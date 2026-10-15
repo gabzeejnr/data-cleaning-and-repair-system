@@ -1,4 +1,4 @@
-import type { DatasetRow, DatasetProfile, ColumnProfile } from "../types/index.js";
+import type { DatasetRow, DatasetProfile, ColumnProfile, NumericStats } from "../types/index.js";
 
 function isMissing(value: unknown): boolean {
     return (
@@ -28,6 +28,20 @@ function detectDataType(values: unknown[]): ColumnProfile["dataType"] {
     return (presentValues.every(value => (
         typeof value === "number" || (typeof value === "string" && value.trim() !== "" && Number.isFinite(Number(value)))
     )) ? "number" : (Array.from(types)[0] as ColumnProfile["dataType"]))
+}
+
+function calculateNumericStats(values: unknown[]) {
+    const count = values.filter(Boolean).length;
+
+    let total = 0;
+
+    for (const value of values) {
+        if (typeof Number(value) === "number"
+            && Number.isInteger(Number(value))
+        ) {
+            total += value
+        }
+    }
 }
 
 function profileDataset(rows: DatasetRow[]): DatasetProfile {

@@ -1,6 +1,6 @@
 type DatasetRow = Record<string, unknown>;
-
 type CSVErrorDetail = { message: string, row: number | undefined }[];
+
 type UploadSuccess = {
     filename: string,
     rowCount: number,
@@ -9,6 +9,7 @@ type UploadSuccess = {
     profile: DatasetProfile,
     preview: DatasetRow[]
 }
+
 interface ColumnProfile {
     name: string;
     dataType: "number" | "text" | "boolean" | "mixed" | "empty";
@@ -18,11 +19,22 @@ interface ColumnProfile {
 }
 
 interface DatasetProfile {
-  rowCount: number;
-  columnCount: number;
-  duplicateRows: number;
-  totalMissingValues: number;
-  columns: ColumnProfile[];
+    rowCount: number;
+    columnCount: number;
+    duplicateRows: number;
+    totalMissingValues: number;
+    columns: ColumnProfile[];
 }
 
-export type { DatasetRow, CSVErrorDetail, UploadSuccess, DatasetProfile, ColumnProfile }
+interface NumericStats {
+    count: number;
+    mean: number | null;
+    median: number | null;
+    min: number | null;
+    max: number | null;
+}
+
+export type {
+    DatasetRow, CSVErrorDetail, UploadSuccess,
+    DatasetProfile, ColumnProfile, NumericStats
+}
