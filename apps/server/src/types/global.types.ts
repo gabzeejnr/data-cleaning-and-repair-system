@@ -1,3 +1,6 @@
-type Error = {error: string}
+type Error<T> = {
+    error: string
+    details?: T
+}
 
-export type {Error}
+export type { Error }

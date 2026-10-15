@@ -1,5 +1,5 @@
 import multer from "multer";
-import path from "path";
+import path from "node:path"
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const MAX_ROWS = 50_000;
