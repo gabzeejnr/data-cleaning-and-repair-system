@@ -8,5 +8,20 @@ type UploadSuccess = {
     columns: string[],
     preview: DatasetRow[]
 }
+interface ColumnProfile {
+    name: string;
+    dataType: "number" | "text" | "boolean" | "mixed" | "empty";
+    missingCount: number;
+    missingPercentage: number;
+    uniqueCount: number;
+}
 
-export type { DatasetRow, CSVErrorDetail, UploadSuccess }
+interface DatasetProfile {
+  rowCount: number;
+  columnCount: number;
+  duplicateRows: number;
+  totalMissingValues: number;
+  columns: ColumnProfile[];
+}
+
+export type { DatasetRow, CSVErrorDetail, UploadSuccess, DatasetProfile, ColumnProfile }
