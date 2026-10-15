@@ -9,7 +9,7 @@ const app: Express = express();
 const PORT = Number(env.PORT) || 4000;
 
 app.use(cors({
-    origin: ["*"]
+    origin: "*"
 }));
 app.use(json({ limit: "1mb" }));
 

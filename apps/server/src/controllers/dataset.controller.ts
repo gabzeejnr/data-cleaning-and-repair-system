@@ -4,7 +4,7 @@ import path from "node:path"
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { ServerError, MAX_ROWS } from "../libs/controller.lib.js";
-import type { ErrorRequestHandler, Request, Response } from "express";
+import type { ErrorRequestHandler, NextFunction, Request, Response } from "express";
 import type { ErrorType, Success } from "../types/global.types.js";
 import type { DatasetRow, CSVErrorDetail, UploadSuccess } from "../types/dataset.type.js";
 import { MulterError } from "multer";
@@ -110,11 +110,7 @@ function uploadFile(req: Request, res: Response<ErrorType<CSVErrorDetail> | Succ
     }
 }
 
-function uploadMiddleware(error: Error & { code?: string },
-    req: Request,
-    res: Response,
-    next: NextFunction
-) {
+const uploadMiddleware: ErrorRequestHandler = (error, _req, res, _next) => {
     if (error instanceof MulterError) {
         res.status(error.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({
             error: (error.code === "LIMIT_FILE_SIZE"
@@ -125,7 +121,12 @@ function uploadMiddleware(error: Error & { code?: string },
         return;
     }
 
-    res.status(400).json({ error: error.message });
-}
+    res.status(400).json({
+        error: (error instanceof Error
+            ? error.message
+            : "An unexpected error occurred."
+        )
+    });
+};
 
 export { uploadFile, uploadMiddleware }
