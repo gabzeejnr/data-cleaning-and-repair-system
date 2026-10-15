@@ -6,6 +6,7 @@ type UploadSuccess = {
     rowCount: number,
     columnCount: number,
     columns: string[],
+    profile: DatasetProfile,
     preview: DatasetRow[]
 }
 interface ColumnProfile {

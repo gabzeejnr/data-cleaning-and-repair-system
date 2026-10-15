@@ -3,8 +3,9 @@ dotenv.config({ path: "../../.env" });
 import path from "node:path"
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
-import { ServerError, MAX_ROWS } from "../libs/controller.lib.js";
-import type { ErrorRequestHandler, NextFunction, Request, Response } from "express";
+import { profileDataset } from "../services/index.js";;
+import { MAX_ROWS } from "../libs/controller.lib.js";
+import type { ErrorRequestHandler, Request, Response } from "express";
 import type { ErrorType, Success } from "../types/global.types.js";
 import type { DatasetRow, CSVErrorDetail, UploadSuccess } from "../types/dataset.type.js";
 import { MulterError } from "multer";
@@ -93,6 +94,8 @@ function uploadFile(req: Request, res: Response<ErrorType<CSVErrorDetail> | Succ
             return;
         }
 
+        const profile = profileDataset(rows);
+
         res.status(200).json({
             message: "Dataset uploaded and parsed successfully.",
             data: {
@@ -100,6 +103,7 @@ function uploadFile(req: Request, res: Response<ErrorType<CSVErrorDetail> | Succ
                 rowCount: rows.length,
                 columnCount: columns.length,
                 columns,
+                profile,
                 preview: rows.slice(0, 10),
             },
         });
