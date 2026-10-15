@@ -30,18 +30,37 @@ function detectDataType(values: unknown[]): ColumnProfile["dataType"] {
     )) ? "number" : (Array.from(types)[0] as ColumnProfile["dataType"]))
 }
 
-function calculateNumericStats(values: unknown[]) {
-    const count = values.filter(Boolean).length;
-
-    let total = 0;
-
-    for (const value of values) {
-        if (typeof Number(value) === "number"
-            && Number.isInteger(Number(value))
-        ) {
-            total += value
+function calculateNumericStats(values: unknown[]): NumericStats {
+    const numbers = values.flatMap((value) => {
+        if (typeof value === "number") {
+            return Number.isFinite(value) ? [value] : [];
         }
+
+        if (typeof value === "string" && value.trim() !== "") {
+            const number = Number(value);
+            return Number.isFinite(number) ? [number] : [];
+        }
+
+        return [];
+    }).sort((a, b) => a - b);
+
+    if (numbers.length === 0) {
+        return { count: 0, mean: null, median: null, min: null, max: null };
     }
+
+    const total = numbers.reduce((sum, number) => sum + number, 0);
+    const middle = Math.floor(numbers.length / 2);
+    const median = numbers.length % 2 === 0
+        ? (numbers[middle - 1]! + numbers[middle]!) / 2
+        : numbers[middle]!;
+
+    return {
+        count: numbers.length,
+        mean: total / numbers.length,
+        median,
+        min: numbers[0]!,
+        max: numbers[numbers.length - 1]!,
+    };
 }
 
 function profileDataset(rows: DatasetRow[]): DatasetProfile {
@@ -95,4 +114,4 @@ function profileDataset(rows: DatasetRow[]): DatasetProfile {
     };
 }
 
-export { profileDataset }
+export { calculateNumericStats, profileDataset }
