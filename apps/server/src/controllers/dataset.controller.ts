@@ -5,10 +5,10 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { ServerError } from "../libs/controller.lib.js";
 import type { Request, Response } from "express";
-import { Error } from "../types/global.types.js";
-import { DatasetRow } from "../types/dataset.type.js";
+import type { Error, Success } from "../types/global.types.js";
+import type { DatasetRow, CSVErrorDetail } from "../types/dataset.type.js";
 
-function uploadFile(req: Request, res: Response<Error<(number | undefined)[]>>) {
+function uploadFile(req: Request, res: Response<Error<CSVErrorDetail> | Success>): void {
     try {
         if (!req.file) {
             res.status(400).json({
@@ -64,7 +64,38 @@ function uploadFile(req: Request, res: Response<Error<(number | undefined)[]>>) 
                 });
                 return;
             }
+
+            rows = XLSX.utils.sheet_to_json<DatasetRow>(worksheet, {
+                defval: null,
+                raw: false,
+            });
         }
+
+        if (rows.length === 0) {
+            res.status(400).json({
+                error: "The uploaded dataset contains no data rows.",
+            });
+            return;
+        }
+
+        const columns = Object.keys(rows[0] ?? {});
+        if (columns.length === 0 || columns.some((column) => !column)) {
+            res.status(400).json({
+                error: "The dataset must have valid column headers.",
+            });
+            return;
+        }
+
+        res.status(200).json({
+            message: "Dataset uploaded and parsed successfully.",
+            data: {
+                filename: req.file.originalname,
+                rowCount: rows.length,
+                columnCount: columns.length,
+                columns,
+                preview: rows.slice(0, 10),
+            },
+        });
 
 
     } catch (err) {

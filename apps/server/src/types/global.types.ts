@@ -3,4 +3,9 @@ type Error<T> = {
     details?: T
 }
 
-export type { Error }
+type Success<T> = {
+    message: string,
+    data?: T
+}
+
+export type { Error, Success }

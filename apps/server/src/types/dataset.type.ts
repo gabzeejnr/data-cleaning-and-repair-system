@@ -1,3 +1,5 @@
 type DatasetRow = Record<string, unknown>;
 
-export type { DatasetRow }
+type CSVErrorDetail = { message: string, row: number | undefined }[]
+
+export type { DatasetRow, CSVErrorDetail }
