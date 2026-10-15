@@ -5,4 +5,6 @@ import type { Router as RouterType } from "express";
 
 const router: RouterType = Router();
 
-router.post("/datasets/upload", upload.single("file"), uploadFile)
+router.post("/upload", upload.single("file"), uploadFile);
+
+export { router }
