@@ -1,5 +1,5 @@
-type Error<T> = {
-    error: string
+type ErrorType<T> = {
+    ErrorType: string
     details?: T
 }
 
@@ -8,4 +8,4 @@ type Success<T> = {
     data?: T
 }
 
-export type { Error, Success }
+export type { ErrorType, Success }

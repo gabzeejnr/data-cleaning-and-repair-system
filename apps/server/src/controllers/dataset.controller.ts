@@ -3,12 +3,12 @@ dotenv.config({ path: "../../.env" });
 import path from "node:path"
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
-import { ServerError } from "../libs/controller.lib.js";
-import type { Request, Response } from "express";
-import type { Error, Success } from "../types/global.types.js";
-import type { DatasetRow, CSVErrorDetail } from "../types/dataset.type.js";
+import { ServerError, MAX_ROWS } from "../libs/controller.lib.js";
+import type { NextFunction, Request, Response } from "express";
+import type { ErrorType, Success } from "../types/global.types.js";
+import type { DatasetRow, CSVErrorDetail, UploadSuccess } from "../types/dataset.type.js";
 
-function uploadFile(req: Request, res: Response<Error<CSVErrorDetail> | Success>): void {
+function uploadFile(req: Request, res: Response<ErrorType<CSVErrorDetail> | Success<UploadSuccess>>): void {
     try {
         if (!req.file) {
             res.status(400).json({
@@ -77,6 +77,12 @@ function uploadFile(req: Request, res: Response<Error<CSVErrorDetail> | Success>
             });
             return;
         }
+        if (rows.length > MAX_ROWS) {
+            res.status(413).json({
+                error: `The dataset exceeds the ${MAX_ROWS.toLocaleString()} row limit.`,
+            });
+            return;
+        }
 
         const columns = Object.keys(rows[0] ?? {});
         if (columns.length === 0 || columns.some((column) => !column)) {
@@ -96,11 +102,19 @@ function uploadFile(req: Request, res: Response<Error<CSVErrorDetail> | Success>
                 preview: rows.slice(0, 10),
             },
         });
-
-
     } catch (err) {
-        res.status(500).json(ServerError)
+        res.status(400).json({
+            error: "Could not parse the uploaded file. Check that it is a valid CSV or XLSX file.",
+        });
     }
 }
 
-export { uploadFile }
+function uploadMiddleware(error: Error & { code?: string },
+    req: Request,
+    res: Response,
+    next: NextFunction
+) {
+    if(error )
+}
+
+export { uploadFile, uploadMiddleware }
