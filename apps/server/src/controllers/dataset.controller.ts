@@ -4,9 +4,10 @@ import path from "node:path"
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { ServerError, MAX_ROWS } from "../libs/controller.lib.js";
-import type { NextFunction, Request, Response } from "express";
+import type { ErrorRequestHandler, Request, Response } from "express";
 import type { ErrorType, Success } from "../types/global.types.js";
 import type { DatasetRow, CSVErrorDetail, UploadSuccess } from "../types/dataset.type.js";
+import { MulterError } from "multer";
 
 function uploadFile(req: Request, res: Response<ErrorType<CSVErrorDetail> | Success<UploadSuccess>>): void {
     try {
@@ -114,7 +115,17 @@ function uploadMiddleware(error: Error & { code?: string },
     res: Response,
     next: NextFunction
 ) {
-    if(error )
+    if (error instanceof MulterError) {
+        res.status(error.code === "LIMIT_FILE_SIZE" ? 413 : 400).json({
+            error: (error.code === "LIMIT_FILE_SIZE"
+                ? "File exceeds the 10 MB upload limit."
+                : error.message
+            )
+        });
+        return;
+    }
+
+    res.status(400).json({ error: error.message });
 }
 
 export { uploadFile, uploadMiddleware }

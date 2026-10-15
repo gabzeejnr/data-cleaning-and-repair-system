@@ -1,5 +1,5 @@
 type ErrorType<T> = {
-    ErrorType: string
+    error: string
     details?: T
 }
 
