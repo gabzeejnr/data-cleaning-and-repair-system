@@ -1,0 +1,17 @@
+{
+    "name": "data-cleaning-system",
+    "private": true,
+    "version": "1.0.0",
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "dev:client": "npm run dev --workspace=data-cleaning-system-client",
+        "build:client": "npm run build --workspace=data-cleaning-system-client",
+        "lint": "npm run lint --workspace=data-cleaning-system-client",
+        "dev:server": "npm run dev --workspace=data-cleaning-system-server",
+        "build:server": "npm run build --workspace=data-cleaning-system-server",
+        "start:server": "npm run start --workspace=data-cleaning-system-server"
+    }
+}

@@ -1,0 +1,36 @@
+{
+  "name": "data-cleaning-system-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "data cleaning system server",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "node -e \"console.log('Working, I guess')\"",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "^4.22.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0",
+    "ml-random-forest": "^2.1.0",
+    "multer": "^2.4.0",
+    "papaparse": "^5.7.0",
+    "pg": "^8.23.1",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.3.0",
+    "@types/node": "^24.19.2",
+    "@types/pg": "^8.23.1",
+    "tsconfig-paths": "^4.2.0",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3"
+  }
+}
