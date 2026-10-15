@@ -13,11 +13,13 @@ const upload = multer({
     fileFilter: function (_req, file, callback) {
         const extension = path.extname(file.originalname).toLowerCase();
 
-        if(extension !== ".csv" && extension !== ".xlsx") {
-            callback(new Error ("Only CSV and XLSX files are supported."));
+        if (extension !== ".csv" && extension !== ".xlsx") {
+            callback(new Error("Only CSV and XLSX files are supported."));
             return
         }
 
         callback(null, true)
     }
 })
+
+export { upload };

@@ -4,7 +4,6 @@ import cors from "cors";
 import type { Express } from "express";
 import { apiRouter } from "./routes/route.js";
 
-
 const app: Express = express();
 const PORT = Number(env.PORT) || 4000;
 
