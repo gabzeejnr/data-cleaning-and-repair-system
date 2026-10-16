@@ -1,0 +1,16 @@
+﻿id,name,age,department,salary,hire_date,performance_score
+1,Alice,25,Engineering,85000,2022-03-15,4.2
+2,Bob,,Marketing,62000,2021-08-22,3.8
+3,Alice,25,Engineering,85000,2022-03-15,4.2
+4,Charlie,28,Sales,70000,2023-01-10,
+5,David,45,Engineering,125000,2015-11-02,4.8
+6,Eva,31,HR,58000,2020-05-18,3.5
+7,Frank,22,Sales,45000,2024-06-01,2.9
+8,Grace,55,Executive,210000,2010-02-14,4.9
+9,Bob,,Marketing,62000,2021-08-22,3.8
+10,Henry,29,Engineering,"90,000",2022-11-30,4.0
+11,Ivy,35,Finance,95000,2018-09-05,4.1
+12,Jack,67,Sales,32000,2025-02-20,1.5
+13,Eva,31,HR,58000,2020-05-18,3.5
+14,Karen,24,Engineering,82000,2023-07-19,
+15,Leo,99,Marketing,65000,2024-01-15,3.2
