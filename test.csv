@@ -1,5 +1,5 @@
 ﻿id,name,age,department,salary,hire_date,performance_score
-1,Alice,25,Engineering,85000,2022-03-15,4.2
+1,Alice,25,Engineering,"85,000",2022-03-15,4.2
 2,Bob,,Marketing,62000,2021-08-22,3.8
 3,Alice,25,Engineering,85000,2022-03-15,4.2
 4,Charlie,28,Sales,70000,2023-01-10,
