@@ -11,11 +11,13 @@ type UploadSuccess = {
 }
 
 interface ColumnProfile {
-    name: string;
-    dataType: "number" | "text" | "boolean" | "mixed" | "empty";
-    missingCount: number;
-    missingPercentage: number;
-    uniqueCount: number;
+    name: string,
+    dataType: "number" | "text" | "boolean" | "mixed" | "empty",
+    missingCount: number,
+    missingPercentage: number,
+    uniqueCount: number,
+    numericStats?: NumericStats,
+    outlierAnalysis?: Outliers | null
 }
 
 interface DatasetProfile {
@@ -34,7 +36,17 @@ interface NumericStats {
     max: number | null;
 }
 
+interface Outliers {
+    Q1: number,
+    Q3: number,
+    IQR: number,
+    lowerBound: number,
+    upperBound: number,
+    outliers: unknown[]
+}
+
 export type {
     DatasetRow, CSVErrorDetail, UploadSuccess,
-    DatasetProfile, ColumnProfile, NumericStats
+    DatasetProfile, ColumnProfile, NumericStats,
+    Outliers
 }
