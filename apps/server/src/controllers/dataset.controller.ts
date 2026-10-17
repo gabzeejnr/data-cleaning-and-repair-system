@@ -4,9 +4,8 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { profileDataset } from "../services/index.js";;
 import { MAX_ROWS } from "../libs/controller.lib.js";
-import { MulterError } from "multer";
 import { persistDataset } from "../repositories/dataset.repository.js";
-import type { ErrorRequestHandler, Request, Response } from "express";
+import type { Request, Response } from "express";
 import type { ErrorType, Success } from "../types/global.types.js";
 import type { DatasetRow, CSVErrorDetail, UploadSuccess } from "../types/dataset.type.js";
 

@@ -49,11 +49,11 @@ interface DatasetProfile {
 }
 
 interface NumericStats {
-    count: number;
-    mean: number | null;
-    median: number | null;
-    min: number | null;
-    max: number | null;
+    count: number,
+    mean: number | null,
+    median: number | null,
+    min: number | null,
+    max: number | null
 }
 
 interface Outliers {
@@ -74,12 +74,14 @@ interface RepairOptions {
     fillValue?: unknown
 }
 
-interface RepairResult {
+interface RepairResult extends Omit<RepairOptions, 'fillValue'> {
     rows: DatasetRow[],
-    column: string,
-    strategy: RepairStrategy,
     replacementValue: unknown,
     repairedCount: number
+}
+
+interface MissingValueRepairResult extends RepairResult {
+    datasetId: UploadSuccess["datasetId"]
 }
 
 
@@ -87,5 +89,5 @@ export type {
     DatasetRow, CSVErrorDetail, UploadSuccess,
     DatasetProfile, ColumnProfile, NumericStats,
     Outliers, DuplicateReturn, DatabaseDataset, RetrievedDataset,
-    RepairOptions, RepairResult
+    RepairOptions, RepairResult, MissingValueRepairResult
 }
