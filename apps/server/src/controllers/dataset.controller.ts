@@ -1,16 +1,16 @@
-import dotenv from "dotenv";
-dotenv.config({ path: "../../.env" });
+import { randomUUID } from "node:crypto";
 import path from "node:path"
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { profileDataset } from "../services/index.js";;
 import { MAX_ROWS } from "../libs/controller.lib.js";
+import { MulterError } from "multer";
+import { persistDataset } from "../repositories/dataset.repository.js";
 import type { ErrorRequestHandler, Request, Response } from "express";
 import type { ErrorType, Success } from "../types/global.types.js";
 import type { DatasetRow, CSVErrorDetail, UploadSuccess } from "../types/dataset.type.js";
-import { MulterError } from "multer";
 
-function uploadFile(req: Request, res: Response<ErrorType<CSVErrorDetail> | Success<UploadSuccess>>): void {
+async function uploadFile(req: Request, res: Response<ErrorType<CSVErrorDetail> | Success<UploadSuccess>>): Promise<void> {
     try {
         if (!req.file) {
             res.status(400).json({
@@ -96,20 +96,18 @@ function uploadFile(req: Request, res: Response<ErrorType<CSVErrorDetail> | Succ
 
         const profile = profileDataset(rows);
 
+        const datasetId = randomUUID();
+
+        await persistDataset(datasetId, req.file.originalname, columns, rows);
+
         res.status(200).json({
             message: "Dataset uploaded and parsed successfully.",
-            data: {
-                filename: req.file.originalname,
-                rowCount: rows.length,
-                columnCount: columns.length,
-                columns,
-                profile,
-                preview: rows.slice(0, 10),
-            },
+            data: { datasetId }
         });
     } catch (err) {
-        res.status(400).json({
-            error: "Could not parse the uploaded file. Check that it is a valid CSV or XLSX file.",
+        console.error("Datasetupload failed:", err)
+        res.status(500).json({
+            error: "Dataset upload failed.",
         });
     }
 }

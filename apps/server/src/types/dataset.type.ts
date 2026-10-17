@@ -1,13 +1,32 @@
 type DatasetRow = Record<string, unknown>;
 type CSVErrorDetail = { message: string, row: number | undefined }[];
 
-type UploadSuccess = {
+type UploadSuccess = { datasetId: string }
+
+interface DatabaseDataset {
+    id: string,
     filename: string,
-    rowCount: number,
-    columnCount: number,
+    row_count: number,
+    column_count: number,
     columns: string[],
-    profile: DatasetProfile,
-    preview: DatasetRow[]
+    created_at: string,
+    expires_at: string
+}
+
+interface RetrievedDataset {
+    id: string,
+    columns: string[],
+    rows: DatasetRow[],
+    expires_at: string
+}
+
+
+interface DuplicateReturn {
+    datasetId: string,
+    selectedColumns: unknown[],
+    duplicateGroupCount: number,
+    duplicateRowCount: number,
+    groups: DatasetRow[][];
 }
 
 interface ColumnProfile {
@@ -21,11 +40,12 @@ interface ColumnProfile {
 }
 
 interface DatasetProfile {
-    rowCount: number;
-    columnCount: number;
-    duplicateRows: number;
-    totalMissingValues: number;
-    columns: ColumnProfile[];
+    rowCount: number,
+    columnCount: number,
+    duplicateRows: number,
+    // duplicates: DatasetRow[][],
+    totalMissingValues: number,
+    columns: ColumnProfile[],
 }
 
 interface NumericStats {
@@ -48,5 +68,5 @@ interface Outliers {
 export type {
     DatasetRow, CSVErrorDetail, UploadSuccess,
     DatasetProfile, ColumnProfile, NumericStats,
-    Outliers
+    Outliers, DuplicateReturn, DatabaseDataset, RetrievedDataset
 }
