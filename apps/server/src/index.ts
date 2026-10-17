@@ -1,4 +1,5 @@
-import { env } from "process";
+import { env } from "node:process";
+import { IS_ACTIVE } from "./config/env.js";
 import express, { json } from "express";
 import cors from "cors";
 import type { Express } from "express";
@@ -11,6 +12,9 @@ const PORT = Number(env.PORT) || 4000;
 app.use(cors({
     origin: "*"
 }));
+
+console.log(IS_ACTIVE);
+
 app.use(json({ limit: "1mb" }));
 
 app.use("/api", apiRouter);
