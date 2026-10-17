@@ -3,7 +3,11 @@ import { findDuplicateGroups } from "../services/duplicate-detection.js";
 import type { Request, Response } from "express";
 import type { ErrorType, Success, DuplicateReturn } from "../types/index.js";
 
-async function detectDuplicates(req: Request, res: Response<ErrorType<any[]> | Success<DuplicateReturn>>) {
+async function detectDuplicates(
+    req: Request<{}, {}, { datasetId: string, columns: string[] }>,
+    res: Response<ErrorType<any[]> | Success<DuplicateReturn>>
+) {
+
     const { datasetId, columns } = req.body;
 
     if (!datasetId || !Array.isArray(columns) || columns.length === 0) {
