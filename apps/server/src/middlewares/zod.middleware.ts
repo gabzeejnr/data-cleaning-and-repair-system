@@ -1,19 +1,25 @@
-import { detectDuplicateSchema } from "../api/datasets/detect-duplicate.js";
+import { z } from "zod";
+import type { ZodType } from "zod";
 import type { Request, Response, NextFunction } from "express";
 
-function validateSchema(req: Request, res: Response, next: NextFunction) {
-    const result = detectDuplicateSchema.safeParse(req.body);
+function validateSchema<T>(zod: ZodType<T>) {
 
-    if (!result.success) {
-        res.status(400).json({
-            error: "Invalid request data.",
-            details: result.error.issues
-        })
+    return (req: Request, res: Response, next: NextFunction): void => {
 
-        return;
+        const result = zod.safeParse(req.body);
+
+        if (!result.success) {
+            res.status(400).json({
+                error: "Invalid request data.",
+                details: result.error.issues
+            })
+
+            return;
+        }
+
+        res.locals.validatedBody = result.data;
+        next();
     }
-
-    next();
 }
 
 export { validateSchema }
