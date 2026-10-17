@@ -65,8 +65,27 @@ interface Outliers {
     outliers: unknown[]
 }
 
+// MISSING_VALUE_REPAIR =========================
+
+type RepairStrategy = "mean" | "median" | "mode" | "constant"
+interface RepairOptions {
+    column: string,
+    strategy: RepairStrategy,
+    fillValue?: unknown
+}
+
+interface RepairResult {
+    rows: DatasetRow[],
+    column: string,
+    strategy: RepairStrategy,
+    replacementValue: unknown,
+    repairedCount: number
+}
+
+
 export type {
     DatasetRow, CSVErrorDetail, UploadSuccess,
     DatasetProfile, ColumnProfile, NumericStats,
-    Outliers, DuplicateReturn, DatabaseDataset, RetrievedDataset
+    Outliers, DuplicateReturn, DatabaseDataset, RetrievedDataset,
+    RepairOptions, RepairResult
 }
