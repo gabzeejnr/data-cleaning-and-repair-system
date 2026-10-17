@@ -1,6 +1,6 @@
 import { isNumber } from "../libs/service.libs.js";
 import { parseNumericValue } from "../utils/parsing.js";
-import type { ColumnProfile, DatasetRow, Outliers } from "../types/dataset.type.js";
+import type { ColumnProfile, Outliers } from "../types/dataset.type.js";
 
 function isMissing(value: unknown): boolean {
     return (
@@ -110,18 +110,6 @@ function detectOutliers(values: unknown[]): Outliers | null {
     }
 }
 
-function findDuplicateGroups(rows: DatasetRow[], columns: string[]): DatasetRow[][] {
-    const group = new Set<string>();
-    const duplicates = new Set<string>();
-    for (const row of rows) {
-        const key = JSON.stringify(columns.map(col => row[col]));
-
-        if(!group.has(key)){
-            group.add(key)
-        } else {
-            duplicates.add(key)
-        }
-    }
+export {
+    calculateQuartiles, detectDataType, detectOutliers, isMissing
 }
-
-export { calculateQuartiles, detectDataType, detectOutliers, isMissing }

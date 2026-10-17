@@ -1,3 +1,4 @@
+import { findDuplicateGroups } from "./duplicate-detection.js";
 import { isMissing, detectDataType, detectOutliers } from "../helpers/index.js";
 import { parseNumericValue } from "../utils/index.js";
 import type { DatasetRow, DatasetProfile, ColumnProfile, NumericStats } from "../types/index.js";
@@ -81,6 +82,8 @@ function profileDataset(rows: DatasetRow[]): DatasetProfile {
             seenRows.add(rowKey);
         }
     }
+
+    const possibleDuplicates = findDuplicateGroups(rows, ["name"])
 
     return {
         rowCount: rows.length,
