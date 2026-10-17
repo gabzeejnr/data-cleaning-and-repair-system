@@ -1,14 +1,12 @@
 import { getDataset } from "../repositories/dataset.repository.js";
 import { findDuplicateGroups } from "../services/duplicate-detection.js";
 import type { Request, Response } from "express";
+import type { DuplicateInput } from "../apis/datasets/detect-duplicate.js";
 import type { ErrorType, Success, DuplicateReturn } from "../types/index.js";
 
-async function detectDuplicates(
-    req: Request<{}, {}, { datasetId: string, columns: string[] }>,
-    res: Response<ErrorType<any[]> | Success<DuplicateReturn>>
-) {
+async function detectDuplicates(_req: Request, res: Response<ErrorType<any[]> | Success<DuplicateReturn>>) {
 
-    const { datasetId, columns } = req.body;
+    const { datasetId, columns } = res.locals.validatedBody as DuplicateInput;
 
     if (!datasetId || !Array.isArray(columns) || columns.length === 0) {
         res.status(400).json({

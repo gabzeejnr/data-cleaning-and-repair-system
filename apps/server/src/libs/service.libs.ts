@@ -1,4 +1,4 @@
-import { parseNumericValue } from "../utils/parsing.js";
+import { parseNumericValue } from "../utils/index.js";
 
 const isNumber = (value: unknown) => parseNumericValue(value) !== null;
 
