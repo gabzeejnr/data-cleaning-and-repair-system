@@ -1,4 +1,4 @@
-import { pool } from "../config/db.js"
+import { pool } from "../configs/db.js"
 import type { QueryResult } from "pg";
 import type { DatasetRow, DatabaseDataset, RetrievedDataset } from "../types/dataset.type.js";
 

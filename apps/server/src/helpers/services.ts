@@ -1,5 +1,5 @@
 import { isNumber } from "../libs/service.libs.js";
-import { parseNumericValue } from "../utils/parsing.js";
+import { parseNumericValue } from "../utils/index.js";
 import type { ColumnProfile, Outliers } from "../types/dataset.type.js";
 
 function isMissing(value: unknown): boolean {
