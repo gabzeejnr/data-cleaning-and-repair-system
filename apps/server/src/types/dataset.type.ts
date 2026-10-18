@@ -84,12 +84,21 @@ interface MissingValueRepairResult extends RepairResult {
     datasetId: UploadSuccess["datasetId"]
 }
 
+
 // SAVE_CLEANED_DATASET =========================
+
+interface CleanSaveSuccess {
+    datasetId: string,
+    originalDatasetId: string,
+    repairedColumn: string,
+    repairedCount: number
+}
 
 
 export type {
     DatasetRow, CSVErrorDetail, UploadSuccess,
     DatasetProfile, ColumnProfile, NumericStats,
     Outliers, DuplicateReturn, DatabaseDataset, RetrievedDataset,
-    RepairOptions, RepairResult, MissingValueRepairResult
+    RepairOptions, RepairResult, MissingValueRepairResult,
+    CleanSaveSuccess
 }

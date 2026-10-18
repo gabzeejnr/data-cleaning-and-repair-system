@@ -36,10 +36,10 @@ async function repairMissingValue(req: Request, res: Response<ErrorType<unknown[
         })
     } catch (err) {
         res.status(400).json({
-            error:
-                err instanceof Error
-                    ? err.message
-                    : "Failed to repair missing values."
+            error: (err instanceof Error
+                ? err.message
+                : "Failed to repair missing values."
+            )
         })
     }
 }
