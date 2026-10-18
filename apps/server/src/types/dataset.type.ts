@@ -99,7 +99,7 @@ interface RepairHistory extends RepairResult {
     id: string,
     originalDatasetId: string,
     cleanedDatasetId: string,
-    created
+    created_at: string
 }
 
 
