@@ -1,6 +1,7 @@
 import { pool } from "../configs/db.js"
 import type { QueryResult } from "pg";
 import type { DatasetRow, DatabaseDataset, RetrievedDataset } from "../types/dataset.type.js";
+import { randomUUID } from "crypto";
 
 async function createDataset(id: string, filename: string, columns: string[], rowCount: number): Promise<{ id: string }> {
     const { rows }: QueryResult<{ id: string }> = await pool.query(`INSERT INTO datasets(id, filename, columns, row_count, column_count, expires_at)
@@ -99,8 +100,28 @@ async function getDataset(id: string): Promise<RetrievedDataset | null> {
     }
 }
 
-async function saveCleaned() {
-    
+async function saveCleanedDatasetService(datasetId: string, dataset: RetrievedDataset, rows: DatasetRow[]) {
+    const client = await pool.connect();
+    try {
+        client.query("BEGIN");
+        const newDatasetId = randomUUID();
+
+        await persistDataset(
+            newDatasetId,
+            `${datasetId}-${dataset.file}-cleaned`,
+            dataset.columns,
+            rows
+        )
+
+        await 
+
+        client.query("COMMIT");
+    } catch (err) {
+        client.query("ROLLBACK");
+        throw err;
+    } finally {
+        client.release()
+    }
 }
 
 
