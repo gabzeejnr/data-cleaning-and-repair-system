@@ -103,7 +103,7 @@ async function getDataset(id: string): Promise<RetrievedDataset | null> {
 async function saveCleanedDatasetService(datasetId: string, dataset: RetrievedDataset, rows: DatasetRow[]) {
     const client = await pool.connect();
     try {
-        client.query("BEGIN");
+        await client.query("BEGIN");
         const newDatasetId = randomUUID();
 
         await persistDataset(
@@ -113,11 +113,13 @@ async function saveCleanedDatasetService(datasetId: string, dataset: RetrievedDa
             rows
         )
 
-        await 
+        await client.query(
+            `INSERT INTO repair_history(original_dataset_id, cleaned_dataset_id, )`
+        )
 
-        client.query("COMMIT");
+        await client.query("COMMIT");
     } catch (err) {
-        client.query("ROLLBACK");
+        await client.query("ROLLBACK");
         throw err;
     } finally {
         client.release()
