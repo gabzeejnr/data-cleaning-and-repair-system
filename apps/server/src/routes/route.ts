@@ -1,5 +1,4 @@
 import { Router } from "express";
-import { router as datasetRoute } from "./dataset.route.js";
 import type { Router as RouterType } from "express";
 
 const router: RouterType = Router();
@@ -12,6 +11,4 @@ router.get("/health", (_req, res) => {
     });
 });
 
-router.use("/datasets", datasetRoute)
-
-export { router as apiRouter }
+export { router }

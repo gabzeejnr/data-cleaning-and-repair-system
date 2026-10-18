@@ -3,7 +3,7 @@ import { IS_ACTIVE } from "./configs/env.js";
 import express, { json } from "express";
 import cors from "cors";
 import type { Express } from "express";
-import { apiRouter } from "./routes/route.js";
+import { apiRouter, authRouter } from "./routes/index.js";
 import { uploadMiddleware } from "./middlewares/index.js";
 
 const app: Express = express();
@@ -17,11 +17,17 @@ console.log(IS_ACTIVE);
 
 app.use(json({ limit: "1mb" }));
 
+app.use("/auth", authRouter);
 app.use("/api", apiRouter);
 
 app.use(uploadMiddleware)
 
+app.use((_req, res)=>{
+    res.status(404).json({error: "Route unknown."})
+})
 
 app.listen(PORT, () => {
+    console.log("// ================================================================================================")
     console.log(`Server running at http://localhost:${PORT}`);
+    console.log("// ================================================================================================")
 });
