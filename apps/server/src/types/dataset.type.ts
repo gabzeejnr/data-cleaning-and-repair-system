@@ -95,6 +95,13 @@ interface CleanSaveSuccess {
     repairedCount: number
 }
 
+interface RepairHistory extends RepairResult {
+    id: string,
+    originalDatasetId: string,
+    cleanedDatasetId: string,
+    created
+}
+
 
 export type {
     DatasetRow, CSVErrorDetail, UploadSuccess,
