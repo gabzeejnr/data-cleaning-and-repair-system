@@ -22,7 +22,7 @@ async function saveCleanedDataset(_req: Request, res: Response<ErrorType<never> 
 
         await persistDataset(
             newDatasetId,
-            `${datasetId}-cleaned`,
+            `${datasetId}-${dataset.file}-cleaned`,
             dataset.columns,
             result.rows
         )

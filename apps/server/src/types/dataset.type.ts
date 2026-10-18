@@ -15,6 +15,7 @@ interface DatabaseDataset {
 
 interface RetrievedDataset {
     id: string,
+    file: string,
     columns: string[],
     rows: DatasetRow[],
     expires_at: string

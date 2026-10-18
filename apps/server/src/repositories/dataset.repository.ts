@@ -92,6 +92,7 @@ async function getDataset(id: string): Promise<RetrievedDataset | null> {
 
     return {
         id: dataset.id,
+        file: dataset.filename,
         columns: dataset.columns,
         rows,
         expires_at: dataset.expires_at
