@@ -1,9 +1,10 @@
+import RoutePage from "./routes/Route";
 import "./App.css";
 
 export default function App() {
     return (
-        <h1>
-            App
-        </h1>
+        <>
+            <RoutePage />
+        </>
     )
 }

@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+@theme {
+    --color-theme: var(--indigo);
+    --color-soft-gray: var(--soft-gray);
+    --color-slate: var(--dark-slate);
+    --color-light-indigo: var(--light-indigo);
+    --color-medium-gry: var(--medium-gray);
+}
