@@ -2,6 +2,7 @@ import { env } from "node:process";
 import { IS_ACTIVE } from "./configs/env.js";
 import express, { json } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import type { Express } from "express";
 import { apiRouter, authRouter, healthRouter } from "./routes/index.js";
 import { uploadMiddleware } from "./middlewares/index.js";
@@ -12,6 +13,7 @@ const PORT = Number(env.PORT) || 4000;
 app.use(cors({
     origin: "*"
 }));
+app.use(cookieParser())
 
 console.log(IS_ACTIVE);
 

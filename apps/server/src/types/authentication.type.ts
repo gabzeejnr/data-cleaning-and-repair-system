@@ -2,7 +2,8 @@ interface User {
     user_id: string,
     name: string,
     email: string,
-    role: "user" | "admin"
+    role: "user" | "admin",
+    password?: string
 }
 
 interface UserCreated extends Omit<User, 'user_id'> {
@@ -13,4 +14,8 @@ interface Login extends Omit<User, 'user_id'> {
     userId: string
 }
 
-export type { User, UserCreated, Login }
+interface AccessTokenPayload extends Omit<User, 'password'> {
+    purpose: "access"
+}
+
+export type { User, UserCreated, Login, AccessTokenPayload }

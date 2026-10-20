@@ -1,7 +1,10 @@
+import type { AccessTokenPayload } from "./index.ts";
+
 declare global {
     namespace Express {
         interface Locals {
-            validatedBody?: unknown
+            validatedBody?: unknown,
+            user?: AccessTokenPayload
         }
     }
 }
