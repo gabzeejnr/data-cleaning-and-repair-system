@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../configs/env.js";
 import { createUser, hasUser } from "../repositories/authentication.js";
-import { hashPassword, verifyPassword } from "../helpers/password.js";
+import { hashPassword, verifyPassword, clearTokenCookie, setTokenCookie } from "../helpers/index.js";
 import type { Request, Response } from "express";
 import type { UserRegistrationInput, LoginInput } from "../apis/auth/index.js";
 import type { ErrorType, Login, Success, UserCreated } from "../types/index.js";
@@ -11,14 +11,9 @@ async function registerUser(_req: Request, res: Response<ErrorType<never> | Succ
     try {
         const { email, name, password } = res.locals.validatedBody as UserRegistrationInput;
 
-        if (!email || !name || !password) {
-            res.status(400).json({ error: "username, email and password are required." });
-            return;
-        }
-
         const isUser = await hasUser(email);
         if (isUser) {
-            res.status(401).json({ error: "Account found under this email. Use another email." })
+            res.status(409).json({ error: "Account found under this email. Use another email." })
             return;
         }
 
@@ -49,24 +44,18 @@ async function loginUser(_req: Request, res: Response<ErrorType<never> | Success
     const { email, password } = res.locals.validatedBody as LoginInput;
 
     try {
-        if (!email) {
-            res.status(404).json({ error: "Email is required." });
-            return;
-        }
-
-        const checkUser = await hasUser(email, { password: true });
+        const checkUser = await hasUser(email);
         if (!checkUser) {
-            res.status(404).json({ error: "User not found for this email. Please try again." })
+            res.status(401).json({ error: "Incorrect email or password. Please try again." })
             return;
         }
 
-        const decoded = await verifyPassword(password, checkUser.password)
+        const decoded = await verifyPassword(email, password);
         if (!decoded) {
-            res.status(401).json({ error: "Incorrect password. Please try again." });
+            res.status(401).json({ error: "Incorrect email or password. Please try again." });
             return;
         }
 
-        const purpose = "access"
         const data = {
             userId: checkUser.user_id,
             name: checkUser.name,
@@ -77,16 +66,16 @@ async function loginUser(_req: Request, res: Response<ErrorType<never> | Success
         const token = jwt.sign(
             {
                 ...data,
-                purpose
+                purpose: "access"
             },
             JWT_SECRET,
-            { expiresIn: "10m" }
+            { expiresIn: "1h" }
         )
+        console.log(token)
 
-        res.status(200).json({
-            message: "Login successful.",
-            data
-        });
+        setTokenCookie(res, "accessToken", token, 10 * 60 * 1000);
+
+        res.status(200).json({ message: "Login successful.", data });
     } catch (err) {
         console.log("Could not login user:", err)
         res.status(500).json({
@@ -98,4 +87,19 @@ async function loginUser(_req: Request, res: Response<ErrorType<never> | Success
     }
 }
 
-export { registerUser, loginUser }
+function logOutUser(_req: Request, res: Response<Success<never> | ErrorType<never>>) {
+    try {
+        clearTokenCookie(res, "accessToken");
+        res.status(200).json({ message: "User logged out successfully." })
+    } catch (err) {
+        console.error("Couldn't log out user:", err)
+        res.status(500).json({
+            error: (err instanceof Error
+                ? err.message
+                : "Couldn't log user out."
+            )
+        })
+    }
+}
+
+export { registerUser, loginUser, logOutUser }
