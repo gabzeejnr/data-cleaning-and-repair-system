@@ -25,3 +25,13 @@ test
 *.sln
 *.sw?
 *.env
+
+#Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/

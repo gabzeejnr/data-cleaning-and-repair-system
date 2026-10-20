@@ -8,7 +8,6 @@ router.get("/health", (_req, res) => {
         status: "ok",
         service: "data-cleaning-system-server",
         timestamp: new Date().toISOString(),
-    });
+    })
 });
-
 export { router as healthRouter }
