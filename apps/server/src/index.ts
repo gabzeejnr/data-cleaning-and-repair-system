@@ -3,7 +3,7 @@ import { IS_ACTIVE } from "./configs/env.js";
 import express, { json } from "express";
 import cors from "cors";
 import type { Express } from "express";
-import { apiRouter, authRouter } from "./routes/index.js";
+import { apiRouter, authRouter, healthRouter } from "./routes/index.js";
 import { uploadMiddleware } from "./middlewares/index.js";
 
 const app: Express = express();
@@ -19,6 +19,7 @@ app.use(json({ limit: "1mb" }));
 
 app.use("/auth", authRouter);
 app.use("/api", apiRouter);
+app.use(healthRouter)
 
 app.use(uploadMiddleware)
 

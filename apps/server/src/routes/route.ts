@@ -11,4 +11,4 @@ router.get("/health", (_req, res) => {
     });
 });
 
-export { router }
+export { router as healthRouter }
