@@ -12,8 +12,18 @@ interface UserLogin {
     password: string
 }
 
+interface UserRegistration {
+    name: string,
+    email: string,
+    password: string,
+    confirmPassword: string
+}
+
 interface AccessTokenPayload extends User {
     purpose: "access"
 }
 
-export type { User, UserLogin, UserRole, AccessTokenPayload }
+export type {
+    User, UserLogin, UserRole, AccessTokenPayload,
+    UserRegistration
+}
