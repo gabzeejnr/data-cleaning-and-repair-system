@@ -17,6 +17,7 @@
     "react-router-dom": "^7.18.4"
   },
   "devDependencies": {
+    "@data-cleaning-system/shared": "*",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/vite": "^4.3.3",
     "@types/node": "^24.13.3",
