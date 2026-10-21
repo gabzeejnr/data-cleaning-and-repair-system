@@ -11,13 +11,15 @@ import type { ApiError, ApiSuccess } from "../types/index.js";
 
 async function registerUser(_req: Request, res: Response<ApiError<never> | ApiSuccess<User>>) {
     try {
-        const { email, name, password } = res.locals.validatedBody as UserRegistrationInput;
+        const { email, name, password, confirmPassword } = res.locals.validatedBody as UserRegistrationInput;
 
         const isUser = await hasUser(email);
         if (isUser) {
             res.status(409).json({ error: "Account found under this email. Use another email." })
             return;
         }
+
+        if (password !== confirmPassword) res.status(400).json({ error: "Passwords do not match. Please try again." })
 
         const hashed = await hashPassword(password)
         const newUser = await createUser(name, email, hashed);
@@ -35,7 +37,7 @@ async function registerUser(_req: Request, res: Response<ApiError<never> | ApiSu
         console.log("Could not create user:", err)
         res.status(500).json({
             error: (err instanceof Error
-                ? err.message
+                ? ""
                 : "Error creating user"
             )
         })
