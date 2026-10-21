@@ -1,32 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { API } from "../apis/axios";
+import { useUser } from "../context/UserContext";
 import loader from "../assets/svg/loader.svg";
 
 export default function ProtectedRoutes() {
 
+    const { user, loading } = useUser();
     const navigate = useNavigate();
-    const [checkingAuth, setCheckingAuth] = useState<boolean>(true)
 
     useEffect(() => {
-        getAuthenticated();
-    }, [navigate]);
+        if (!loading && !user) navigate("/auth/login", { replace: true });
+    }, [loading, user, navigate]);
 
-    async function getAuthenticated() {
-        try {
-            const { data } = await API.get("/auth/me");
-        } catch {
-            navigate("/auth/login");
-        } finally {
-            setCheckingAuth(false);
-        }
+    if (loading || !user) return (
+        <div className="h-screen grid place-items-center">
+            <img src={loader} alt="Loading..." width="100" />
+        </div>
+    )
 
-        if (checkingAuth) return (
-            <div className="h-screen grid place-items-center">
-                <img src={loader} alt="Loading..." width="100" />
-            </div>
-        )
 
-        return <Outlet />
-    }
+    return <Outlet />
 }
