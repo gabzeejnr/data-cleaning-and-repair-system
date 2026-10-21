@@ -11,7 +11,8 @@ const app: Express = express();
 const PORT = Number(env.PORT) || 4000;
 
 app.use(cors({
-    origin: "*"
+    origin: "http://localhost:5173",
+    credentials: true
 }));
 app.use(cookieParser())
 
