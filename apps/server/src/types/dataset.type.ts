@@ -1,7 +1,50 @@
 type DatasetRow = Record<string, unknown>;
 type CSVErrorDetail = { message: string, row: number | undefined }[];
 
-type UploadSuccess = { datasetId: string }
+interface UploadSuccess { datasetId: string }
+
+interface NumericStats {
+    count: number,
+    mean: number | null,
+    median: number | null,
+    min: number | null,
+    max: number | null
+}
+
+interface Outliers {
+    Q1: number,
+    Q3: number,
+    IQR: number,
+    lowerBound: number,
+    upperBound: number,
+    outliers: unknown[]
+}
+
+interface ColumnProfile {
+    name: string,
+    dataType: "number" | "text" | "boolean" | "mixed" | "empty",
+    missingCount: number,
+    missingPercentage: number,
+    uniqueCount: number,
+    numericStats?: NumericStats,
+    outlierAnalysis?: Outliers | null
+}
+
+interface DatasetProfile {
+    rowCount: number,
+    columnCount: number,
+    duplicateRows: number,
+    totalMissingValues: number,
+    columns: ColumnProfile[],
+}
+
+interface DuplicateReturn {
+    datasetId: string,
+    selectedColumns: unknown[],
+    duplicateGroupCount: number,
+    duplicateRowCount: number,
+    groups: DatasetRow[][];
+}
 
 interface DatabaseDataset {
     id: string,
@@ -21,54 +64,10 @@ interface RetrievedDataset {
     expires_at: string
 }
 
-
-interface DuplicateReturn {
-    datasetId: string,
-    selectedColumns: unknown[],
-    duplicateGroupCount: number,
-    duplicateRowCount: number,
-    groups: DatasetRow[][];
-}
-
-interface ColumnProfile {
-    name: string,
-    dataType: "number" | "text" | "boolean" | "mixed" | "empty",
-    missingCount: number,
-    missingPercentage: number,
-    uniqueCount: number,
-    numericStats?: NumericStats,
-    outlierAnalysis?: Outliers | null
-}
-
-interface DatasetProfile {
-    rowCount: number,
-    columnCount: number,
-    duplicateRows: number,
-    // duplicates: DatasetRow[][],
-    totalMissingValues: number,
-    columns: ColumnProfile[],
-}
-
-interface NumericStats {
-    count: number,
-    mean: number | null,
-    median: number | null,
-    min: number | null,
-    max: number | null
-}
-
-interface Outliers {
-    Q1: number,
-    Q3: number,
-    IQR: number,
-    lowerBound: number,
-    upperBound: number,
-    outliers: unknown[]
-}
-
 // MISSING_VALUE_REPAIR =========================
 
 type RepairStrategy = "mean" | "median" | "mode" | "constant"
+
 interface RepairOptions {
     column: string,
     strategy: RepairStrategy,

@@ -1,4 +1,4 @@
-import type { AccessTokenPayload } from "./index.ts";
+import type { AccessTokenPayload } from "@data-cleaning-system/shared";
 
 declare global {
     namespace Express {
