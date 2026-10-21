@@ -2,11 +2,11 @@ import { randomUUID } from "node:crypto";
 import { getDataset, persistDataset } from "../repositories/index.js";
 import { repairMissingValues } from "../services/index.js";
 import type { Request, Response } from "express";
-import type { ErrorType, Success, CleanSaveSuccess } from "../types/index.js";
+import type { ApiError, ApiSuccess, CleanSaveSuccess } from "../types/index.js";
 import type { RepairMissingValueInput } from "../apis/datasets/index.js";
 
 
-async function saveCleanedDataset(_req: Request, res: Response<ErrorType<never> | Success<CleanSaveSuccess>>): Promise<void> {
+async function saveCleanedDataset(_req: Request, res: Response<ApiError<never> | ApiSuccess<CleanSaveSuccess>>): Promise<void> {
     const { datasetId, column, strategy, fillValue } = res.locals.validatedBody as RepairMissingValueInput;
 
     try {

@@ -1,10 +1,10 @@
 import { getDataset } from "../repositories/dataset.repository.js";
 import { repairMissingValues } from "../services/index.js";
 import type { Request, Response } from "express";
-import type { ErrorType, Success, MissingValueRepairResult } from "../types/index.js";
+import type { ApiError, ApiSuccess, MissingValueRepairResult } from "../types/index.js";
 import type { RepairMissingValueInput } from "../apis/datasets/repair-missing-values.js";
 
-async function repairMissingValue(req: Request, res: Response<ErrorType<unknown[]> | Success<MissingValueRepairResult>>): Promise<void> {
+async function repairMissingValue(req: Request, res: Response<ApiError<unknown[]> | ApiSuccess<MissingValueRepairResult>>): Promise<void> {
 
     try {
         const { datasetId, column, strategy, fillValue } = res.locals.validatedBody as RepairMissingValueInput;

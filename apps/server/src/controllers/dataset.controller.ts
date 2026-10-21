@@ -6,10 +6,10 @@ import { profileDataset } from "../services/index.js";;
 import { MAX_ROWS } from "../libs/controller.lib.js";
 import { persistDataset } from "../repositories/dataset.repository.js";
 import type { Request, Response } from "express";
-import type { ErrorType, Success } from "../types/global.types.js";
+import type { ApiError, ApiSuccess } from "../types/api.js";
 import type { DatasetRow, CSVErrorDetail, UploadSuccess } from "../types/dataset.type.js";
 
-async function uploadFile(req: Request, res: Response<ErrorType<CSVErrorDetail> | Success<UploadSuccess>>): Promise<void> {
+async function uploadFile(req: Request, res: Response<ApiError<CSVErrorDetail> | ApiSuccess<UploadSuccess>>): Promise<void> {
     try {
         if (!req.file) {
             res.status(400).json({

@@ -2,12 +2,14 @@ import jwt from "jsonwebtoken";
 import { JWT_SECRET } from "../configs/env.js";
 import { createUser, hasUser } from "../repositories/authentication.js";
 import { hashPassword, verifyPassword, clearTokenCookie, setTokenCookie } from "../helpers/index.js";
+import { toUser } from "../utils/user.js";
 import type { Request, Response } from "express";
+import type { User } from "@data-cleaning-system/shared";
 import type { UserRegistrationInput, LoginInput } from "../apis/auth/index.js";
-import type { ErrorType, Login, Success, UserCreated } from "../types/index.js";
+import type { ApiError, ApiSuccess } from "../types/index.js";
 
 
-async function registerUser(_req: Request, res: Response<ErrorType<never> | Success<UserCreated>>) {
+async function registerUser(_req: Request, res: Response<ApiError<never> | ApiSuccess<User>>) {
     try {
         const { email, name, password } = res.locals.validatedBody as UserRegistrationInput;
 
@@ -40,54 +42,40 @@ async function registerUser(_req: Request, res: Response<ErrorType<never> | Succ
     }
 }
 
-async function loginUser(_req: Request, res: Response<ErrorType<never> | Success<Login>>) {
+async function loginUser(_req: Request, res: Response<ApiError<never> | ApiSuccess<User>>) {
     const { email, password } = res.locals.validatedBody as LoginInput;
 
     try {
-        const checkUser = await hasUser(email);
-        if (!checkUser) {
+        const user = await hasUser(email);
+        if (!user) {
             res.status(401).json({ error: "Incorrect email or password. Please try again." })
             return;
         }
 
-        const decoded = await verifyPassword(email, password);
-        if (!decoded) {
+        const passwordValid = await verifyPassword(email, password);
+        if (!passwordValid) {
             res.status(401).json({ error: "Incorrect email or password. Please try again." });
             return;
         }
 
-        const data = {
-            userId: checkUser.user_id,
-            name: checkUser.name,
-            email: checkUser.email,
-            role: checkUser.role
-        }
+        const data = toUser(user)
 
         const token = jwt.sign(
-            {
-                ...data,
-                purpose: "access"
-            },
+            { ...data, purpose: "access" },
             JWT_SECRET,
-            { expiresIn: "1h" }
+            { expiresIn: "1d" }
         )
-        console.log(token)
 
-        setTokenCookie(res, "accessToken", token, 10 * 60 * 1000);
+        setTokenCookie(res, "accessToken", token, 24 * 60 * 60 * 1000);
 
         res.status(200).json({ message: "Login successful.", data });
     } catch (err) {
         console.log("Could not login user:", err)
-        res.status(500).json({
-            error: (err instanceof Error
-                ? err.message
-                : "Error logging user in."
-            )
-        })
+        res.status(500).json({ error: "An unexpected error occurred. Please try again." })
     }
 }
 
-function logOutUser(_req: Request, res: Response<Success<never> | ErrorType<never>>) {
+function logOutUser(_req: Request, res: Response<ApiSuccess<never> | ApiError<never>>) {
     try {
         clearTokenCookie(res, "accessToken");
         res.status(200).json({ message: "User logged out successfully." })
