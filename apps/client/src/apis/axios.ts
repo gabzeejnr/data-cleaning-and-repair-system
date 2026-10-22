@@ -1,8 +1,14 @@
 import axios from "axios";
+const baseUrl = "http://localhost:4000"
 
-const API = axios.create({
-    baseURL: "http://localhost:4000",
+const AUTH = axios.create({
+    baseURL: `${baseUrl}/auth`,
     withCredentials: true
 })
 
-export { API }
+const API = axios.create({
+    baseURL: `${baseUrl}/api`,
+    withCredentials: true
+})
+
+export { API, AUTH }
