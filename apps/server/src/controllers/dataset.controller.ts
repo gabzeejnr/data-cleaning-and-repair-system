@@ -4,16 +4,18 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { profileDataset } from "../services/index.js";;
 import { MAX_ROWS } from "../libs/controller.lib.js";
-import { persistDataset } from "../repositories/dataset.repository.js";
+import { getDatasetsFunc, persistDataset } from "../repositories/dataset.repository.js";
+import { toDataset } from "../utils/datasets.js";
 import type { Request, Response } from "express";
-import type { ApiError, ApiSuccess } from "../types/api.js";
-import type { DatasetRow, CSVErrorDetail, UploadSuccess } from "../types/dataset.type.js";
+import type { Dataset } from "@data-cleaning-system/shared";
+import type { ApiError, ApiSuccess, CSVErrorDetail, DatabaseDataset, DatasetRow, UploadSuccess } from "../types/index.js";
 
 async function uploadFile(req: Request, res: Response<ApiError<CSVErrorDetail> | ApiSuccess<UploadSuccess>>): Promise<void> {
     try {
+
         if (!req.file) {
             res.status(400).json({
-                error: "please upload a CSV or XLSX file using the 'file' field."
+                error: "Please upload a CSV or XLSX file using the 'file' field."
             });
             return;
         }
@@ -97,18 +99,74 @@ async function uploadFile(req: Request, res: Response<ApiError<CSVErrorDetail> |
 
         const datasetId = randomUUID();
 
-        await persistDataset(datasetId, req.file.originalname, columns, rows);
+        const userId = res.locals.user?.userId;
+
+        if (!userId) {
+            res.status(401).json({
+                error: "User not found"
+            });
+            return;
+        }
+
+        await persistDataset(datasetId, userId, req.file.originalname, columns, rows);
 
         res.status(200).json({
             message: "Dataset uploaded and parsed successfully.",
             data: { datasetId }
         });
     } catch (err) {
-        console.error("Datasetupload failed:", err)
+        console.error("Dataset upload failed:", err)
         res.status(500).json({
             error: "Dataset upload failed.",
         });
     }
 }
 
-export { uploadFile }
+async function getDatasets(req: Request<{}, {}, { limit?: string }>, res: Response<ApiError | ApiSuccess<Dataset[]>>) {
+    try {
+        const userId = res.locals.user?.userId
+        if (!userId) {
+            res.status(401).json({
+                error: "Couldn't find user. Please try again."
+            });
+            return;
+        }
+
+        const { limit } = req.query;
+
+        if (limit !== undefined) {
+            if (typeof limit !== "string"
+                || !/^[1-9]\d*$/.test(limit)
+                || !Number.isSafeInteger(Number(limit))
+            ) {
+                res.status(400).json({ error: "Invalid dataset limit." });
+                return;
+            }
+        }
+
+        const datasets = await getDatasetsFunc(userId,
+            typeof limit === "string" ? limit : undefined
+        );
+
+        const data = toDataset(datasets);
+        if (!Array.isArray(data)) {
+            res.status(400).json({
+                error: "Something went wrong. Please try again."
+            });
+            return;
+        }
+
+
+        res.status(200).json({
+            message: "Datasets request successful.",
+            data
+        })
+    } catch (err) {
+        console.error("Datasets fetching failed:", err)
+        res.status(500).json({
+            error: "Failed to fetch datasets.Please try again.",
+        });
+    }
+}
+
+export { uploadFile, getDatasets }

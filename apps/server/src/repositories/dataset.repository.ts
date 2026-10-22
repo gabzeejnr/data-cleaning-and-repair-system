@@ -34,16 +34,16 @@ async function saveDatasetRows(datasetId: string, rows: DatasetRow[]): Promise<v
     }
 }
 
-async function persistDataset(id: string, filename: string, columns: string[], rows: DatasetRow[]): Promise<void> {
+async function persistDataset(id: string, userId: string, filename: string, columns: string[], rows: DatasetRow[]): Promise<void> {
     const client = await pool.connect();
 
     try {
         await client.query("BEGIN");
 
         await client.query(
-            `INSERT INTO datasets (id, filename, columns, row_count,column_count, expires_at)
-            VALUES ($1, $2, $3, $4, $5, NOW() + INTERVAL '24 hours')`,
-            [id, filename, columns, rows.length, columns.length]
+            `INSERT INTO datasets (id, user_id, filename, columns, row_count,column_count, expires_at)
+            VALUES ($1, $2, $3, $4, $5, $6, NOW() + INTERVAL '24 hours')`,
+            [id, userId, filename, columns, rows.length, columns.length]
         );
 
         const batchSize = 500;
@@ -100,7 +100,7 @@ async function getDataset(id: string): Promise<RetrievedDataset | null> {
     }
 }
 
-async function saveCleanedDatasetService(datasetId: string, dataset: RetrievedDataset, rows: DatasetRow[]) {
+async function saveCleanedDatasetService(datasetId: string, userId: string, dataset: RetrievedDataset, rows: DatasetRow[]) {
     const client = await pool.connect();
     try {
         await client.query("BEGIN");
@@ -108,6 +108,7 @@ async function saveCleanedDatasetService(datasetId: string, dataset: RetrievedDa
 
         await persistDataset(
             newDatasetId,
+            userId,
             `${datasetId}-${dataset.file}-cleaned`,
             dataset.columns,
             rows
@@ -126,7 +127,18 @@ async function saveCleanedDatasetService(datasetId: string, dataset: RetrievedDa
     }
 }
 
+async function getDatasetsFunc(userId: string, limit?: string): Promise<DatabaseDataset[]> {
+    const values: unknown[] = [userId]
+    
+    let sql: string = `SELECT id, filename, row_count, column_count, created_at, expires_at FROM datasets WHERE user_id = $1 AND expires_at > NOW() ORDER BY created_at DESC`;
+    if (limit) {
+        sql += " LIMIT $2";
+        values.push(Number(limit));
+    }
+    
+    const { rows } = await pool.query<DatabaseDataset>(sql, values)
+    return rows;
+}
 
 
-
-export { createDataset, saveDatasetRows, persistDataset, getDataset }
+export { createDataset, saveDatasetRows, persistDataset, getDataset, getDatasetsFunc }
