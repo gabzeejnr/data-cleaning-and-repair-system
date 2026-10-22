@@ -1,1 +1,2 @@
-export * from "./icons.lib"
+export * from "./dashboard.lib";
+export * from "./icons.lib";

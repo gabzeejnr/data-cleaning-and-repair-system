@@ -4,7 +4,7 @@ import type { PagesType } from "../types";
 const workspaces: PagesType[] = [
     {
         label: "Overview",
-        path: "/dashboard",
+        path: "/",
         icon: LayoutDashboard,
         end: true,
         text: "Manage and monitor your data quality"

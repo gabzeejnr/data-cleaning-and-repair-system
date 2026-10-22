@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import type { AccessTokenPayload, User } from "@data-cleaning-system/shared";
 import type { UserContextType } from "../types";
-import { API } from "../apis/axios";
+import { AUTH } from "../apis/axios";
 
 const UserContext = createContext<UserContextType | null>(null);
 
@@ -13,7 +13,7 @@ function UserProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         async function getAuthenticated() {
             try {
-                const { data } = await API.get<{ message: string, user: AccessTokenPayload }>("/auth/me");
+                const { data } = await AUTH.get<{ message: string, user: AccessTokenPayload }>("/me");
                 setUser(data.user)
             } catch {
                 setUser(null)
