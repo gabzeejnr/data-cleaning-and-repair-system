@@ -3,6 +3,7 @@ import Authentication from "../pages/Authentication";
 import ProtectedRoutes from "../components/ProtectedRoutes";
 import MainLayout from "../layouts/MainLayout";
 import Dashboard from "../pages/Dashboard";
+import Datasets from "../pages/Datasets";
 import Settings from "../pages/Settings";
 
 export default function RoutePage() {
@@ -15,6 +16,7 @@ export default function RoutePage() {
             <Route element={<ProtectedRoutes />}>
                 <Route path="/" element={<MainLayout />}>
                     <Route index element={<Dashboard />} />
+                    <Route path="datasets" element={<Datasets />} />
                     <Route path="settings" element={<Settings />} />
                 </Route>
             </Route>
