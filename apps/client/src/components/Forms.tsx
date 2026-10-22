@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { API } from "../apis/axios";
+import { useUser } from "../context/UserContext";
+import { AUTH } from "../apis/axios";
 import { Toast } from "./Toast";
 import { ArrowLeft, ArrowUpRight, Database, Eye, EyeOff, ShieldCheck, UserPlus } from "lucide-react";
 import type { User, UserLogin, UserRegistration } from "@data-cleaning-system/shared";
@@ -56,6 +57,7 @@ function FormButton({ type, className, value, children, disabled }: ButtonProps)
 function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnchorElement> }) {
 
     const navigate = useNavigate();
+    const { setUser } = useUser();
     const [toast, setToast] = useState<ToastType | null>(null);
     const [loading, setLoading] = useState(false);
     const [emailError, setEmailError] = useState<string>("");
@@ -77,21 +79,22 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
         }
 
         try {
-            const { data } = await API.post<{ message: string, data: User }>("/auth/login", form);
+            const { data } = await AUTH.post<{ message: string, data: User }>("/login", form);
+            setUser(data.data);
             setToast({
                 type: "success",
-                text: `Welcome back ${data.data.name.split(" ")[0] ?? ""}`
+                text: `Welcome back ${data.data.name.trim().split(/\s+/)[0] ?? ""}`
             })
 
             setTimeout(() => {
-                navigate("/")
+                navigate("/", { replace: true })
             }, 1500);
         } catch (err) {
             if (axios.isAxiosError<{ error: string }>(err)) {
                 const { response } = err
                 setToast({
                     type: "error",
-                    text: response?.data?.error || "Something went wong"
+                    text: response?.data?.error || "Something went wong. Please try again."
                 })
             }
 
@@ -214,7 +217,7 @@ function RegisterForm({ onBack }: { onBack: React.MouseEventHandler<HTMLButtonEl
         }
 
         try {
-            await API.post("/auth/register", form);
+            await AUTH.post("/register", form);
 
             setToast({
                 type: "success",
@@ -225,7 +228,7 @@ function RegisterForm({ onBack }: { onBack: React.MouseEventHandler<HTMLButtonEl
                 const { response } = err
                 setToast({
                     type: "error",
-                    text: response?.data?.error || "Something went wong"
+                    text: response?.data?.error || "Something went wong. Please try again."
                 })
             }
 
@@ -235,11 +238,6 @@ function RegisterForm({ onBack }: { onBack: React.MouseEventHandler<HTMLButtonEl
             }, 5000);
         }
     }
-
-    useEffect(() => {
-        form.password && form.confirmPassword && (form.password !== form.confirmPassword) && setPasswordError("Passwords do not match.");
-        (form.password && form.password.length < 8) && setPasswordError("Password mut be at least 8 characters.")
-    }, [form.password, form.confirmPassword])
 
     const inputClass = "w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-100";
 
