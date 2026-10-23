@@ -127,18 +127,45 @@ async function saveCleanedDatasetService(datasetId: string, userId: string, data
     }
 }
 
-async function getDatasetsFunc(userId: string, limit?: string): Promise<DatabaseDataset[]> {
-    const values: unknown[] = [userId]
-    
-    let sql: string = `SELECT id, filename, row_count, column_count, created_at, expires_at FROM datasets WHERE user_id = $1 AND expires_at > NOW() ORDER BY created_at DESC`;
-    if (limit) {
-        sql += " LIMIT $2";
-        values.push(Number(limit));
+async function getDatasetsFunc(args: { userId: string; datasetId: string; limit?: string }): Promise<DatabaseDataset | null>;
+async function getDatasetsFunc(args: { userId: string; limit?: string; datasetId?: undefined }):Promise<DatabaseDataset[] | null>;
+async function getDatasetsFunc({ userId, limit, datasetId }: { userId: string, limit?: string, datasetId?: string }): Promise<DatabaseDataset[] | DatabaseDataset | null> {
+    const queries: string[] = ["user_id = $1"];
+    const values: unknown[] = [userId];
+
+    if (datasetId) {
+        values.push(datasetId);
+        queries.push(`id = $${values.length}`)
     }
-    
+
+    let sql = `SELECT id, filename, row_count, column_count, created_at, expires_at, status FROM datasets WHERE ${queries.join(" AND ")} AND expires_at > NOW() ORDER BY created_at DESC`
+
+    if (limit) {
+        values.push(Number(limit));
+        sql += ` LIMIT $${values.length}`;
+    }
+
     const { rows } = await pool.query<DatabaseDataset>(sql, values)
+    if (datasetId) {
+        return rows[0] ?? null
+    }
+
+    return rows
+}
+
+
+async function getDatasetRows(datasetId: string, limit?: number): Promise<DatasetRow[]> {
+    const values: unknown[] = [datasetId];
+    let sql = `SELECT row_data FROM dataset_rows WHERE dataset_id = $1 ORDER BY id ASC`
+    if (limit) {
+        values.push(limit);
+        sql += ` LIMIT $${values.length}`;
+    }
+
+    const { rows } = await pool.query<{ row_data: unknown }>(sql, values)
+
     return rows;
 }
 
 
-export { createDataset, saveDatasetRows, persistDataset, getDataset, getDatasetsFunc }
+export { createDataset, saveDatasetRows, persistDataset, getDataset, getDatasetsFunc, getDatasetRows }

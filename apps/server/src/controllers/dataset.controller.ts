@@ -4,11 +4,11 @@ import Papa from "papaparse";
 import * as XLSX from "xlsx";
 import { profileDataset } from "../services/index.js";;
 import { MAX_ROWS } from "../libs/controller.lib.js";
-import { getDatasetsFunc, persistDataset } from "../repositories/dataset.repository.js";
+import { getDatasetRows, getDatasetsFunc, persistDataset } from "../repositories/index.js";
 import { toDataset } from "../utils/datasets.js";
 import type { Request, Response } from "express";
-import type { Dataset } from "@data-cleaning-system/shared";
-import type { ApiError, ApiSuccess, CSVErrorDetail, DatabaseDataset, DatasetRow, UploadSuccess } from "../types/index.js";
+import type { Dataset, getDatasetIdResponse } from "@data-cleaning-system/shared";
+import type { ApiError, ApiSuccess, CSVErrorDetail, DatasetRow, UploadSuccess } from "../types/index.js";
 
 async function uploadFile(req: Request, res: Response<ApiError<CSVErrorDetail> | ApiSuccess<UploadSuccess>>): Promise<void> {
     try {
@@ -144,11 +144,15 @@ async function getDatasets(req: Request<{}, {}, { limit?: string }>, res: Respon
             }
         }
 
-        const datasets = await getDatasetsFunc(userId,
-            typeof limit === "string" ? limit : undefined
-        );
+        const datasets = await getDatasetsFunc({
+            userId,
+            limit: typeof limit === "string" ? limit : undefined
+        });
+        if (!datasets) {
+            res.status(404).json({ error: "Dataset not found or expired." })
+        }
 
-        const data = toDataset(datasets);
+        const data = toDataset(datasets!);
         if (!Array.isArray(data)) {
             res.status(400).json({
                 error: "Something went wrong. Please try again."
@@ -169,4 +173,42 @@ async function getDatasets(req: Request<{}, {}, { limit?: string }>, res: Respon
     }
 }
 
-export { uploadFile, getDatasets }
+async function getDatasetsId(req: Request<{ id: string }>, res: Response<ApiSuccess<getDatasetIdResponse> | ApiError>) {
+    try {
+        const userId = res.locals.user?.userId;
+        if (!userId) {
+            res.status(401).json({
+                error: "Couldn't find user. Please try again."
+            });
+            return;
+        }
+
+        const { id } = req.params;
+        if (typeof id !== "string") {
+            res.status(400).json({ error: "Invalid request parameter." });
+            return;
+        }
+
+        const datasetData = await getDatasetsFunc({ userId, datasetId: id })
+        if (!datasetData) {
+            res.status(404).json({ error: "Dataset not found or expired." });
+            return;
+        }
+        const rowsData = await getDatasetRows(id, 10);
+        const dataset = toDataset(datasetData) as Dataset;
+        const rows = rowsData.map(row => row.row_data) as DatasetRow[];
+
+        res.status(200).json({
+            message: "Dataset request successful.",
+            data: { dataset, rows }
+        })
+    } catch (err) {
+        console.error("Failed to fetch dataset:", err);
+
+        res.status(500).json({
+            error: "Failed to retrieve dataset.",
+        });
+    }
+}
+
+export { uploadFile, getDatasets, getDatasetsId }
