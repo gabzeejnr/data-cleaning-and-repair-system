@@ -1,36 +1,18 @@
 import {
-    ArrowRight,
-    Bell,
-    ChevronDown,
-    ChartNoAxesCombined,
-    CircleAlert,
-    Database,
-    FileChartColumn,
-    FileSpreadsheet,
-    LayoutDashboard,
-    Menu,
-    RefreshCw,
-    Settings,
-    Upload,
-    UserRound,
-    WandSparkles
+    AlertCircle, ArrowRight, ArrowUpDown, Bell, CheckCircle2, ChevronDown, ChartNoAxesCombined, CircleAlert,
+    Database, FileChartColumn, FileSpreadsheet, FileText,
+    Info, LayoutDashboard, Menu,
+    RefreshCw, Search, Settings,
+    Upload, UploadCloud, UserRound,
+    WandSparkles, X
 } from "lucide-react";
 
 
 export {
-    ArrowRight,
-    Bell,
-    ChevronDown,
-    ChartNoAxesCombined,
-    CircleAlert,
-    Database,
-    FileChartColumn,
-    FileSpreadsheet,
-    LayoutDashboard,
-    Menu,
-    RefreshCw,
-    Settings,
-    Upload,
-    UserRound,
-    WandSparkles
+    AlertCircle, ArrowRight, ArrowUpDown, Bell, CheckCircle2, ChevronDown, ChartNoAxesCombined, CircleAlert,
+    Database, FileChartColumn, FileSpreadsheet, FileText,
+    Info, LayoutDashboard, Menu,
+    RefreshCw, Search, Settings,
+    Upload, UploadCloud, UserRound,
+    WandSparkles, X
 }

@@ -4,11 +4,7 @@ import { ArrowRight, Database, FileSpreadsheet, RefreshCw } from "../../libs"
 import axios from "axios";
 import { API } from "../../apis/axios";
 import type { Dataset } from "@data-cleaning-system/shared";
-
-type DatasetsResponse = {
-    message: string;
-    data: Dataset[];
-}
+import type { DatasetsResponse } from "../../types";
 
 export default function RecentDatasets() {
     const [datasets, setDatasets] = useState<Dataset[]>([]);
