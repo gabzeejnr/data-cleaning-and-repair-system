@@ -1,6 +1,6 @@
 import {
-    AlertCircle, ArrowRight, ArrowUpDown, Bell, CheckCircle2, ChevronDown, ChartNoAxesCombined, CircleAlert,
-    Database, FileChartColumn, FileSpreadsheet, FileText,
+    AlertCircle, ArrowLeft, ArrowRight, ArrowUpDown, Bell, CheckCircle2, ChevronDown,
+    ChartNoAxesCombined, CircleAlert, Database, Eye, FileChartColumn, FileSpreadsheet, FileText,
     Info, LayoutDashboard, Menu,
     RefreshCw, Search, Settings,
     Upload, UploadCloud, UserRound,
@@ -9,8 +9,8 @@ import {
 
 
 export {
-    AlertCircle, ArrowRight, ArrowUpDown, Bell, CheckCircle2, ChevronDown, ChartNoAxesCombined, CircleAlert,
-    Database, FileChartColumn, FileSpreadsheet, FileText,
+    AlertCircle, ArrowLeft, ArrowRight, ArrowUpDown, Bell, CheckCircle2, ChevronDown,
+    ChartNoAxesCombined, CircleAlert, Database, Eye, FileChartColumn, FileSpreadsheet, FileText,
     Info, LayoutDashboard, Menu,
     RefreshCw, Search, Settings,
     Upload, UploadCloud, UserRound,

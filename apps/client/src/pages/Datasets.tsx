@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { API } from "../apis/axios";
-import { ArrowUpDown, Search } from "../libs"
+import { ArrowUpDown, Eye,Search } from "../libs"
 import type { Dataset } from "@data-cleaning-system/shared";
 import type { DatasetsResponse } from "../types";
-import UploadDatasetModal from "../components/dataset/UploadDatasetModal";
+import UploadDatasetModal from "../components/datasets/UploadDatasetModal";
 
 export default function Datasets() {
 
@@ -150,12 +151,13 @@ export default function Datasets() {
                                         <th className="px-6 py-4">Columns</th>
                                         <th className="px-6 py-4">Uploaded</th>
                                         <th className="px-6 py-4">Status</th>
+                                        <th className="px-6 py-4 text-right">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100">
                                     {filteredDatasets.length === 0 && (
                                         <tr>
-                                            <td colSpan={5} className="px-6 py-12 text-center text-sm text-slate-500">No datasets match "{search}".</td>
+                                            <td colSpan={6} className="px-6 py-12 text-center text-sm text-slate-500">No datasets match "{search}".</td>
                                         </tr>
                                     )}
                                     {filteredDatasets.map((dataset) => (
@@ -165,7 +167,13 @@ export default function Datasets() {
                                             <td className="px-6 py-4 text-slate-600">{dataset.columnCount.toLocaleString()}</td>
                                             <td className="px-6 py-4 text-slate-600">{new Date(dataset.createdAt).toLocaleDateString()}</td>
                                             <td className="px-6 py-4">
-                                                <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">{dataset.status}</span>
+                                                <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">{dataset.status.capitalize()}</span>
+                                            </td>
+                                            <td className="px-6 py-4 text-right">
+                                                <Link to={`/datasets/${dataset.id}`} className="inline-flex items-center justify-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 py-2 text-xs font-semibold text-indigo-700 transition hover:border-indigo-600 hover:bg-indigo-600 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">
+                                                    <Eye size={15} />
+                                                    View details
+                                                </Link>
                                             </td>
                                         </tr>
                                     ))}

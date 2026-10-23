@@ -126,7 +126,7 @@ export default function RecentDatasets() {
                             </div>
 
                             <span className="shrink-0 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
-                                {dataset.status}
+                                {dataset.status.capitalize()}
                             </span>
                         </div>
                     ))}
