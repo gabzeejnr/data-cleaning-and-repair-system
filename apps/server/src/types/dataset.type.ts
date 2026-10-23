@@ -1,4 +1,4 @@
-type DatasetRow = Record<string, unknown>;
+import type { DatasetRow } from "@data-cleaning-system/shared";
 type CSVErrorDetail = { message: string, row: number | undefined }[];
 
 interface UploadSuccess { datasetId: string }
@@ -53,7 +53,8 @@ interface DatabaseDataset {
     column_count: number,
     columns: string[],
     created_at: string,
-    expires_at: string
+    expires_at: string,
+    status: "profiled" | "not profiled"
 }
 
 interface RetrievedDataset {

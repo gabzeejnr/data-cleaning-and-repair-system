@@ -1,4 +1,5 @@
-type DatasetStatus = "profiled"
+type DatasetStatus = "profiled" | "not profiled"
+type DatasetRow = Record<string, unknown>
 
 interface Dataset {
     id: string,
@@ -9,7 +10,11 @@ interface Dataset {
     status: DatasetStatus
 }
 
+interface getDatasetIdResponse {
+    dataset: Dataset,
+    rows: DatasetRow[]
+}
 
 
 
-export type { Dataset }
+export type { Dataset, DatasetRow, getDatasetIdResponse }

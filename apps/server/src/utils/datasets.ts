@@ -10,7 +10,7 @@ const toDataset = (dataset: DatabaseDataset | DatabaseDataset[]): Dataset | Data
             rowCount: dataset.row_count,
             columnCount: dataset.column_count,
             createdAt: dataset.created_at,
-            status: "profiled"
+            status: dataset.status
         }
     }
 
@@ -20,7 +20,7 @@ const toDataset = (dataset: DatabaseDataset | DatabaseDataset[]): Dataset | Data
         rowCount: data.row_count,
         columnCount: data.column_count,
         createdAt: data.created_at,
-        status: "profiled"
+        status: data.status
     }))
 }
 
