@@ -1,12 +1,16 @@
-import { API } from "../apis/axios";
+import { useNavigate } from "react-router-dom";
+import { AUTH } from "../apis/axios";
 
 export default function Settings() {
+
+    const navigate = useNavigate()
 
     async function logOut(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
         try {
-            await API.post("/auth/logout");
+            await AUTH.post("/logout");
+            navigate("/auth/login", { replace: true })
         } catch (err) {
             console.log(err);
         }

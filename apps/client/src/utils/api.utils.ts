@@ -1,6 +1,6 @@
 import axios from "axios";
 
-function getUploadErrorMessage(err: unknown): string {
+function getUploadErrorMessage(err: unknown, switchMessage: string): string {
     if (axios.isAxiosError(err)) {
         if (!err.response) {
             return "Could not reach the server. Check your connection and try again.";
@@ -20,7 +20,7 @@ function getUploadErrorMessage(err: unknown): string {
         return err.message;
     }
 
-    return err instanceof Error ? err.message : "Upload failed. Please try again.";
+    return err instanceof Error ? err.message : switchMessage;
 }
 
 
