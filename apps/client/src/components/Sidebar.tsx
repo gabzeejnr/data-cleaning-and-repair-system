@@ -50,7 +50,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
             >
                 <div className="flex h-[76px] items-center justify-between border-b border-slate-100 px-6">
-                    <NavLink to="/dashboard" onClick={onClose} className="flex items-center gap-3">
+                    <NavLink to="/" onClick={onClose} className="flex items-center gap-3">
                         <div className="grid size-10 place-items-center rounded-xl bg-indigo-600 text-white shadow-sm shadow-indigo-200">
                             <Database size={22} />
                         </div>

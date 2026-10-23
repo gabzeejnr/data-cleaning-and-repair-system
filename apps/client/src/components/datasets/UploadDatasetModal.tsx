@@ -66,7 +66,7 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
         try {
             await onUpload(file, name.trim());
         } catch (err) {
-            setError(getUploadErrorMessage(err));
+            setError(getUploadErrorMessage(err, "Upload failed. Please try again."));
         } finally {
             setUploading(false);
         }
