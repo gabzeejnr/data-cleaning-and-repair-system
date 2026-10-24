@@ -1,7 +1,8 @@
 import { findDuplicateGroups } from "./duplicate-detection.js";
 import { isMissing, detectDataType, detectOutliers } from "../helpers/index.js";
 import { parseNumericValue } from "../utils/index.js";
-import type { DatasetRow, DatasetProfile, ColumnProfile, NumericStats } from "../types/index.js";
+import type { ColumnProfile, DatasetRow, NumericStats } from "@data-cleaning-system/shared";
+import type { DatasetProfile } from "../types/index.js";
 
 function calculateNumericStats(values: unknown[]): NumericStats {
     const numbers = (values

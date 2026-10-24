@@ -2,13 +2,13 @@ import { randomUUID } from "node:crypto";
 import path from "node:path"
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
-import { profileDataset } from "../services/index.js";;
+import { detectIssues, profileDataset } from "../services/index.js";;
 import { MAX_ROWS } from "../libs/controller.lib.js";
-import { getDatasetRows, getDatasetsFunc, persistDataset } from "../repositories/index.js";
+import { getDatasetProfile, getDatasetRows, getDatasetsFunc, persistDataset } from "../repositories/index.js";
 import { toDataset } from "../utils/datasets.js";
 import type { Request, Response } from "express";
-import type { Dataset, getDatasetIdResponse } from "@data-cleaning-system/shared";
-import type { ApiError, ApiSuccess, CSVErrorDetail, DatasetRow, UploadSuccess } from "../types/index.js";
+import type { Dataset, DataIssue, DatasetRow, getDatasetIdResponse } from "@data-cleaning-system/shared";
+import type { ApiError, ApiSuccess, CSVErrorDetail, UploadSuccess } from "../types/index.js";
 
 async function uploadFile(req: Request, res: Response<ApiError<CSVErrorDetail> | ApiSuccess<UploadSuccess>>): Promise<void> {
     try {
@@ -95,10 +95,7 @@ async function uploadFile(req: Request, res: Response<ApiError<CSVErrorDetail> |
             return;
         }
 
-        const profile = profileDataset(rows);
-
         const datasetId = randomUUID();
-
         const userId = res.locals.user?.userId;
 
         if (!userId) {
@@ -108,7 +105,8 @@ async function uploadFile(req: Request, res: Response<ApiError<CSVErrorDetail> |
             return;
         }
 
-        await persistDataset(datasetId, userId, req.file.originalname, columns, rows);
+        const profile = profileDataset(rows);
+        await persistDataset(datasetId, userId, req.file.originalname, columns, rows, profile);
 
         res.status(200).json({
             message: "Dataset uploaded and parsed successfully.",
@@ -184,7 +182,7 @@ async function getDatasetsId(req: Request<{ id: string }>, res: Response<ApiSucc
         }
 
         const { id } = req.params;
-        if (typeof id !== "string") {
+        if (typeof id !== "string" || !id.trim()) {
             res.status(400).json({ error: "Invalid request parameter." });
             return;
         }
@@ -197,18 +195,59 @@ async function getDatasetsId(req: Request<{ id: string }>, res: Response<ApiSucc
         const rowsData = await getDatasetRows(id, 10);
         const dataset = toDataset(datasetData) as Dataset;
         const rows = rowsData.map(row => row.row_data) as DatasetRow[];
+        const profile = await getDatasetProfile(dataset.id);
 
         res.status(200).json({
             message: "Dataset request successful.",
-            data: { dataset, rows }
+            data: { dataset, rows, profile }
         })
     } catch (err) {
         console.error("Failed to fetch dataset:", err);
-
         res.status(500).json({
             error: "Failed to retrieve dataset.",
         });
     }
 }
 
-export { uploadFile, getDatasets, getDatasetsId }
+async function getDatasetIssues(req: Request<{ id: string }>, res: Response<ApiSuccess<DataIssue[]> | ApiError>) {
+    try {
+        const userId = res.locals.user?.userId;
+        if (!userId) {
+            res.status(401).json({ error: "Couldn't find user. Please try again." });
+            return;
+        }
+
+        const { id } = req.params;
+        if (typeof id !== "string" || !id.trim()) {
+            res.status(400).json({ error: "Invalid request parameter." });
+            return;
+        }
+
+        const dataset = await getDatasetsFunc({ userId, datasetId: id });
+        if (!dataset) {
+            res.status(404).json({ error: "Dataset not found or expired." });
+            return;
+        }
+
+        const profile = await getDatasetProfile(id);
+        if (!profile) {
+            res.status(404).json({ error: "Dataset profile not found." });
+            return;
+        }
+
+        const issues = detectIssues(id, profile);
+        res.status(200).json({
+            message: "Dataset issues retrieved successfully.",
+            data: issues
+        })
+
+    } catch (err) {
+        console.error("Failed to fetch dataset issues:", err);
+        res.status(500).json({ error: "Failed to retrieve dataset issues." })
+    }
+}
+
+export {
+    getDatasetIssues, getDatasets,
+    getDatasetsId, uploadFile
+}

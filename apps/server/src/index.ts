@@ -20,18 +20,22 @@ console.log(IS_ACTIVE);
 
 app.use(json({ limit: "1mb" }));
 
+console.log("// ================================================================================================")
+console.log("// STARTING SERVER ==============================");
+console.log("// ================================================================================================")
+
 app.use("/auth", authRouter);
 app.use("/api", apiRouter);
 app.use(healthRouter)
 
 app.use(uploadMiddleware)
 
-app.use((_req, res)=>{
-    res.status(404).json({error: "Route unknown."})
+app.use((_req, res) => {
+    res.status(404).json({ error: "Route unknown." })
 })
 
 app.listen(PORT, () => {
     console.log("// ================================================================================================")
-    console.log(`Server running at http://localhost:${PORT}`);
+    console.log(`Server running at http://localhost:${PORT}==========`);
     console.log("// ================================================================================================")
 });

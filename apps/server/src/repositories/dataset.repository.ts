@@ -1,16 +1,8 @@
+import { randomUUID } from "node:crypto";
 import { pool } from "../configs/db.js"
 import type { QueryResult } from "pg";
-import type { DatasetRow, DatabaseDataset, RetrievedDataset } from "../types/dataset.type.js";
-import { randomUUID } from "crypto";
-
-async function createDataset(id: string, filename: string, columns: string[], rowCount: number): Promise<{ id: string }> {
-    const { rows }: QueryResult<{ id: string }> = await pool.query(`INSERT INTO datasets(id, filename, columns, row_count, column_count, expires_at)
-        VALUES ($1, $2, $3, $4, $5, NOW() + INTERVAL '24 hours') RETURNING id`,
-        [id, filename, columns, rowCount, columns.length]
-    )
-
-    return rows[0]!
-}
+import type { DatasetRow, DatasetProfile } from "@data-cleaning-system/shared";
+import type { DatabaseDataset, RetrievedDataset } from "../types/dataset.type.js";
 
 async function saveDatasetRows(datasetId: string, rows: DatasetRow[]): Promise<void> {
     const batchSize = 500;
@@ -34,16 +26,23 @@ async function saveDatasetRows(datasetId: string, rows: DatasetRow[]): Promise<v
     }
 }
 
-async function persistDataset(id: string, userId: string, filename: string, columns: string[], rows: DatasetRow[]): Promise<void> {
+async function persistDataset(
+    id: string,
+    userId: string,
+    filename: string,
+    columns: string[],
+    rows: DatasetRow[],
+    profile?: DatasetProfile
+): Promise<void> {
     const client = await pool.connect();
 
     try {
         await client.query("BEGIN");
 
         await client.query(
-            `INSERT INTO datasets (id, user_id, filename, columns, row_count,column_count, expires_at)
-            VALUES ($1, $2, $3, $4, $5, $6, NOW() + INTERVAL '24 hours')`,
-            [id, userId, filename, columns, rows.length, columns.length]
+            `INSERT INTO datasets (id, user_id, filename, columns, row_count,column_count, profile, expires_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7,NOW() + INTERVAL '24 hours')`,
+            [id, userId, filename, columns, rows.length, columns.length, JSON.stringify(profile)]
         );
 
         const batchSize = 500;
@@ -128,7 +127,7 @@ async function saveCleanedDatasetService(datasetId: string, userId: string, data
 }
 
 async function getDatasetsFunc(args: { userId: string; datasetId: string; limit?: string }): Promise<DatabaseDataset | null>;
-async function getDatasetsFunc(args: { userId: string; limit?: string; datasetId?: undefined }):Promise<DatabaseDataset[] | null>;
+async function getDatasetsFunc(args: { userId: string; limit?: string; datasetId?: undefined }): Promise<DatabaseDataset[] | null>;
 async function getDatasetsFunc({ userId, limit, datasetId }: { userId: string, limit?: string, datasetId?: string }): Promise<DatabaseDataset[] | DatabaseDataset | null> {
     const queries: string[] = ["user_id = $1"];
     const values: unknown[] = [userId];
@@ -167,5 +166,13 @@ async function getDatasetRows(datasetId: string, limit?: number): Promise<Datase
     return rows;
 }
 
+async function getDatasetProfile(datasetId: string): Promise<DatasetProfile | null> {
+    const { rows } = await pool.query<{ profile: DatasetProfile }>(`SELECT profile FROM datasets WHERE id = $1`,
+        [datasetId]
+    )
+    if (rows.length === 0) return null;
+    return rows[0]?.profile!
+}
 
-export { createDataset, saveDatasetRows, persistDataset, getDataset, getDatasetsFunc, getDatasetRows }
+
+export { saveDatasetRows, persistDataset, getDataset, getDatasetsFunc, getDatasetProfile, getDatasetRows }

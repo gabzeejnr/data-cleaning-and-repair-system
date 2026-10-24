@@ -1,6 +1,6 @@
 import { isNumber } from "../libs/service.libs.js";
 import { parseNumericValue } from "../utils/index.js";
-import type { ColumnProfile, Outliers } from "../types/dataset.type.js";
+import type { ColumnProfile, Outliers } from "@data-cleaning-system/shared";
 
 function isMissing(value: unknown): boolean {
     return (
