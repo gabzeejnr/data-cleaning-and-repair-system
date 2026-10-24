@@ -1,5 +1,5 @@
 import { normalizeValue } from "../helpers/index.js";
-import type { DatasetRow } from "../types/dataset.type.js";
+import type { DatasetRow } from "@data-cleaning-system/shared";
 
 function findDuplicateGroups(rows: DatasetRow[], columns: string[]): DatasetRow[][] {
 

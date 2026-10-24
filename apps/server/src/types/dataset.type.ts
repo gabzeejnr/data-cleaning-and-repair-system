@@ -3,41 +3,6 @@ type CSVErrorDetail = { message: string, row: number | undefined }[];
 
 interface UploadSuccess { datasetId: string }
 
-interface NumericStats {
-    count: number,
-    mean: number | null,
-    median: number | null,
-    min: number | null,
-    max: number | null
-}
-
-interface Outliers {
-    Q1: number,
-    Q3: number,
-    IQR: number,
-    lowerBound: number,
-    upperBound: number,
-    outliers: unknown[]
-}
-
-interface ColumnProfile {
-    name: string,
-    dataType: "number" | "text" | "boolean" | "mixed" | "empty",
-    missingCount: number,
-    missingPercentage: number,
-    uniqueCount: number,
-    numericStats?: NumericStats,
-    outlierAnalysis?: Outliers | null
-}
-
-interface DatasetProfile {
-    rowCount: number,
-    columnCount: number,
-    duplicateRows: number,
-    totalMissingValues: number,
-    columns: ColumnProfile[],
-}
-
 interface DuplicateReturn {
     datasetId: string,
     selectedColumns: unknown[],
@@ -104,9 +69,7 @@ interface RepairHistory extends RepairResult {
 
 
 export type {
-    DatasetRow, CSVErrorDetail, UploadSuccess,
-    DatasetProfile, ColumnProfile, NumericStats,
-    Outliers, DuplicateReturn, DatabaseDataset, RetrievedDataset,
-    RepairOptions, RepairResult, MissingValueRepairResult,
-    CleanSaveSuccess
+    CSVErrorDetail, UploadSuccess, DuplicateReturn,
+    DatabaseDataset, RetrievedDataset, RepairOptions,
+    RepairResult, MissingValueRepairResult, CleanSaveSuccess
 }
