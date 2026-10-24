@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { API } from "../apis/axios";
-import { ArrowUpDown, Eye,Search } from "../libs"
+import { ArrowUpDown, Eye, Search } from "../libs"
 import type { Dataset } from "@data-cleaning-system/shared";
 import type { DatasetsResponse } from "../types";
 import UploadDatasetModal from "../components/datasets/UploadDatasetModal";
@@ -48,9 +48,7 @@ export default function Datasets() {
         setError(null);
 
         try {
-            const { data } = await API.get<DatasetsResponse>(
-                "/datasets/get-datasets"
-            );
+            const { data } = await API.get<DatasetsResponse>("/datasets")
 
             setDatasets(data.data);
         } catch (err) {

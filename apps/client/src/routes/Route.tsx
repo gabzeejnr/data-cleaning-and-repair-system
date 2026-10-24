@@ -6,6 +6,7 @@ import Dashboard from "../pages/Dashboard";
 import Datasets from "../pages/Datasets";
 import Dataset from "../pages/Dataset";
 import Settings from "../pages/Settings";
+import Issues from "../pages/Issues";
 
 export default function RoutePage() {
     return (
@@ -21,6 +22,7 @@ export default function RoutePage() {
                         <Route index element={<Datasets />} />
                         <Route path=":id" element={<Dataset />} />
                     </Route>
+                    <Route path="issues" element={<Issues />} />
                     <Route path="settings" element={<Settings />} />
                 </Route>
             </Route>
