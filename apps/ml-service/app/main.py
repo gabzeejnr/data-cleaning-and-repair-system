@@ -26,6 +26,16 @@ class AnalyzeRequest(BaseModel):
     exclude_columns: list[str] = Field(default_factory=list)
 
 
+class CleanRequest(BaseModel):
+    records: list[dict[str, Any]] = Field(min_length=1)
+    rules: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    contamination: float = Field(default=0.05, gt=0, le=0.5)
+    exclude_columns: list[str] = Field(default_factory=list)
+    imputation_method: str = "auto"
+    remove_duplicates: bool = False
+    trim_whitespace: bool = True
+
+
 @app.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok", "service": "ml-data-cleaning", "version": "1.0.0"}
@@ -64,6 +74,40 @@ def clean_records(
         cleaned, report = run_cleaning_workflow(df, rules, contamination, exclude_columns, imputation_method, remove_duplicates, trim_whitespace)
         return {"cleaned_records": cleaned.astype(object).where(pd.notna(cleaned), None).to_dict(orient="records"), "report": report}
     except (ValueError, TypeError, json.JSONDecodeError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+
+@app.post("/api/clean/preview")
+def preview_cleaning(request: CleanRequest) -> dict[str, Any]:
+    try:
+        df = pd.DataFrame(request.records)
+
+        if df.empty or len(df.columns) == 0:
+            raise ValueError("Provide at least one row and one column.")
+
+        cleaned, report = run_cleaning_workflow(
+            df,
+            rules=request.rules,
+            contamination=request.contamination,
+            exclude_columns=request.exclude_columns,
+            imputation_method=request.imputation_method,
+            remove_duplicates=request.remove_duplicates,
+            trim_whitespace=request.trim_whitespace,
+        )
+
+        cleaned_records = (
+            cleaned.astype(object)
+            .where(pd.notna(cleaned), None)
+            .to_dict(orient="records")
+        )
+
+        return {
+            "preview_records": cleaned_records,
+            "report": report,
+        }
+
+    except (ValueError, TypeError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 

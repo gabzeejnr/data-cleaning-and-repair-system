@@ -6,11 +6,51 @@ import pandas as pd
 from sklearn.impute import KNNImputer, SimpleImputer
 
 
+def record_value_changes(
+    original: pd.DataFrame,
+    cleaned: pd.DataFrame,
+    column: str,
+    indexes: list[Any],
+    operation: str,
+    method: str,
+) -> dict[str, Any]:
+    changes = []
+
+    for index in indexes:
+        old_value = original.at[index, column]
+        new_value = cleaned.at[index, column]
+
+        changes.append({
+            "row_index": int(index) if isinstance(index, (int, np.integer)) else str(index),
+            "column": str(column),
+            "original_value": (
+                old_value.item()
+                if isinstance(old_value, np.generic)
+                else old_value
+            ),
+            "proposed_value": (
+                new_value.item()
+                if isinstance(new_value, np.generic)
+                else new_value
+            ),
+        })
+
+    return {
+        "type": operation,
+        "column": str(column),
+        "count": len(indexes),
+        "method": method,
+        "changes": changes[:100],
+        "truncated": len(changes) > 100,
+    }
+
+
 def repair_missing_values(df: pd.DataFrame, method: str = "auto") -> tuple[pd.DataFrame, list[dict[str, Any]]]:
     """Repair missing values on a copy. KNN is used for numeric ML imputation in auto mode."""
     if method not in {"auto", "knn", "median", "mean", "mode", "constant"}:
         raise ValueError("method must be auto, knn, median, mean, mode, or constant")
 
+    original = df.copy(deep=True)
     cleaned = df.copy(deep=True)
     changes: list[dict[str, Any]] = []
 
@@ -79,11 +119,21 @@ def repair_missing_values(df: pd.DataFrame, method: str = "auto") -> tuple[pd.Da
         else:
             continue
 
-        changes.append({"type": "missing_value_imputation", "column": str(column), "count": original_missing, "row_indexes": [int(i) for i in missing_indexes[:100]], "method": used})
+        changes.append(
+            record_value_changes(
+                original=original,
+                cleaned=cleaned,
+                column=column,
+                indexes=missing_indexes,
+                operation="missing_value_imputation",
+                method=used,
+            )
+        )
     return cleaned, changes
 
 
 def standardize_whitespace(df: pd.DataFrame) -> tuple[pd.DataFrame, list[dict[str, Any]]]:
+    original = df.copy(deep=True)
     cleaned = df.copy(deep=True)
     changes: list[dict[str, Any]] = []
 
@@ -95,7 +145,16 @@ def standardize_whitespace(df: pd.DataFrame) -> tuple[pd.DataFrame, list[dict[st
 
         if count:
             cleaned[column] = after
-            changes.append({"type": "whitespace_standardization", "column": str(column), "count": count, "row_indexes": [int(i) for i in cleaned.index[changed][:100]]})
+            changes.append(
+                record_value_changes(
+                    original=original,
+                    cleaned=cleaned,
+                    column=column,
+                    indexes=cleaned.index[changed].tolist(),
+                    operation="whitespace_standardization",
+                    method="strip",
+                )
+            )
 
     return cleaned, changes
 
@@ -107,7 +166,29 @@ def remove_exact_duplicates(df: pd.DataFrame) -> tuple[pd.DataFrame, list[dict[s
     changes = []
 
     if indexes:
-        changes.append({"type": "exact_duplicate_removal", "count": len(indexes), "removed_row_indexes": indexes[:100], "truncated": len(indexes) > 100})
+        changes.append({
+            "type": "exact_duplicate_removal",
+            "count": len(indexes),
+            "removed_rows": [
+                {
+                    "row_index": (
+                        int(index)
+                        if isinstance(index, (int, np.integer))
+                        else str(index)
+                    ),
+                    "original_values": {
+                        str(column): (
+                            value.item()
+                            if isinstance(value, np.generic)
+                            else value
+                        )
+                        for column, value in df.loc[index].items()
+                    },
+                }
+                for index in indexes[:100]
+            ],
+            "truncated": len(indexes) > 100
+        })
 
     return cleaned, changes
 

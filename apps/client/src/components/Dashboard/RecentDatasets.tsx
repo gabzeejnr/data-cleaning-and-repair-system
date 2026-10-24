@@ -17,7 +17,7 @@ export default function RecentDatasets() {
 
         try {
             const { data } = await API.get<DatasetsResponse>(
-                "/datasets/get-datasets?limit=5"
+                "/datasets?limit=5"
             );
 
             setDatasets(data.data);

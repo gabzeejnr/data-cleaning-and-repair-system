@@ -90,3 +90,25 @@ def test_upload_endpoint():
     assert response.status_code == 200
     assert "cleaned_dataset.csv" in response.headers["content-disposition"]
     assert b"name,age" in response.content
+
+
+def test_clean_preview_api():
+    response = client.post(
+        "/api/clean/preview",
+        json={
+            "records": [
+                {"name": " Alice ", "age": 25},
+                {"name": "Bob", "age": None},
+            ],
+            "trim_whitespace": True,
+        },
+    )
+
+    assert response.status_code == 200
+
+    result = response.json()
+
+    assert "preview_records" in result
+    assert "report" in result
+    assert result["preview_records"][0]["name"] == "Alice"
+    assert result["preview_records"][1]["age"] is not None
