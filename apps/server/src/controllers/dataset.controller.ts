@@ -9,6 +9,7 @@ import { toDataset } from "../utils/datasets.js";
 import type { Request, Response } from "express";
 import type { Dataset, DataIssue, DatasetRow, getDatasetIdResponse } from "@data-cleaning-system/shared";
 import type { ApiError, ApiSuccess, CSVErrorDetail, UploadSuccess } from "../types/index.js";
+import { pool } from "../configs/db.js";
 
 async function uploadFile(req: Request, res: Response<ApiError<CSVErrorDetail> | ApiSuccess<UploadSuccess>>): Promise<void> {
     try {
@@ -209,6 +210,44 @@ async function getDatasetsId(req: Request<{ id: string }>, res: Response<ApiSucc
     }
 }
 
+async function getDatasetIdRows(req: Request<{ id: string }>, res: Response<ApiSuccess | ApiError>) {
+    try {
+        const userId = res.locals.user?.userId;
+        if (!userId) {
+            res.status(401).json({
+                error: "Couldn't find user. Please try again."
+            });
+            return;
+        }
+
+        const { id } = req.params;
+        if (typeof id !== "string" || !id.trim()) {
+            res.status(400).json({ error: "Invalid request parameter." });
+            return;
+        }
+
+        const datasetData = await getDatasetsFunc({ userId, datasetId: id })
+        if (!datasetData) {
+            res.status(404).json({ error: "Dataset not found or expired." });
+            return;
+        }
+
+        const { rows: data } = await pool.query(`SELECT * FROM dataset_rows WHERE dataset_id = $1`,
+            [datasetData.id]
+        )
+
+        res.status(200).json({
+            message: "Dataset rows request successful.",
+            data
+        })
+    } catch (err) {
+        console.error("Failed to fetch dataset rows:", err);
+        res.status(500).json({
+            error: "Failed to retrieve dataset rows.",
+        });
+    }
+}
+
 async function getDatasetIssues(req: Request<{ id: string }>, res: Response<ApiSuccess<DataIssue[]> | ApiError>) {
     try {
         const userId = res.locals.user?.userId;
@@ -249,5 +288,5 @@ async function getDatasetIssues(req: Request<{ id: string }>, res: Response<ApiS
 
 export {
     getDatasetIssues, getDatasets,
-    getDatasetsId, uploadFile
+    getDatasetsId, getDatasetIdRows, uploadFile
 }
