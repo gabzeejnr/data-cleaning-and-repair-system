@@ -1,15 +1,10 @@
 import { randomUUID } from "node:crypto";
-import { getDataset, persistDataset } from "../repositories/index.js";
+import { getDataset, persistRepairedDataset } from "../repositories/index.js";
 import type { Request, Response } from "express";
-import type { DatasetRow } from "@data-cleaning-system/shared";
-
-interface SaveRepairsBody {
-    datasetId: string;
-    records: DatasetRow[];
-}
+import type { SaveRepairsBody } from "../types/dataset.type.js";
 
 async function saveRepairs(req: Request, res: Response): Promise<void> {
-    const { datasetId, records } = req.body as SaveRepairsBody;
+    const { datasetId, records, reports } = req.body as SaveRepairsBody;
     const userId = res.locals.user?.userId as string;
 
     try {
@@ -43,12 +38,14 @@ async function saveRepairs(req: Request, res: Response): Promise<void> {
 
         const newDatasetId = randomUUID();
 
-        await persistDataset(
+        await persistRepairedDataset(
             newDatasetId,
+            datasetId,
             userId,
             `${dataset.file}-repaired`,
             dataset.columns,
-            records
+            records,
+            reports
         );
 
         res.status(201).json({

@@ -1,4 +1,4 @@
-import type { DatasetRow } from "@data-cleaning-system/shared";
+import type { DatasetRow, CleaningReportInput } from "@data-cleaning-system/shared";
 type CSVErrorDetail = { message: string, row: number | undefined }[];
 
 interface UploadSuccess { datasetId: string }
@@ -62,9 +62,16 @@ interface CleanSaveSuccess {
     repairedCount: number
 }
 
+interface SaveRepairsBody {
+    datasetId: string;
+    records: DatasetRow[];
+    reports: CleaningReportInput[]
+}
+
 
 export type {
     CSVErrorDetail, UploadSuccess, DuplicateReturn,
     DatabaseDataset, RetrievedDataset, RepairOptions,
-    RepairResult, MissingValueRepairResult, CleanSaveSuccess
+    RepairResult, MissingValueRepairResult, CleanSaveSuccess,
+    SaveRepairsBody
 }

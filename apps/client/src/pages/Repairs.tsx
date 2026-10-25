@@ -2,15 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import { API, ML_API } from "../apis/axios";
 import { repairStats, status } from "../data";
 import {
-    AlertTriangle, ArrowRight,
-    CheckCheck, FileCheck2,
-    RefreshCw, Sparkles
+    AlertTriangle, ArrowRight, CheckCheck,
+    FileCheck2, RefreshCw, Sparkles
 } from "../libs";
 import DatasetSelector from "../components/datasets/DatasetSelector";
-import type { Dataset } from "@data-cleaning-system/shared";
-import type { ProposedChange, ReviewStatus } from "../types/repairs.types";
 import RepairsHeader from "../components/repairs/RepairsHeader";
 import VisibleChanges from "../components/repairs/VisibleChanges";
+import type { Dataset, CleaningReportInput } from "@data-cleaning-system/shared";
+import type { ProposedChange, ReviewStatus } from "../types/repairs.types";
 
 
 export default function Repairs() {
@@ -26,6 +25,18 @@ export default function Repairs() {
     const [previewToken, setPreviewToken] = useState<string | null>(null);
     const [applyLoading, setApplyLoading] = useState(false);
     const [success, setSuccess] = useState("");
+    const visibleChanges = changes.filter(change => {
+        const status = decisions[change.id] ?? "pending";
+        return filter === "all" || status === filter;
+    });
+    const counts = useMemo(() => {
+        return {
+            total: changes.length,
+            pending: changes.filter(c => (decisions[c.id] ?? "pending") === "pending").length,
+            accepted: changes.filter(c => decisions[c.id] === "accepted").length,
+            rejected: changes.filter(c => decisions[c.id] === "rejected").length,
+        }
+    }, [changes, decisions]);
 
     useEffect(() => {
         let active = true;
@@ -114,9 +125,16 @@ export default function Repairs() {
                 accepted_change_ids: acceptedChangeIds,
             });
 
+            const reports = buildCleaningReports(
+                changes,
+                applied.applied_change_ids,
+                applied.rows_removed
+            );
+
             const { data: saved } = await API.post("/datasets/save-repairs", {
                 datasetId: selectedDatasetId,
                 records: applied.cleaned_records,
+                reports,
             });
 
             setPreviewToken(null);
@@ -135,6 +153,47 @@ export default function Repairs() {
         }
     }
 
+    function buildCleaningReports(changes: ProposedChange[], appliedChangeIds: string[], rowsRemoved: number): CleaningReportInput[] {
+        const appliedIds = new Set(appliedChangeIds);
+
+        const grouped = new Map<string, {
+            rows: Set<string>;
+            methods: Set<string>;
+        }>();
+
+        for (const change of changes) {
+            if (!appliedIds.has(change.id)) continue;
+
+            const group = grouped.get(change.type) ?? {
+                rows: new Set<string>(),
+                methods: new Set<string>(),
+            };
+
+            group.rows.add(String(change.row_index));
+            group.methods.add(change.method || "repair_applied");
+
+            grouped.set(change.type, group);
+        }
+
+        const reports: CleaningReportInput[] = Array.from(
+            grouped,
+            ([errorType, group]) => ({
+                errorType,
+                recordsAffected: group.rows.size,
+                actionTaken: Array.from(group.methods).join(", "),
+            })
+        );
+
+        if (rowsRemoved > 0) {
+            reports.push({
+                errorType: "duplicate_rows",
+                recordsAffected: rowsRemoved,
+                actionTaken: "Removed duplicate rows",
+            });
+        }
+
+        return reports;
+    }
 
     function selectDataset(datasetId: string) {
         setSelectedDatasetId(datasetId);
@@ -145,22 +204,6 @@ export default function Repairs() {
         setPreviewToken(null);
         setSuccess("");
     }
-
-
-
-    const visibleChanges = changes.filter(change => {
-        const status = decisions[change.id] ?? "pending";
-        return filter === "all" || status === filter;
-    })
-
-    const counts = useMemo(() => {
-        return {
-            total: changes.length,
-            pending: changes.filter(c => (decisions[c.id] ?? "pending") === "pending").length,
-            accepted: changes.filter(c => decisions[c.id] === "accepted").length,
-            rejected: changes.filter(c => decisions[c.id] === "rejected").length,
-        }
-    }, [changes, decisions]);
 
     return (
         <main className="space-y-7 pb-10">

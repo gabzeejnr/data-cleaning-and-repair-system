@@ -8,8 +8,9 @@
   "scripts": {
     "test": "node -e \"console.log('Working, I guess')\"",
     "dev": "tsx watch src/index.ts",
-    "build": "tsc --watch",
-    "start": "node dist/index.js"
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "watch": "tsc --watch"
   },
   "dependencies": {
     "axios": "^1.20.0",

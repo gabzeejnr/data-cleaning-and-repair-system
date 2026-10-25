@@ -1,6 +1,6 @@
 import { pool } from "../configs/db.js"
 import type { QueryResult } from "pg";
-import type { DatasetRow, DatasetProfile } from "@data-cleaning-system/shared";
+import type { CleaningReportInput, DatasetRow, DatasetProfile } from "@data-cleaning-system/shared";
 import type { DatabaseDataset, RetrievedDataset } from "../types/dataset.type.js";
 
 async function saveDatasetRows(datasetId: string, rows: DatasetRow[]): Promise<void> {
@@ -62,6 +62,60 @@ async function persistDataset(
                  VALUES ${placeholders.join(", ")}`,
                 values
             );
+        }
+
+        await client.query("COMMIT");
+    } catch (error) {
+        await client.query("ROLLBACK");
+        throw error;
+    } finally {
+        client.release();
+    }
+}
+
+async function persistRepairedDataset(
+    id: string,
+    originalDatasetId: string,
+    userId: string,
+    filename: string,
+    columns: string[],
+    rows: DatasetRow[],
+    reports: CleaningReportInput[],
+    profile?: DatasetProfile
+): Promise<void> {
+    const client = await pool.connect();
+
+    try {
+        await client.query("BEGIN");
+
+        await client.query(`INSERT INTO datasets (id, user_id, filename, columns, row_count, column_count, profile, expires_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, NOW() + INTERVAL '24 hours')`,
+            [id, userId, filename, columns, rows.length, columns.length, profile ? JSON.stringify(profile) : null]
+        )
+
+        const batchSize = 500;
+
+        for (let i = 0; i < rows.length; i += batchSize) {
+            const batch = rows.slice(i, i + batchSize);
+            const values: unknown[] = [];
+
+            const placeholders = batch.map((row, index) => {
+                const offset = index * 3;
+                values.push(id, i + index, JSON.stringify(row));
+                return `($${offset + 1}, $${offset + 2}, $${offset + 3}::jsonb)`;
+            })
+
+            await client.query(
+                `INSERT INTO dataset_rows (dataset_id, row_index, row_data) VALUES ${placeholders.join(", ")}`,
+                values
+            )
+        }
+
+        for (const report of reports) {
+            await client.query(`INSERT INTO cleaning_reports (dataset_id, repaired_dataset_id, error_type, records_affected, action_taken)
+                VALUES ($1, $2, $3, $4, $5)`,
+                [originalDatasetId, id, report.errorType, report.recordsAffected, report.actionTaken]
+            )
         }
 
         await client.query("COMMIT");
@@ -148,4 +202,4 @@ async function getDatasetProfile(datasetId: string): Promise<DatasetProfile | nu
 }
 
 
-export { saveDatasetRows, persistDataset, getDataset, getDatasetsFunc, getDatasetProfile, getDatasetRows }
+export { saveDatasetRows, persistDataset, persistRepairedDataset, getDataset, getDatasetsFunc, getDatasetProfile, getDatasetRows }

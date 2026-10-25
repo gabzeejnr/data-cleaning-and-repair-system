@@ -65,9 +65,17 @@ interface DataIssue {
 }
 
 
+interface CleaningReportInput {
+    errorType: string;
+    recordsAffected: number;
+    actionTaken: string;
+}
+
+
 export type {
     ColumnProfile, DataIssue, Dataset,
     DatasetRow, DatasetProfile, getDatasetIdResponse,
     IssueSeverity,
-    NumericStats, Outliers
+    NumericStats, Outliers,
+    CleaningReportInput
 }

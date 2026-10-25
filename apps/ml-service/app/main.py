@@ -222,7 +222,6 @@ def apply_approved_changes(request: ApplyChangesRequest) -> dict[str, Any]:
             .to_dict(orient="records")
         )
 
-        # Consume the preview only after successful application.
         preview_cache.pop(request.preview_token, None)
 
         return {

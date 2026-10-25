@@ -6,7 +6,6 @@ import cookieParser from "cookie-parser";
 import type { Express } from "express";
 import { apiRouter, authRouter, healthRouter } from "./routes/index.js";
 import { uploadMiddleware } from "./middlewares/index.js";
-import { pool } from "./configs/db.js";
 
 const app: Express = express();
 const PORT = Number(env.PORT) || 4000;
@@ -25,7 +24,6 @@ console.log("// ================================================================
 console.log("// STARTING SERVER ==============================");
 console.log("// ================================================================================================")
 
-console.log(await pool.query(`SELECT * FROM datasets WHERE id = '9515bab4-9123-4184-97e8-0402caf0b632'`))
 
 app.use("/auth", authRouter);
 app.use("/api", apiRouter);

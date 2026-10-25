@@ -10,7 +10,7 @@ interface ProposedChange {
     original_value: unknown;
     proposed_value: unknown;
     method?: string | null;
-};
+}
 
 interface Counts {
     total: number;
