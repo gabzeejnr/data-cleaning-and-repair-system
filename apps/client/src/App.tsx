@@ -1,6 +1,6 @@
 import { UserProvider } from "./context/UserContext";
 import RoutePage from "./routes/Route";
-import "./utils/string.utils";
+import "./utils";
 import "./App.css";
 
 export default function App() {

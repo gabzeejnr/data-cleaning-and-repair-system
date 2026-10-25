@@ -3,3 +3,5 @@ export * from "./dashboard.types";
 export * from "./datasets.types"
 export * from "./forms.types";
 export * from "./global.types";
+export * from "./repairs.types";
+export * from "./reports.types";
