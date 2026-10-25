@@ -1,10 +1,22 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Upload } from "../libs";
-import { stats, quickActions } from "../data";
+import { getDashboardSummary, getStats, quickActions } from "../data";
 import StatCard from "../components/Dashboard/StatCard";
 import RecentDatasets from "../components/Dashboard/RecentDatasets";
+import type { StatCardProps } from "../types";
 
 export default function Dashboard() {
+
+    const [stats, setStats] = useState<readonly StatCardProps[]>([]);
+
+    useEffect(() => {
+        getDashboardSummary()
+            .then(summary => setStats(getStats(summary)))
+            .catch(console.error)
+    }, [])
+
+
     return (
         <div className="space-y-8">
             <section className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
@@ -27,7 +39,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    {stats.map((stat) => (
+                    {stats.map(stat => (
                         <StatCard key={stat.title} {...stat} />
                     ))}
                 </div>

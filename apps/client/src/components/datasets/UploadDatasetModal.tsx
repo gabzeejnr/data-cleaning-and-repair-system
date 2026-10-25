@@ -1,23 +1,12 @@
 import { useRef, useState } from "react";
-import type { DragEvent, ChangeEvent } from "react";
 import {
-    X,
-    UploadCloud,
-    FileSpreadsheet,
-    FileText,
-    CheckCircle2,
-    AlertCircle,
-    Info,
+    X, UploadCloud, FileSpreadsheet, FileText,
+    CheckCircle2, AlertCircle, Info
 } from "../../libs";
-import { getUploadErrorMessage } from "../../utils"
-
-interface UploadDatasetModalProps {
-    onClose: () => void;
-    onUpload: (file: File, name: string) => Promise<void>;
-}
-
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
-const ACCEPTED_EXTENSIONS = [".csv", ".xls", ".xlsx"];
+import { getUploadErrorMessage } from "../../utils";
+import { MAX_FILE_SIZE, ACCEPTED_EXTENSIONS, whatHappensNext } from "../../data/datasets.data";
+import type { DragEvent, ChangeEvent } from "react";
+import type { UploadDatasetModalProps } from "../../types";
 
 export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetModalProps) {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -72,22 +61,22 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
         }
     }
 
-    const fileSize =
-        file && file.size < 1024 * 1024
-            ? `${(file.size / 1024).toFixed(1)} KB`
-            : file
-                ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
-                : "";
+    const fileSize = (file && file.size < 1024 * 1024
+        ? `${(file.size / 1024).toFixed(1)} KB`
+        : (file
+            ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
+            : ""
+        )
+    )
 
     return (
         <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-[#11133B]/60 p-4 backdrop-blur-sm"
             onMouseDown={(event) => { if (event.target === event.currentTarget && !uploading) onClose() }}
         >
-            <section role="dialog" aria-modal="true" aria-labelledby="upload-title" className="my-auto w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl"
-            >
+            <section role="dialog" aria-modal="true" aria-labelledby="upload-title" className="my-auto w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl">
                 <header className="flex items-start justify-between border-b border-slate-100 px-6 py-5 sm:px-8">
                     <div className="flex items-start gap-3">
-                        <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-indigo-50 text-indigo-600">
+                        <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-indigo-50 text-brand">
                             <UploadCloud size={23} />
                         </div>
                         <div>
@@ -97,7 +86,7 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
                     </div>
 
                     <button type="button" onClick={onClose} disabled={uploading} aria-label="Close upload dialog"
-                        className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50"
+                        className="rounded-lg p-2 text-slate-400 transition hover:bg-brand-soft hover:text-slate-700 disabled:opacity-50"
                     >
                         <X size={20} />
                     </button>
@@ -107,22 +96,20 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
                     <div className="p-6 sm:p-8">
                         <input ref={inputRef} type="file" accept=".csv,.xls,.xlsx" className="hidden" onChange={handleFileChange} />
 
-                        <div
-                            onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+                        <div onDragOver={(e) => { e.preventDefault(); setDragging(true) }} onDrop={handleDrop}
                             onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) { setDragging(false) } }}
-                            onDrop={handleDrop}
                             className={`flex min-h-56 flex-col items-center justify-center rounded-2xl border-2 border-dashed px-5 py-8 text-center transition ${dragging
                                 ? "border-indigo-500 bg-indigo-50"
                                 : "border-indigo-200 bg-slate-50/70 hover:border-indigo-400"
                                 }`
                             }
                         >
-                            <div className="grid size-14 place-items-center rounded-2xl bg-indigo-100 text-indigo-600"><UploadCloud size={28} /></div>
+                            <div className="grid size-14 place-items-center rounded-2xl bg-indigo-100 text-brand"><UploadCloud size={28} /></div>
 
                             <p className="mt-4 font-semibold text-[#11133B]">Drag and drop your file here</p>
                             <p className="mt-1 text-sm text-slate-500">or</p>
 
-                            <button type="button" onClick={() => inputRef.current?.click()} className="mt-4 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-700">
+                            <button type="button" onClick={() => inputRef.current?.click()} className="mt-4 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand">
                                 Choose file
                             </button>
 
@@ -132,11 +119,10 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
                         {file && (
                             <div className="mt-4 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50/50 p-4">
                                 <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-emerald-100 text-emerald-700">
-                                    {file.name.toLowerCase().endsWith(".csv") ? (
-                                        <FileText size={21} />
-                                    ) : (
-                                        <FileSpreadsheet size={21} />
-                                    )}
+                                    {file.name.toLowerCase().endsWith(".csv")
+                                        ? <FileText size={21} />
+                                        : <FileSpreadsheet size={21} />
+                                    }
                                 </div>
 
                                 <div className="min-w-0 flex-1">
@@ -178,7 +164,7 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
                                 Cancel
                             </button>
                             <button type="button" onClick={() => void handleSubmit()} disabled={!file || uploading}
-                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 <UploadCloud size={18} />
                                 {uploading ? "Uploading..." : "Upload dataset"}
@@ -210,20 +196,15 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
 
                         <h3 className="font-semibold text-[#11133B]">What happens next?</h3>
                         <ol className="mt-4 space-y-4">
-                            {[
-                                "Analyze your data structure",
-                                "Detect missing values, duplicates, and outliers",
-                                "Prepare data quality insights",
-                                "Help you clean and repair your data",
-                            ].map((step, index) => (
+                            {whatHappensNext.map((step, index) => (
                                 <li key={step} className="flex items-start gap-3">
-                                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-indigo-600 text-xs font-semibold text-white">{index + 1}</span>
+                                    <span className="grid size-6 shrink-0 place-items-center rounded-full bg-brand text-xs font-semibold text-white">{index + 1}</span>
                                     <p className="pt-0.5 text-sm leading-5 text-slate-600">{step}</p>
                                 </li>
                             ))}
                         </ol>
 
-                        <p className="mt-8 text-sm font-semibold text-indigo-700">Clean data. Better decisions.</p>
+                        <p className="mt-8 text-sm font-semibold text-brand">Clean data. Better decisions.</p>
                     </aside>
                 </div>
             </section>

@@ -5,4 +5,9 @@ type DatasetsResponse = {
     data: Dataset[];
 }
 
-export type { DatasetsResponse }
+interface UploadDatasetModalProps {
+    onClose: () => void;
+    onUpload: (file: File, name: string) => Promise<void>;
+}
+
+export type { DatasetsResponse, UploadDatasetModalProps }

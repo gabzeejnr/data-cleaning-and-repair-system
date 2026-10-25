@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 
 interface StatCardProps {
+    id: string;
     title: string;
     value: string | number;
     icon: LucideIcon;

@@ -78,7 +78,7 @@ export default function VisibleChanges({ visibleChanges, decisions, setDecisions
                         <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-center">
                             <div className="min-w-0 rounded-xl border border-rose-100 bg-rose-50/60 p-4">
                                 <p className="text-xs font-medium text-rose-700">Original value</p>
-                                <p className="mt-2 break-words text-sm text-slate-800">
+                                <p className="mt-2 wrap-break-word text-sm text-slate-800">
                                     {displayValue(change.original_value)}
                                 </p>
                             </div>
@@ -87,7 +87,7 @@ export default function VisibleChanges({ visibleChanges, decisions, setDecisions
 
                             <div className="min-w-0 rounded-xl border border-emerald-100 bg-emerald-50/60 p-4">
                                 <p className="text-xs font-medium text-emerald-700">Proposed value</p>
-                                <p className="mt-2 break-words text-sm text-slate-800">
+                                <p className="mt-2 wrap-break-word text-sm text-slate-800">
                                     {displayValue(change.proposed_value)}
                                 </p>
                             </div>

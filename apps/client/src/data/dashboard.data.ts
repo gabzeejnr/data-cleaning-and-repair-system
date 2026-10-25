@@ -1,20 +1,24 @@
-import {
-    Database,
-    CircleAlert,
-    WandSparkles,
-    ChartNoAxesCombined
-} from "../libs";
+import { API } from "../apis/axios";
+import { Database, CircleAlert, WandSparkles, ChartNoAxesCombined } from "../libs";
+import type { DashboardSummary } from "@data-cleaning-system/shared";
 import type { QuickActionProps, StatCardProps } from "../types";
 
-const stats: readonly StatCardProps[] = [
+async function getDashboardSummary(): Promise<DashboardSummary> {
+    const { data } = await API.get("/datasets/summary");
+    return data.data
+}
+
+const getStats = (summary: DashboardSummary): readonly StatCardProps[] => ([
     {
+        id: "totalDatasets",
         title: "Total datasets",
-        value: 24,
+        value: summary.totalDatasets,
         icon: Database,
         description: "Datasets uploaded to your workspace",
         accent: "indigo",
     },
     {
+        id: "issuesDetected",
         title: "Issues detected",
         value: 138,
         icon: CircleAlert,
@@ -22,20 +26,22 @@ const stats: readonly StatCardProps[] = [
         accent: "amber",
     },
     {
+        id: "repairsCompleted",
         title: "Repairs completed",
-        value: 96,
+        value: summary.repairsCompleted,
         icon: WandSparkles,
         description: "Issues repaired across your datasets",
         accent: "emerald",
     },
     {
+        id: "avgDataQuality",
         title: "Average data quality",
         value: "94.8%",
         icon: ChartNoAxesCombined,
         description: "Overall quality score across datasets",
         accent: "rose",
     },
-]
+])
 
 const quickActions: readonly QuickActionProps[] = [
     {
@@ -55,4 +61,4 @@ const quickActions: readonly QuickActionProps[] = [
     },
 ]
 
-export { stats, quickActions }
+export { getDashboardSummary, getStats, quickActions }
