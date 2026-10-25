@@ -92,6 +92,7 @@ def test_upload_endpoint():
     assert b"name,age" in response.content
 
 
+
 def test_clean_preview_api():
     response = client.post(
         "/api/clean/preview",
@@ -104,50 +105,73 @@ def test_clean_preview_api():
         },
     )
 
-    assert response.status_code == 200
-
+    assert response.status_code == 200, response.json()
     result = response.json()
 
+    assert "preview_token" in result
     assert "preview_records" in result
     assert "report" in result
+    assert "changes" in result
     assert result["preview_records"][0]["name"] == "Alice"
     assert result["preview_records"][1]["age"] is not None
-    
 
 
 def test_apply_one_approved_change():
+    records = [
+        {"name": " Alice ", "age": 25},
+        {"name": "Bob", "age": None},
+    ]
+
+    preview_response = client.post(
+        "/api/clean/preview",
+        json={"records": records, "trim_whitespace": True},
+    )
+    assert preview_response.status_code == 200, preview_response.json()
+    preview = preview_response.json()
+
+    name_change = next(
+        change for change in preview["changes"]
+        if change["column"] == "name" and change["row_index"] == 0
+    )
+
     response = client.post(
         "/api/clean/apply",
         json={
-            "records": [
-                {"name": " Alice ", "age": 25},
-                {"name": "Bob", "age": None},
-            ],
-            "accepted_change_ids": ["0-0"],
+            "preview_token": preview["preview_token"],
+            "accepted_change_ids": [name_change["id"]],
         },
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.json()
     result = response.json()
 
     assert result["cleaned_records"][0]["name"] == "Alice"
     assert result["cleaned_records"][1]["age"] is None
-    assert result["applied_change_ids"] == ["0-0"]
+    assert result["applied_change_ids"] == [name_change["id"]]
 
 
 def test_rejecting_change_leaves_original_value():
+    records = [
+        {"name": " Alice ", "age": 25},
+        {"name": "Bob", "age": None},
+    ]
+
+    preview_response = client.post(
+        "/api/clean/preview",
+        json={"records": records, "trim_whitespace": True},
+    )
+    assert preview_response.status_code == 200, preview_response.json()
+    preview = preview_response.json()
+
     response = client.post(
         "/api/clean/apply",
         json={
-            "records": [
-                {"name": " Alice ", "age": 25},
-                {"name": "Bob", "age": None},
-            ],
+            "preview_token": preview["preview_token"],
             "accepted_change_ids": [],
         },
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.json()
     result = response.json()
 
     assert result["cleaned_records"][0]["name"] == " Alice "
@@ -156,15 +180,25 @@ def test_rejecting_change_leaves_original_value():
 
 
 def test_apply_rejects_unknown_change_id():
+    records = [
+        {"name": " Alice ", "age": 25},
+        {"name": "Bob", "age": None},
+    ]
+
+    preview_response = client.post(
+        "/api/clean/preview",
+        json={"records": records, "trim_whitespace": True},
+    )
+    assert preview_response.status_code == 200, preview_response.json()
+    preview = preview_response.json()
+
     response = client.post(
         "/api/clean/apply",
         json={
-            "records": [
-                {"name": " Alice ", "age": 25},
-                {"name": "Bob", "age": None},
-            ],
+            "preview_token": preview["preview_token"],
             "accepted_change_ids": ["not-a-valid-id"],
         },
     )
 
     assert response.status_code == 422
+

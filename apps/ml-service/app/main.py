@@ -6,6 +6,9 @@ from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
+from copy import deepcopy
+from uuid import uuid4
+from time import time
 import pandas as pd
 
 from .io_utils import read_dataset, dataframe_to_csv_bytes, MAX_UPLOAD_BYTES, records_to_dataframe
@@ -28,6 +31,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+PREVIEW_TTL_SECONDS = 1800
+preview_cache: dict[str, dict[str, Any]] = {}
+
 
 class AnalyzeRequest(BaseModel):
     records: list[dict[str, Any]] = Field(min_length=1)
@@ -35,6 +41,10 @@ class AnalyzeRequest(BaseModel):
     contamination: float = Field(default=0.05, gt=0, le=0.5)
     exclude_columns: list[str] = Field(default_factory=list)
 
+class ApplyChangesRequest(BaseModel):
+    preview_token: str
+    accepted_change_ids: list[str] = Field(default_factory=list)
+    
 class CleanRequest(BaseModel):
     records: list[dict[str, Any]] = Field(min_length=1)
     rules: dict[str, dict[str, Any]] = Field(default_factory=dict)
@@ -44,7 +54,8 @@ class CleanRequest(BaseModel):
     remove_duplicates: bool = False
     trim_whitespace: bool = True
 
-class ApplyChangesRequest(CleanRequest):
+class ApplyChangesRequest(BaseModel):
+    preview_token: str
     accepted_change_ids: list[str] = Field(default_factory=list)
 
 
@@ -117,11 +128,21 @@ def preview_cleaning(request: CleanRequest) -> dict[str, Any]:
             .where(pd.notna(cleaned), None)
             .to_dict(orient="records")
         )
+        
+        changes = get_reviewable_changes(report["repair_summary"]["operations"])
+        
+        preview_token = str(uuid4())
+        preview_cache[preview_token] = {
+            "records": deepcopy(request.records),
+            "changes": deepcopy(changes),
+            "expires_at": time() + PREVIEW_TTL_SECONDS,
+        }
 
         return {
+            "preview_token": preview_token,
             "preview_records": cleaned_records,
             "report": report,
-            "changes": get_reviewable_changes(report["repair_summary"]["operations"])
+            "changes": changes
         }
 
     except (ValueError, TypeError) as exc:
@@ -129,31 +150,25 @@ def preview_cleaning(request: CleanRequest) -> dict[str, Any]:
 
 
 
+
 @app.post("/api/clean/apply")
-def apply_approved_changes(
-    request: ApplyChangesRequest,
-) -> dict[str, Any]:
+def apply_approved_changes(request: ApplyChangesRequest) -> dict[str, Any]:
     try:
-        original = records_to_dataframe(request.records)
+        cached = preview_cache.get(request.preview_token)
 
-        if original.empty or len(original.columns) == 0:
-            raise ValueError("Provide at least one row and one column.")
+        if cached is None:
+            raise ValueError(
+                "Preview not found or already applied. Generate a new preview."
+            )
 
-        _, report = run_cleaning_workflow(
-            original,
-            rules=request.rules,
-            contamination=request.contamination,
-            exclude_columns=request.exclude_columns,
-            imputation_method=request.imputation_method,
-            remove_duplicates=request.remove_duplicates,
-            trim_whitespace=request.trim_whitespace,
-        )
+        if time() >= cached["expires_at"]:
+            preview_cache.pop(request.preview_token, None)
+            raise ValueError("Preview expired. Generate a new preview.")
 
-        available_changes = get_reviewable_changes(
-            report["repair_summary"]["operations"]
-        )
+        available_changes = cached["changes"]
         changes_by_id = {
-            change["id"]: change for change in available_changes
+            change["id"]: change
+            for change in available_changes
         }
 
         accepted_ids = request.accepted_change_ids
@@ -168,6 +183,7 @@ def apply_approved_changes(
                 f"Unknown change IDs: {', '.join(sorted(unknown_ids))}"
             )
 
+        original = records_to_dataframe(cached["records"])
         cleaned = original.copy(deep=True)
         rows_to_remove: set[int] = set()
 
@@ -176,6 +192,10 @@ def apply_approved_changes(
             row_index = change["row_index"]
 
             if change["type"] == "exact_duplicate_removal":
+                if row_index not in cleaned.index:
+                    raise ValueError(
+                        f"Row index '{row_index}' is not present in the dataset."
+                    )
                 rows_to_remove.add(row_index)
                 continue
 
@@ -201,6 +221,9 @@ def apply_approved_changes(
             .where(pd.notna(cleaned), None)
             .to_dict(orient="records")
         )
+
+        # Consume the preview only after successful application.
+        preview_cache.pop(request.preview_token, None)
 
         return {
             "message": "Approved changes applied successfully.",

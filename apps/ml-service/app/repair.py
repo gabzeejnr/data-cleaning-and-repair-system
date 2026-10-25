@@ -46,24 +46,25 @@ def record_value_changes(
 
 
 
+
 def get_reviewable_changes(operations: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Flatten repair operations into individually reviewable changes."""
     reviewable: list[dict[str, Any]] = []
 
     for operation_index, operation in enumerate(operations):
         operation_type = operation["type"]
+        change_index = 0
 
-        for change_index, change in enumerate(operation.get("changes", [])):
+        for change in operation.get("changes", []):
             reviewable.append({
                 "id": f"{operation_index}-{change_index}",
                 "type": operation_type,
                 "method": operation.get("method"),
                 **change,
             })
+            change_index += 1
 
-        for change_index, removed_row in enumerate(
-            operation.get("removed_rows", [])
-        ):
+        for removed_row in operation.get("removed_rows", []):
             reviewable.append({
                 "id": f"{operation_index}-{change_index}",
                 "type": operation_type,
@@ -73,6 +74,7 @@ def get_reviewable_changes(operations: list[dict[str, Any]]) -> list[dict[str, A
                 "original_value": removed_row["original_values"],
                 "proposed_value": None,
             })
+            change_index += 1
 
     return reviewable
 
