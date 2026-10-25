@@ -1,5 +1,6 @@
 import axios from "axios";
-const baseUrl = "http://localhost:4000"
+const baseUrl = "http://localhost:4000";
+const mlBaseUrl = "http://127.0.0.1:8000";
 
 const AUTH = axios.create({
     baseURL: `${baseUrl}/auth`,
@@ -11,4 +12,9 @@ const API = axios.create({
     withCredentials: true
 })
 
-export { API, AUTH }
+const ML_API = axios.create({
+    baseURL: `${mlBaseUrl}/api`,
+    timeout: 60_000
+})
+
+export { API, AUTH, ML_API }

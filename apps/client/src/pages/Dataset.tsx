@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Database } from "../libs";
+import { Database, RefreshCw } from "../libs";
 import { getUploadErrorMessage } from "../utils";
 import { API } from "../apis/axios";
+import PageHeader from "../components/PageHeader";
 import DatasetTable from "../components/Dataset/Table";
 import type { Dataset, DatasetProfile, DatasetRow, getDatasetIdResponse } from "@data-cleaning-system/shared";
-import DatasetHeader from "../components/Dataset/Header";
 import ColumnProfile from "../components/Dataset/ColumnProfile";
 
 export default function Dataset() {
@@ -50,7 +50,15 @@ export default function Dataset() {
 
     return (
         <main className="space-y-8 p-3 sm:p-5 lg:p-4">
-            <DatasetHeader loading={loading} getRows={getRows} />
+            <PageHeader title="Dataset Details" subtitle="Inspect your dataset and review its records."
+            back backText="Back to datasets" backLink="/datasets">
+                <button type="button" onClick={() => void getRows()} disabled={loading}
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 transition hover:border-indigo-200 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+                <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
+                Refresh
+            </button>
+            </PageHeader>
 
             <section className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">

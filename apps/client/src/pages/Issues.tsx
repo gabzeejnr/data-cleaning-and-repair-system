@@ -4,6 +4,7 @@ import { API } from "../apis/axios";
 import DatasetSelector from "../components/datasets/DatasetSelector";
 import SummaryCard from "../components/Issues/SummaryCard";
 import type { Dataset, DataIssue } from "@data-cleaning-system/shared";
+import PageHeader from "../components/PageHeader";
 
 interface GetDatasetsResponse {
     message: string;
@@ -98,10 +99,7 @@ export default function Issues() {
 
     return (
         <main className="space-y-6">
-            <header>
-                <h1 className="text-2xl font-bold text-slate-900">Data Quality Issues</h1>
-                <p className="mt-1 text-sm text-slate-500">Inspect missing values, duplicates, and potential outliers.</p>
-            </header>
+            <PageHeader title="Data Quality Issues" subtitle="Inspect missing values, duplicates, and potential outliers." />
 
             <section className="rounded-2xl border border-slate-200 bg-white p-5">
                 {loadingDatasets ? (
