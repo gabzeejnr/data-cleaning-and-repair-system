@@ -78,9 +78,7 @@ export default function Repairs() {
             const records: DatasetRow["row_data"][] =
                 data.data.map((row: DatasetRow) => row.row_data);
 
-            const res = await ML_API.post("/clean/preview", {
-                records,
-            });
+            const res = await ML_API.post("/clean/preview", { records });
 
             const preview = res.data;
 
@@ -111,20 +109,27 @@ export default function Repairs() {
         setSuccess("");
 
         try {
-            const { data } = await ML_API.post("/clean/apply", {
+            const { data: applied } = await ML_API.post("/clean/apply", {
                 preview_token: previewToken,
                 accepted_change_ids: acceptedChangeIds,
             });
 
+            const { data: saved } = await API.post("/datasets/save-repairs", {
+                datasetId: selectedDatasetId,
+                records: applied.cleaned_records,
+            });
+
             setPreviewToken(null);
+            setHasPreview(false);
+            setChanges([]);
+            setDecisions({});
 
             setSuccess(
-                `Successfully applied ${data.applied_count} approved changes.`
+                `Repaired dataset saved successfully. ${saved.data.rowCount} rows saved.`
             );
-
         } catch (err) {
             console.error(err);
-            setError("Couldn't apply the approved changes. Please try again.");
+            setError("Couldn't apply and save the repairs. Please try again.");
         } finally {
             setApplyLoading(false);
         }
