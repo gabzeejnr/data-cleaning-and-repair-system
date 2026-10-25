@@ -19,7 +19,7 @@ function Password({ label, error, isClosed = true, setIsClosed, ...props }: Pass
                 <input {...props} id={props.id ?? "password"} name={props.name ?? "password"}
                     type={isClosed ? "password" : "text"} autoComplete={props.autoComplete ?? "current-password"} required={props.required ?? true}
                     placeholder={props.placeholder ?? "Enter your password"}
-                    className={`w-full rounded-lg border border-gray-200 bg-white px-4 py-3 pr-12 text-sm outline-none transition placeholder:text-gray-400 focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-100 ${error ? "border-red-500" : ""
+                    className={`w-full rounded-lg border border-gray-200 bg-white px-4 py-3 pr-12 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100 ${error ? "border-red-500" : ""
                         }`}
                     aria-invalid={!!error}
                     aria-describedby={error ? `${props.id ?? "password"}-error` : undefined}
@@ -44,7 +44,7 @@ function Password({ label, error, isClosed = true, setIsClosed, ...props }: Pass
 
 function FormButton({ type, className, value, children, disabled }: ButtonProps) {
     return (
-        <button type={type} className={`flex w-full items-center justify-center gap-2 rounded-lg bg-[#4F46E5] py-3 text-sm font-semibold text-white shadow-sm
+        <button type={type} className={`flex w-full items-center justify-center gap-2 rounded-lg bg-brand py-3 text-sm font-semibold text-white shadow-sm
             transition-colors duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2
             disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 disabled:shadow-none disabled:hover:bg-gray-300${className}`} disabled={disabled}
         >
@@ -112,7 +112,7 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
         <div>
             <div className="w-full max-w-md space-y-8">
                 <header className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#4F46E5]">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand">
                         <Database size={25} color="white" />
                     </div>
 
@@ -137,7 +137,7 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
 
                         <input id="email" name="email" type="email" autoComplete="email" required
                             placeholder="someone@example.com"
-                            className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-100"
+                            className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100"
                         />
                         {emailError && <p role="alert" className="text-sm -mt-1 text-red-600">{emailError}</p>}
                     </div>
@@ -148,7 +148,7 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
                                 Password
                             </label>
 
-                            <Link to="/forgot-password" className="text-sm font-medium text-[#4F46E5] hover:text-indigo-700">
+                            <Link to="/forgot-password" className="text-sm font-medium text-brand hover:text-indigo-700">
                                 Forgot password?
                             </Link>
                         </div>
@@ -156,7 +156,7 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
                         <div className="relative">
                             <input id="password" name="password" type={isClosed ? "password" : "text"} autoComplete="current-password" required
                                 placeholder="Enter your password"
-                                className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 pr-12 text-sm outline-none transition placeholder:text-gray-400 focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-100"
+                                className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 pr-12 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100"
                             />
                             {passwordError && <p role="alert" className="text-sm -mt-1 text-red-600">{passwordError}</p>}
 
@@ -175,7 +175,7 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
 
                 <p className="text-center text-sm text-gray-500">
                     Don't have an account?{" "}
-                    <Link to={"/auth/register"} className="font-semibold text-[#4F46E5] hover:text-indigo-700"
+                    <Link to={"/auth/register"} className="font-semibold text-brand hover:text-indigo-700"
                         onClick={onRegister}>
                         Create one
                     </Link>
@@ -191,6 +191,7 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
 }
 
 function RegisterForm({ onBack }: { onBack: React.MouseEventHandler<HTMLButtonElement> }) {
+    const navigate = useNavigate();
     const [toast, setToast] = useState<ToastType | null>(null);
     const [isClosed, setIsClosed] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -212,7 +213,8 @@ function RegisterForm({ onBack }: { onBack: React.MouseEventHandler<HTMLButtonEl
             setToast({
                 type: "error",
                 text: "Passwords do not match.",
-            })
+            });
+            
             return;
         }
 
@@ -223,6 +225,10 @@ function RegisterForm({ onBack }: { onBack: React.MouseEventHandler<HTMLButtonEl
                 type: "success",
                 text: "User registered successfully."
             })
+
+            setTimeout(() => {
+                navigate("/", { replace: true })
+            }, 1500);
         } catch (err) {
             if (axios.isAxiosError<{ error: string }>(err)) {
                 const { response } = err
@@ -236,20 +242,22 @@ function RegisterForm({ onBack }: { onBack: React.MouseEventHandler<HTMLButtonEl
                 setToast(null);
                 setPasswordError("");
             }, 5000);
+        } finally {
+            setLoading(false);
         }
     }
 
-    const inputClass = "w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-[#4F46E5] focus:ring-2 focus:ring-indigo-100";
+    const inputClass = "w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100";
 
     return (
         <div className="w-full space-y-6">
             <div className="space-y-2">
-                <button type="button" onClick={onBack} className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-[#4F46E5]">
+                <button type="button" onClick={onBack} className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-brand">
                     <ArrowLeft size={16} />
                     Back to sign in
                 </button>
 
-                <div className="flex items-center gap-2 text-[#4F46E5]">
+                <div className="flex items-center gap-2 text-brand">
                     <UserPlus size={21} />
                     <span className="text-sm font-semibold">Create your account</span>
                 </div>
@@ -305,7 +313,7 @@ function RegisterForm({ onBack }: { onBack: React.MouseEventHandler<HTMLButtonEl
 
             <p className="text-center text-sm text-gray-500">
                 Already have an account?{" "}
-                <Link to="/auth/login" className="font-semibold text-[#4F46E5] hover:text-indigo-700">Sign in</Link>
+                <Link to="/auth/login" className="font-semibold text-brand hover:text-indigo-700">Sign in</Link>
             </p>
         </div>
     )

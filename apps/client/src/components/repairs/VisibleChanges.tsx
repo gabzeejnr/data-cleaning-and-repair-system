@@ -10,7 +10,7 @@ function formatType(type: string) {
 
 function displayValue(value: unknown) {
     if (value === null || value === undefined || value === "") {
-        return "Missing value";
+        return "—";
     }
 
     if (typeof value === "object") {
@@ -53,21 +53,47 @@ export default function VisibleChanges({ visibleChanges, decisions, setDecisions
                         <span className={`rounded-full px-3 py-1 text-xs font-medium capitalize ${statusStyles[status]}`}>{status}</span>
                     </div>
 
-                    <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-center">
-                        <div className="min-w-0 rounded-xl border border-rose-100 bg-rose-50/60 p-4">
-                            <p className="text-xs font-medium text-rose-700">Original value</p>
-                            <p className="mt-2 break-words text-sm text-slate-800">{displayValue(change.original_value)}</p>
-                        </div>
 
-                        <ArrowRight size={18} className="hidden text-slate-400 md:block" />
+                    {change.type === "outlier_review" ? (
+                        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4">
+                            <p className="text-sm font-semibold text-amber-900">
+                                Unusual row detected
+                            </p>
 
-                        <div className="min-w-0 rounded-xl border border-emerald-100 bg-emerald-50/60 p-4">
-                            <p className="text-xs font-medium text-emerald-700">Proposed value</p>
-                            <p className="mt-2 break-words text-sm text-slate-800">
-                                {displayValue(change.proposed_value)}
+                            <p className="mt-2 text-sm text-amber-800">
+                                Anomaly score: {change.details?.anomaly_score ?? "Unavailable"}
+                            </p>
+
+                            <p className="mt-2 text-sm text-amber-800">
+                                No automatic replacement is proposed. Review this row in the
+                                dataset before deciding whether it needs correction.
+                            </p>
+
+                            <p className="mt-2 text-xs text-amber-700">
+                                Numeric columns analyzed:{" "}
+                                {change.details?.numeric_columns.join(", ") || "None"}
                             </p>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="mt-4 grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-center">
+                            <div className="min-w-0 rounded-xl border border-rose-100 bg-rose-50/60 p-4">
+                                <p className="text-xs font-medium text-rose-700">Original value</p>
+                                <p className="mt-2 break-words text-sm text-slate-800">
+                                    {displayValue(change.original_value)}
+                                </p>
+                            </div>
+
+                            <ArrowRight size={18} className="hidden text-slate-400 md:block" />
+
+                            <div className="min-w-0 rounded-xl border border-emerald-100 bg-emerald-50/60 p-4">
+                                <p className="text-xs font-medium text-emerald-700">Proposed value</p>
+                                <p className="mt-2 break-words text-sm text-slate-800">
+                                    {displayValue(change.proposed_value)}
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
 
                     <div className="mt-4 flex flex-wrap justify-end gap-2">
                         <button type="button" onClick={() => decide(change.id, "rejected")}

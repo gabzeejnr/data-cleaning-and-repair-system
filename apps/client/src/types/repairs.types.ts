@@ -10,6 +10,10 @@ interface ProposedChange {
     original_value: unknown;
     proposed_value: unknown;
     method?: string | null;
+    details?: {
+        anomaly_score: number;
+        numeric_columns: string[];
+    }
 }
 
 interface Counts {

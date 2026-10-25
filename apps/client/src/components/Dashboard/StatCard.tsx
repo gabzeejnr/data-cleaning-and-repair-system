@@ -19,5 +19,5 @@ export default function StatCard({
 
             <p className="mt-4 text-xs leading-5 text-slate-500">{description}</p>
         </article>
-    );
+    )
 }

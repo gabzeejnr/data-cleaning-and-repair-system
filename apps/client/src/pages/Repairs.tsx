@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import { API, ML_API } from "../apis/axios";
 import { repairStats, status } from "../data";
-import {
-    AlertTriangle, ArrowRight, CheckCheck,
-    FileCheck2, RefreshCw, Sparkles
-} from "../libs";
+import { AlertTriangle, ArrowRight, FileCheck2, RefreshCw, Sparkles } from "../libs";
 import DatasetSelector from "../components/datasets/DatasetSelector";
 import RepairsHeader from "../components/repairs/RepairsHeader";
-import VisibleChanges from "../components/repairs/VisibleChanges";
+import ChangeGroupCard from "../components/repairs/ChangeGroupCard";
+import ReviewActionBar from "../components/repairs/ReviewActionBar";
+import { groupChanges, isApplyable, summarize } from "../utils/groupChanges";
 import type { Dataset, CleaningReportInput } from "@data-cleaning-system/shared";
 import type { ProposedChange, ReviewStatus } from "../types/repairs.types";
 
@@ -25,10 +25,12 @@ export default function Repairs() {
     const [previewToken, setPreviewToken] = useState<string | null>(null);
     const [applyLoading, setApplyLoading] = useState(false);
     const [success, setSuccess] = useState("");
-    const visibleChanges = changes.filter(change => {
-        const status = decisions[change.id] ?? "pending";
-        return filter === "all" || status === filter;
-    });
+
+    const visibleChanges = useMemo(() => changes.filter(change => {
+        const decision = decisions[change.id] ?? "pending";
+        return filter === "all" || decision === filter;
+    }), [changes, decisions, filter]);
+
     const counts = useMemo(() => {
         return {
             total: changes.length,
@@ -37,6 +39,9 @@ export default function Repairs() {
             rejected: changes.filter(c => decisions[c.id] === "rejected").length,
         }
     }, [changes, decisions]);
+
+    const groups = useMemo(() => groupChanges(visibleChanges), [visibleChanges]);
+    const stats = useMemo(() => summarize(changes, decisions), [changes, decisions]);
 
     useEffect(() => {
         let active = true;
@@ -71,86 +76,15 @@ export default function Repairs() {
         row_data: Record<string, unknown>
     }
 
-
-    async function generatePreview() {
-        if (!selectedDatasetId) return;
-
-        setPreviewLoading(true);
-        setError("");
-        setHasPreview(false);
-        setPreviewToken(null);
-        setSuccess("");
-
-        try {
-            const { data } = await API.get(
-                `/datasets/${selectedDatasetId}/rows`
-            );
-
-            const records: DatasetRow["row_data"][] =
-                data.data.map((row: DatasetRow) => row.row_data);
-
-            const res = await ML_API.post("/clean/preview", { records });
-
-            const preview = res.data;
-
-            setPreviewToken(preview.preview_token);
-            setChanges(preview.changes);
-            setHasPreview(true);
-            setDecisions({});
-            setFilter("all");
-        } catch (err) {
-            console.error(err);
-            setError("Couldn't generate the preview. Please try again.");
-        } finally {
-            setPreviewLoading(false);
-        }
+    function decide(id: string, status: ReviewStatus) {
+        setDecisions(current => ({ ...current, [id]: status }));
     }
 
-    async function applyApprovedChanges() {
-        if (!previewToken || !selectedDatasetId) return;
-
-        const acceptedChangeIds = Object.entries(decisions)
-            .filter(([, decision]) => decision === "accepted")
-            .map(([id]) => id);
-
-        if (acceptedChangeIds.length === 0) return;
-
-        setApplyLoading(true);
-        setError("");
-        setSuccess("");
-
-        try {
-            const { data: applied } = await ML_API.post("/clean/apply", {
-                preview_token: previewToken,
-                accepted_change_ids: acceptedChangeIds,
-            });
-
-            const reports = buildCleaningReports(
-                changes,
-                applied.applied_change_ids,
-                applied.rows_removed
-            );
-
-            const { data: saved } = await API.post("/datasets/save-repairs", {
-                datasetId: selectedDatasetId,
-                records: applied.cleaned_records,
-                reports,
-            });
-
-            setPreviewToken(null);
-            setHasPreview(false);
-            setChanges([]);
-            setDecisions({});
-
-            setSuccess(
-                `Repaired dataset saved successfully. ${saved.data.rowCount} rows saved.`
-            );
-        } catch (err) {
-            console.error(err);
-            setError("Couldn't apply and save the repairs. Please try again.");
-        } finally {
-            setApplyLoading(false);
-        }
+    function decideAll(ids: string[], status: ReviewStatus) {
+        setDecisions(current => ({
+            ...current,
+            ...Object.fromEntries(ids.map(id => [id, status])),
+        }));
     }
 
     function buildCleaningReports(changes: ProposedChange[], appliedChangeIds: string[], rowsRemoved: number): CleaningReportInput[] {
@@ -203,6 +137,95 @@ export default function Repairs() {
         setError("");
         setPreviewToken(null);
         setSuccess("");
+    }
+
+
+    async function generatePreview() {
+        if (!selectedDatasetId) return;
+
+        setPreviewLoading(true);
+        setError("");
+        setHasPreview(false);
+        setPreviewToken(null);
+        setSuccess("");
+
+        try {
+            const { data } = await API.get(
+                `/datasets/${selectedDatasetId}/rows`
+            );
+
+            const records: DatasetRow["row_data"][] =
+                data.data.map((row: DatasetRow) => row.row_data);
+
+            const res = await ML_API.post("/clean/preview", { records });
+
+            const preview = res.data;
+
+            setPreviewToken(preview.preview_token);
+            setChanges(preview.changes);
+            setHasPreview(true);
+            setDecisions({});
+            setFilter("all");
+        } catch (err) {
+            console.error("Preview generation failed:", err);
+
+            if (axios.isAxiosError(err)) {
+                console.error("Status:", err.response?.status);
+                console.error("Response:", err.response?.data);
+            }
+
+            setError("Couldn't generate preview. Check the console for details.");
+        } finally {
+            setPreviewLoading(false);
+        }
+    }
+
+    async function applyApprovedChanges() {
+        if (!previewToken || !selectedDatasetId) return;
+
+        const applyable = changes.filter(isApplyable);
+        const acceptedChangeIds = applyable
+            .filter(change => decisions[change.id] === "accepted")
+            .map(change => change.id);
+
+        if (acceptedChangeIds.length === 0) return;
+
+        setApplyLoading(true);
+        setError("");
+        setSuccess("");
+
+        try {
+            const { data: applied } = await ML_API.post("/clean/apply", {
+                preview_token: previewToken,
+                accepted_change_ids: acceptedChangeIds,
+            });
+
+            const reports = buildCleaningReports(
+                changes,
+                applied.applied_change_ids,
+                applied.rows_removed
+            );
+
+            const { data: saved } = await API.post("/datasets/save-repairs", {
+                datasetId: selectedDatasetId,
+                records: applied.cleaned_records,
+                reports,
+            });
+
+            setPreviewToken(null);
+            setHasPreview(false);
+            setChanges([]);
+            setDecisions({});
+
+            setSuccess(
+                `Repaired dataset saved successfully. ${saved.data.rowCount} rows saved.`
+            );
+        } catch (err) {
+            console.error(err);
+            setError("Couldn't apply and save the repairs. Please try again.");
+        } finally {
+            setApplyLoading(false);
+        }
     }
 
     return (
@@ -274,7 +297,7 @@ export default function Repairs() {
                 })}
             </section>
 
-            <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
                 <div className="flex flex-col justify-between gap-4 border-b border-slate-100 p-5 sm:flex-row sm:items-center sm:p-6">
                     <div>
                         <h2 className="font-semibold text-slate-900">Proposed changes</h2>
@@ -304,29 +327,29 @@ export default function Repairs() {
                             Choose a dataset above and generate a preview. Proposed corrections will appear here for your approval.
                         </p>
                     </div>
-                ) : visibleChanges.length === 0
-                    ? <div className="px-6 py-12 text-center text-sm text-slate-500">No changes match this filter.</div>
-                    : <div className="divide-y divide-slate-100">
-                        <VisibleChanges visibleChanges={visibleChanges} decisions={decisions} setDecisions={setDecisions} />
+                ) : visibleChanges.length === 0 ? (
+                    <div className="px-6 py-12 text-center text-sm text-slate-500">No changes match this filter.</div>
+                ) : (
+                    <div className="space-y-4 p-5 sm:p-6">
+                        {groups.map(group => (
+                            <ChangeGroupCard key={group.key} group={group} decisions={decisions}
+                                onDecide={decide} onDecideAll={decideAll}
+                            />
+                        ))}
                     </div>
-                }
+                )}
 
-                <div className="flex flex-col gap-3 border-t border-slate-100 bg-slate-50/70 p-5 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                    <p className="text-sm text-slate-500">{counts.accepted} changes approved</p>
-
-                    <button type="button" onClick={applyApprovedChanges} disabled={!hasPreview
-                        || !previewToken
-                        || counts.accepted === 0
-                        || applyLoading
-                    } className="inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
-                    >
-                        {applyLoading
-                            ? <RefreshCw size={17} className="animate-spin" />
-                            : <CheckCheck size={17} />
-                        }
-                        {applyLoading ? "Applying changes..." : "Apply approved changes"}
-                    </button>
-                </div>
+                {hasPreview && (
+                    <div className="sticky bottom-4 z-20 px-5 pb-5 sm:px-6 sm:pb-6">
+                        <ReviewActionBar
+                            approved={stats.approved}
+                            applyable={stats.applyable}
+                            pending={stats.pending}
+                            loading={applyLoading}
+                            onApply={applyApprovedChanges}
+                        />
+                    </div>
+                )}
             </section>
         </main>
     );
