@@ -13,6 +13,7 @@ interface DuplicateReturn {
 
 interface DatabaseDataset {
     id: string,
+    user_id: string,
     filename: string,
     row_count: number,
     column_count: number,
@@ -24,6 +25,7 @@ interface DatabaseDataset {
 
 interface RetrievedDataset {
     id: string,
+    userId: string,
     file: string,
     columns: string[],
     rows: DatasetRow[],
@@ -58,13 +60,6 @@ interface CleanSaveSuccess {
     originalDatasetId: string,
     repairedColumn: string,
     repairedCount: number
-}
-
-interface RepairHistory extends RepairResult {
-    id: string,
-    originalDatasetId: string,
-    cleanedDatasetId: string,
-    created_at: string
 }
 
 

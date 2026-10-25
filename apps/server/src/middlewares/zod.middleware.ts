@@ -1,4 +1,3 @@
-import { z } from "zod";
 import type { ZodType } from "zod";
 import type { Request, Response, NextFunction } from "express";
 
@@ -13,7 +12,6 @@ function validateSchema<T>(zod: ZodType<T>) {
                 error: "Invalid request data.",
                 details: result.error.issues
             })
-
             return;
         }
 

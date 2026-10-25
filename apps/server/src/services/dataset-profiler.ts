@@ -1,8 +1,7 @@
-import { findDuplicateGroups } from "./duplicate-detection.js";
 import { isMissing, detectDataType, detectOutliers } from "../helpers/index.js";
 import { parseNumericValue } from "../utils/index.js";
 import type { ColumnProfile, DatasetRow, NumericStats } from "@data-cleaning-system/shared";
-import type { DatasetProfile } from "../types/index.js";
+import type { DatasetProfile } from "@data-cleaning-system/shared";
 
 function calculateNumericStats(values: unknown[]): NumericStats {
     const numbers = (values
@@ -83,8 +82,6 @@ function profileDataset(rows: DatasetRow[]): DatasetProfile {
             seenRows.add(rowKey);
         }
     }
-
-    const possibleDuplicates = findDuplicateGroups(rows, ["name"])
 
     return {
         rowCount: rows.length,

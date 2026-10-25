@@ -1,4 +1,3 @@
-import { randomUUID } from "node:crypto";
 import { pool } from "../configs/db.js"
 import type { QueryResult } from "pg";
 import type { DatasetRow, DatasetProfile } from "@data-cleaning-system/shared";
@@ -92,37 +91,11 @@ async function getDataset(id: string): Promise<RetrievedDataset | null> {
 
     return {
         id: dataset.id,
+        userId: dataset.user_id,
         file: dataset.filename,
         columns: dataset.columns,
         rows,
         expires_at: dataset.expires_at
-    }
-}
-
-async function saveCleanedDatasetService(datasetId: string, userId: string, dataset: RetrievedDataset, rows: DatasetRow[]) {
-    const client = await pool.connect();
-    try {
-        await client.query("BEGIN");
-        const newDatasetId = randomUUID();
-
-        await persistDataset(
-            newDatasetId,
-            userId,
-            `${datasetId}-${dataset.file}-cleaned`,
-            dataset.columns,
-            rows
-        )
-
-        await client.query(
-            `INSERT INTO repair_history(original_dataset_id, cleaned_dataset_id, )`
-        )
-
-        await client.query("COMMIT");
-    } catch (err) {
-        await client.query("ROLLBACK");
-        throw err;
-    } finally {
-        client.release()
     }
 }
 

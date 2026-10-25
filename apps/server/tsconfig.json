@@ -12,6 +12,8 @@
     "skipLibCheck": true,
     "noEmitOnError": true,
     "noUncheckedIndexedAccess": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "types": ["node"]
   },
   "include": ["src/**/*.ts"],

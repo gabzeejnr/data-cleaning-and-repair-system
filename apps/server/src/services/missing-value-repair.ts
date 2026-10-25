@@ -1,6 +1,7 @@
 import { isMissing } from "../helpers/index.js";
 import { parseNumericValue, calculateMode } from "../utils/index.js";
-import type { DatasetRow, RepairOptions, RepairResult } from "../types/index.js";
+import type { DatasetRow } from "@data-cleaning-system/shared";
+import type { RepairOptions, RepairResult } from "../types/index.js";
 
 function preserveValueType(replacement: number, existingValues: unknown[]) {
     const firstValue = existingValues.find(v => v !== null && v !== undefined);

@@ -10,6 +10,11 @@ async function saveCleanedDataset(_req: Request, res: Response<ApiError<never> |
     const { datasetId, column, strategy, fillValue } = res.locals.validatedBody as RepairMissingValueInput;
 
     try {
+        const userId = res.locals.user?.userId;
+        if (!userId) {
+            res.status(404).json({ error: "User not found." });
+            return;
+        }
         const dataset = await getDataset(datasetId);
         if (!dataset) {
             res.status(404).json({ error: "Dataset not found." });
@@ -22,6 +27,7 @@ async function saveCleanedDataset(_req: Request, res: Response<ApiError<never> |
 
         await persistDataset(
             newDatasetId,
+            userId,
             `${datasetId}-${dataset.file}-cleaned`,
             dataset.columns,
             result.rows
