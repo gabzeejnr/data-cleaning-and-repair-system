@@ -45,6 +45,38 @@ def record_value_changes(
     }
 
 
+
+def get_reviewable_changes(operations: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Flatten repair operations into individually reviewable changes."""
+    reviewable: list[dict[str, Any]] = []
+
+    for operation_index, operation in enumerate(operations):
+        operation_type = operation["type"]
+
+        for change_index, change in enumerate(operation.get("changes", [])):
+            reviewable.append({
+                "id": f"{operation_index}-{change_index}",
+                "type": operation_type,
+                "method": operation.get("method"),
+                **change,
+            })
+
+        for change_index, removed_row in enumerate(
+            operation.get("removed_rows", [])
+        ):
+            reviewable.append({
+                "id": f"{operation_index}-{change_index}",
+                "type": operation_type,
+                "method": operation.get("method"),
+                "row_index": removed_row["row_index"],
+                "column": None,
+                "original_value": removed_row["original_values"],
+                "proposed_value": None,
+            })
+
+    return reviewable
+
+
 def repair_missing_values(df: pd.DataFrame, method: str = "auto") -> tuple[pd.DataFrame, list[dict[str, Any]]]:
     """Repair missing values on a copy. KNN is used for numeric ML imputation in auto mode."""
     if method not in {"auto", "knn", "median", "mean", "mode", "constant"}:
@@ -231,3 +263,4 @@ def clean_dataset(df: pd.DataFrame, imputation_method: str = "auto", remove_dupl
     }
     
     return cleaned, summary
+

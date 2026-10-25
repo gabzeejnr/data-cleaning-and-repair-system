@@ -112,3 +112,59 @@ def test_clean_preview_api():
     assert "report" in result
     assert result["preview_records"][0]["name"] == "Alice"
     assert result["preview_records"][1]["age"] is not None
+    
+
+
+def test_apply_one_approved_change():
+    response = client.post(
+        "/api/clean/apply",
+        json={
+            "records": [
+                {"name": " Alice ", "age": 25},
+                {"name": "Bob", "age": None},
+            ],
+            "accepted_change_ids": ["0-0"],
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+
+    assert result["cleaned_records"][0]["name"] == "Alice"
+    assert result["cleaned_records"][1]["age"] is None
+    assert result["applied_change_ids"] == ["0-0"]
+
+
+def test_rejecting_change_leaves_original_value():
+    response = client.post(
+        "/api/clean/apply",
+        json={
+            "records": [
+                {"name": " Alice ", "age": 25},
+                {"name": "Bob", "age": None},
+            ],
+            "accepted_change_ids": [],
+        },
+    )
+
+    assert response.status_code == 200
+    result = response.json()
+
+    assert result["cleaned_records"][0]["name"] == " Alice "
+    assert result["cleaned_records"][1]["age"] is None
+    assert result["applied_count"] == 0
+
+
+def test_apply_rejects_unknown_change_id():
+    response = client.post(
+        "/api/clean/apply",
+        json={
+            "records": [
+                {"name": " Alice ", "age": 25},
+                {"name": "Bob", "age": None},
+            ],
+            "accepted_change_ids": ["not-a-valid-id"],
+        },
+    )
+
+    assert response.status_code == 422

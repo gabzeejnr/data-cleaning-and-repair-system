@@ -3,19 +3,29 @@ from __future__ import annotations
 import json
 from typing import Any
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
 import pandas as pd
 
-from .io_utils import read_dataset, dataframe_to_csv_bytes, MAX_UPLOAD_BYTES
+from .io_utils import read_dataset, dataframe_to_csv_bytes, MAX_UPLOAD_BYTES, records_to_dataframe
 from .profiling import profile_dataset
 from .detection import detect_quality_issues
 from .reporting import run_cleaning_workflow
+from .repair import get_reviewable_changes
 
 app = FastAPI(
     title="Machine Learning Data Cleaning Service",
     description="Profiles structured datasets, detects quality issues, performs conservative repairs, and produces reports.",
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
@@ -24,7 +34,6 @@ class AnalyzeRequest(BaseModel):
     rules: dict[str, dict[str, Any]] = Field(default_factory=dict)
     contamination: float = Field(default=0.05, gt=0, le=0.5)
     exclude_columns: list[str] = Field(default_factory=list)
-
 
 class CleanRequest(BaseModel):
     records: list[dict[str, Any]] = Field(min_length=1)
@@ -35,10 +44,17 @@ class CleanRequest(BaseModel):
     remove_duplicates: bool = False
     trim_whitespace: bool = True
 
+class ApplyChangesRequest(CleanRequest):
+    accepted_change_ids: list[str] = Field(default_factory=list)
+
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "service": "ml-data-cleaning", "version": "1.0.0"}
+    return {
+                "status": "ok",
+                "service": "ml-data-cleaning", 
+                "version": "1.0.0"
+            }
 
 
 @app.post("/api/analyze")
@@ -81,7 +97,7 @@ def clean_records(
 @app.post("/api/clean/preview")
 def preview_cleaning(request: CleanRequest) -> dict[str, Any]:
     try:
-        df = pd.DataFrame(request.records)
+        df = records_to_dataframe(request.records)
 
         if df.empty or len(df.columns) == 0:
             raise ValueError("Provide at least one row and one column.")
@@ -105,10 +121,98 @@ def preview_cleaning(request: CleanRequest) -> dict[str, Any]:
         return {
             "preview_records": cleaned_records,
             "report": report,
+            "changes": get_reviewable_changes(report["repair_summary"]["operations"])
         }
 
     except (ValueError, TypeError) as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+
+@app.post("/api/clean/apply")
+def apply_approved_changes(
+    request: ApplyChangesRequest,
+) -> dict[str, Any]:
+    try:
+        original = records_to_dataframe(request.records)
+
+        if original.empty or len(original.columns) == 0:
+            raise ValueError("Provide at least one row and one column.")
+
+        _, report = run_cleaning_workflow(
+            original,
+            rules=request.rules,
+            contamination=request.contamination,
+            exclude_columns=request.exclude_columns,
+            imputation_method=request.imputation_method,
+            remove_duplicates=request.remove_duplicates,
+            trim_whitespace=request.trim_whitespace,
+        )
+
+        available_changes = get_reviewable_changes(
+            report["repair_summary"]["operations"]
+        )
+        changes_by_id = {
+            change["id"]: change for change in available_changes
+        }
+
+        accepted_ids = request.accepted_change_ids
+
+        if len(accepted_ids) != len(set(accepted_ids)):
+            raise ValueError("Duplicate change IDs are not allowed.")
+
+        unknown_ids = set(accepted_ids) - set(changes_by_id)
+
+        if unknown_ids:
+            raise ValueError(
+                f"Unknown change IDs: {', '.join(sorted(unknown_ids))}"
+            )
+
+        cleaned = original.copy(deep=True)
+        rows_to_remove: set[int] = set()
+
+        for change_id in accepted_ids:
+            change = changes_by_id[change_id]
+            row_index = change["row_index"]
+
+            if change["type"] == "exact_duplicate_removal":
+                rows_to_remove.add(row_index)
+                continue
+
+            column = change["column"]
+
+            if column not in cleaned.columns:
+                raise ValueError(
+                    f"Column '{column}' is not present in the dataset."
+                )
+
+            if row_index not in cleaned.index:
+                raise ValueError(
+                    f"Row index '{row_index}' is not present in the dataset."
+                )
+
+            cleaned.at[row_index, column] = change["proposed_value"]
+
+        if rows_to_remove:
+            cleaned = cleaned.drop(index=list(rows_to_remove))
+
+        cleaned_records = (
+            cleaned.astype(object)
+            .where(pd.notna(cleaned), None)
+            .to_dict(orient="records")
+        )
+
+        return {
+            "message": "Approved changes applied successfully.",
+            "cleaned_records": cleaned_records,
+            "applied_change_ids": accepted_ids,
+            "applied_count": len(accepted_ids),
+            "rows_removed": len(rows_to_remove),
+        }
+
+    except (ValueError, TypeError) as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+
 
 
 @app.post("/api/datasets/analyze-upload")

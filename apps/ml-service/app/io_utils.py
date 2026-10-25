@@ -1,6 +1,7 @@
 from __future__ import annotations
 from io import BytesIO
 from pathlib import Path
+from typing import Any
 import pandas as pd
 
 MAX_UPLOAD_BYTES = 25 * 1024 * 1024
@@ -48,3 +49,15 @@ def read_dataset(filename: str, content: bytes) -> pd.DataFrame:
 
 def dataframe_to_csv_bytes(df: pd.DataFrame) -> bytes:
     return df.to_csv(index=False).encode("utf-8-sig")
+
+
+def records_to_dataframe(records: list[dict[str, Any]]) -> pd.DataFrame:
+    """Convert API records into a normalized DataFrame."""
+    if not records:
+        raise ValueError("At least one record is required.")
+
+    df = pd.DataFrame(records)
+
+    df = df.replace(r"^\s*$", pd.NA, regex=True)
+
+    return df
