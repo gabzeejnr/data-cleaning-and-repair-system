@@ -23,23 +23,48 @@ def detect_duplicates(df: pd.DataFrame) -> dict[str, Any]:
     return {"type": "duplicate_rows", "count": int(mask.sum()), "row_indexes": [int(i) for i in indexes[:100]], "truncated": len(indexes) > 100}
 
 
+
 def detect_inconsistent_strings(df: pd.DataFrame) -> list[dict[str, Any]]:
     """Flag likely whitespace/case inconsistencies without silently rewriting meaning."""
     issues: list[dict[str, Any]] = []
+
     for column in df.select_dtypes(include=["object", "string"]).columns:
         series = df[column].dropna().astype(str)
-        whitespace_rows = series.index[series != series.str.strip()].tolist()
-        normalized = series.str.strip().str.casefold()
-        groups = normalized.groupby(normalized).groups
-        variants = []
-        for _, indexes in groups.items():
-            original_values = sorted(set(series.loc[list(indexes)].tolist()))
-            if len(original_values) > 1:
-                variants.append(original_values[:10])
+
+        whitespace_mask = series != series.str.strip()
+        whitespace_rows = series.index[whitespace_mask].tolist()
+
+        groups: dict[str, set[str]] = {}
+
+        for value in series:
+            normalized = value.strip().casefold()
+            groups.setdefault(normalized, set()).add(value)
+
+        variants = [
+            sorted(original_values)[:10]
+            for original_values in groups.values()
+            if len(original_values) > 1
+        ]
+
         if whitespace_rows:
-            issues.append({"type": "leading_or_trailing_whitespace", "column": str(column), "count": len(whitespace_rows), "row_indexes": [int(i) for i in whitespace_rows[:100]], "truncated": len(whitespace_rows) > 100})
+            issues.append({
+                "type": "leading_or_trailing_whitespace",
+                "column": str(column),
+                "count": len(whitespace_rows),
+                "row_indexes": [
+                    int(i) for i in whitespace_rows[:100]
+                ],
+                "truncated": len(whitespace_rows) > 100,
+            })
+
         if variants:
-            issues.append({"type": "case_or_spacing_variants", "column": str(column), "variant_groups": variants[:50], "truncated": len(variants) > 50})
+            issues.append({
+                "type": "case_or_spacing_variants",
+                "column": str(column),
+                "variant_groups": variants[:50],
+                "truncated": len(variants) > 50,
+            })
+
     return issues
 
 
@@ -52,7 +77,7 @@ def detect_invalid_values(df: pd.DataFrame, rules: dict[str, dict[str, Any]] | N
         series = pd.to_numeric(df[column], errors="coerce")
         invalid = pd.Series(False, index=df.index)
         if "min" in rule or "max" in rule:
-            # A non-empty value that cannot be parsed as a number violates a numeric range rule.
+            
             invalid |= df[column].notna() & series.isna()
         if "min" in rule:
             invalid |= series.notna() & (series < float(rule["min"]))
@@ -77,17 +102,30 @@ def detect_outliers(df: pd.DataFrame, contamination: float = 0.05, exclude_colum
         return {"available": False, "reason": "At least two rows and one usable numeric column are required.", "count": 0, "row_indexes": [], "scores": []}
     model = make_pipeline(SimpleImputer(strategy="median"), IsolationForest(contamination=contamination, random_state=42, n_estimators=100))
     predictions = model.fit_predict(numeric)
-    scores = -model.decision_function(numeric)  # higher = more unusual; not a probability
+    scores = -model.decision_function(numeric) 
     indexes = [int(i) for i, prediction in zip(df.index, predictions) if prediction == -1]
     results = [{"row_index": int(i), "anomaly_score": round(float(score), 6)} for i, prediction, score in zip(df.index, predictions, scores) if prediction == -1]
     return {"available": True, "method": "IsolationForest", "note": "Anomalies require review; unusual does not necessarily mean incorrect.", "numeric_columns": [str(c) for c in numeric.columns], "count": len(indexes), "row_indexes": indexes[:100], "truncated": len(indexes) > 100, "scores": results[:100]}
 
 
-def detect_quality_issues(df: pd.DataFrame, rules: dict[str, dict[str, Any]] | None = None, contamination: float = 0.05, exclude_columns: list[str] | None = None) -> dict[str, Any]:
-    return {
-        "missing_values": detect_missing_values(df),
-        "duplicates": detect_duplicates(df),
-        "inconsistent_formats": detect_inconsistent_strings(df),
-        "invalid_values": detect_invalid_values(df, rules),
-        "outliers": detect_outliers(df, contamination, exclude_columns),
-    }
+
+def detect_quality_issues(
+    df: pd.DataFrame,
+    rules: dict[str, dict[str, Any]] | None = None,
+    contamination: float = 0.05,
+    exclude_columns: list[str] | None = None,
+) -> dict[str, Any]:
+    issues = {}
+
+    detectors = [
+        ("missing_values", lambda: detect_missing_values(df)),
+        ("duplicates", lambda: detect_duplicates(df)),
+        ("inconsistent_formats", lambda: detect_inconsistent_strings(df)),
+        ("invalid_values", lambda: detect_invalid_values(df, rules)),
+        ("outliers", lambda: detect_outliers(df, contamination, exclude_columns)),
+    ]
+
+    for name, detector in detectors:
+        issues[name] = detector()
+
+    return issues

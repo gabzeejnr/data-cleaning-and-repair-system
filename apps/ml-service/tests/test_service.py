@@ -202,3 +202,34 @@ def test_apply_rejects_unknown_change_id():
 
     assert response.status_code == 422
 
+
+
+def test_preview_includes_outlier_review_items_without_auto_repairing_them():
+    records = [{"value": value} for value in [10, 11, 10, 12, 11, 10, 9, 11, 12, 1000]]
+    response = client.post(
+        "/api/clean/preview",
+        json={"records": records, "contamination": 0.2, "trim_whitespace": False},
+    )
+
+    assert response.status_code == 200, response.json()
+    preview = response.json()
+    outlier_changes = [
+        change for change in preview["changes"]
+        if change["type"] == "outlier_review"
+    ]
+    assert outlier_changes
+    assert all(change["column"] is None for change in outlier_changes)
+    assert all(change["method"] == "IsolationForest" for change in outlier_changes)
+
+    selected = outlier_changes[0]
+    apply_response = client.post(
+        "/api/clean/apply",
+        json={
+            "preview_token": preview["preview_token"],
+            "accepted_change_ids": [selected["id"]],
+        },
+    )
+    assert apply_response.status_code == 200, apply_response.json()
+    applied = apply_response.json()
+    assert applied["cleaned_records"] == records
+    assert applied["applied_change_ids"] == [selected["id"]]
