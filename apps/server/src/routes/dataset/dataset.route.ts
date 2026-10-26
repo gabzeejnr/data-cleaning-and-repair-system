@@ -6,11 +6,13 @@ import { uploadFile, detectDuplicates, repairMissingValue, getDatasets, getDatas
 import type { Router as RouterType } from "express";
 import { saveCleanedDataset } from "../../controllers/saveCleaned.controller.js";
 import { saveRepairs } from "../../controllers/saveRepairs.controller.js";
+import { getReports } from "../../controllers/reports.controller.js";
 
 const router: RouterType = Router();
 
 router.get("", getDatasets);
 router.get("/summary", getSummary);
+router.get("/reports", getReports)
 router.get("/:id/issues", getDatasetIssues);
 router.get("/:id/rows", getDatasetIdRows);
 router.get("/:id", getDatasetsId);
