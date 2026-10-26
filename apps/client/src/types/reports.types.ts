@@ -1,10 +1,10 @@
-export interface ReportBreakdown {
+interface ReportBreakdown {
     errorType: string;
     recordsAffected: number;
     actionTaken: string;
 }
 
-export interface CleaningRun {
+interface CleaningRun {
     id: string;
     datasetId: string;
     datasetName: string;
@@ -15,3 +15,12 @@ export interface CleaningRun {
     missingAfter: number;
     breakdown: ReportBreakdown[];
 }
+
+interface SummarizeRuns {
+    runCount: number;
+    recordsRepaired: number;
+    missingFilled: number;
+    duplicatesRemoved: number;
+}
+
+export type { ReportBreakdown, CleaningRun, SummarizeRuns }
