@@ -2,7 +2,7 @@ import { Router } from "express";
 import { upload } from "../../configs/multer.js";
 import { validateSchema } from "../../middlewares/index.js";
 import { duplicateZod, repairMissingValuesZod } from "../../apis/datasets/index.js";
-import { uploadFile, detectDuplicates, repairMissingValue, getDatasets, getDatasetsId, getDatasetIssues, getDatasetIdRows } from "../../controllers/index.js";
+import { uploadFile, detectDuplicates, repairMissingValue, getDatasets, getDatasetsId, getDatasetIssues, getDatasetIdRows, getSummary } from "../../controllers/index.js";
 import type { Router as RouterType } from "express";
 import { saveCleanedDataset } from "../../controllers/saveCleaned.controller.js";
 import { saveRepairs } from "../../controllers/saveRepairs.controller.js";
@@ -10,6 +10,7 @@ import { saveRepairs } from "../../controllers/saveRepairs.controller.js";
 const router: RouterType = Router();
 
 router.get("", getDatasets);
+router.get("/summary", getSummary);
 router.get("/:id/issues", getDatasetIssues);
 router.get("/:id/rows", getDatasetIdRows);
 router.get("/:id", getDatasetsId);

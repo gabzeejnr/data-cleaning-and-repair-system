@@ -7,7 +7,7 @@ import { MAX_ROWS } from "../libs/controller.lib.js";
 import { getDatasetProfile, getDatasetRows, getDatasetsFunc, persistDataset } from "../repositories/index.js";
 import { toDataset } from "../utils/datasets.js";
 import type { Request, Response } from "express";
-import type { Dataset, DataIssue, DatasetRow, getDatasetIdResponse } from "@data-cleaning-system/shared";
+import type { DashboardSummary, Dataset, DataIssue, DatasetRow, getDatasetIdResponse } from "@data-cleaning-system/shared";
 import type { ApiError, ApiSuccess, CSVErrorDetail, UploadSuccess } from "../types/index.js";
 import { pool } from "../configs/db.js";
 
@@ -286,7 +286,33 @@ async function getDatasetIssues(req: Request<{ id: string }>, res: Response<ApiS
     }
 }
 
+async function getSummary(_req: Request, res: Response<ApiSuccess<DashboardSummary> | ApiError>) {
+    const userId = res.locals.user?.userId;
+    try {
+        if (!userId) {
+            res.status(401).json({ error: "Couldn't find user. Please try again." });
+            return;
+        }
+
+        const { rows } = await pool.query<DashboardSummary>(`SELECT COUNT(*) FILTER (WHERE filename NOT ILIKE '%repaired%') AS "totalDatasets",
+            COUNT(*) FILTER (WHERE filename ILIKE '%repaired%') AS "repairsCompleted" FROM datasets WHERE user_id = $1`,
+            [userId]
+        );
+
+        res.status(200).json({
+            message: "Successfully fetched dataset summary.",
+            data: {
+                totalDatasets: Number(rows[0]?.totalDatasets),
+                repairsCompleted: Number(rows[0]?.repairsCompleted)
+            }
+        })
+    } catch (err) {
+        console.error("Failed to get summary:", err);
+        res.status(500).json({ error: "Failed to get dataset summary." })
+    }
+}
+
 export {
-    getDatasetIssues, getDatasets,
+    getDatasetIssues, getDatasets, getSummary,
     getDatasetsId, getDatasetIdRows, uploadFile
 }
