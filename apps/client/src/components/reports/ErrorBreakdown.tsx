@@ -7,7 +7,7 @@ export default function ErrorBreakdown({ items }: { items: ReportBreakdown[] }) 
     return (
         <ul className="space-y-4">
             {items.map(item => (
-                <li key={item.errorType}>
+                <li key={`${item.errorType}-${item.actionTaken}`}>
                     <div className="flex items-baseline justify-between gap-3 text-sm">
                         <span className="font-medium text-ink">{labelFor(item.errorType)}</span>
                         <span className="tabular-nums text-muted">{item.recordsAffected.toLocaleString()}</span>

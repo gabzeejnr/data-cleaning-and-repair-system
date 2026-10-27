@@ -34,17 +34,6 @@ async function saveRepairs(req: Request, res: Response): Promise<void> {
         const newDatasetId = randomUUID();
         const missingBefore = countMissingValues(originalRecords);
         const missingAfter = countMissingValues(records);
-        console.dir(
-            {
-                originalFirstRow: originalRecords[0],
-                cleanedFirstRow: records[0],
-                originalRowCount: originalRecords.length,
-                cleanedRowCount: records.length,
-            },
-            { depth: 3 }
-        );
-
-        console.log(`DatasetId:${newDatasetId}\nMissingBefore:${missingBefore}\nMissingAfter:${missingAfter}`)
         await persistRepairedDataset({
             id: newDatasetId,
             originalDatasetId: datasetId,
@@ -56,17 +45,6 @@ async function saveRepairs(req: Request, res: Response): Promise<void> {
             missing_after: missingAfter,
             rows: records
         });
-
-        /* 
-         newDatasetId,
-            datasetId,
-            userId,
-            `${dataset.file}-repaired`,
-            dataset.columns,
-            records,
-            reports
-        
-        */
 
         res.status(201).json({
             message: "Repaired dataset saved successfully.",

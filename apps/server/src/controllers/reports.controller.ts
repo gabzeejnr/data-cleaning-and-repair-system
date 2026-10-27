@@ -44,8 +44,6 @@ export async function getReports(req: Request, res: Response<ApiSuccess | ApiErr
             [userId, parsedLimit]
         )
 
-        console.log(rows);
-        console.dir(rows, { depth: null });
         const reportRows = rows.slice(0, parsedLimit);
 
         const data = reportRows.map(row => ({
@@ -53,11 +51,11 @@ export async function getReports(req: Request, res: Response<ApiSuccess | ApiErr
             datasetId: row.dataset_id,
             datasetName: row.dataset_name,
             createdAt: row.created_at,
-            rowsBefore: row.rows_before,
-            rowsAfter: row.rows_after,
-            missingBefore: row.missing_before,
-            missingAfter: row.missing_after,
-            breakdown: row.breakdown,
+            rowsBefore: Number(row.rows_before),
+            rowsAfter: Number(row.rows_after),
+            missingBefore: Number(row.missing_before),
+            missingAfter: Number(row.missing_after),
+            breakdown: row.breakdown ?? [],
         }))
 
         res.status(200).json({
