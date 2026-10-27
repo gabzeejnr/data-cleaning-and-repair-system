@@ -11,7 +11,10 @@ const app: Express = express();
 const PORT = Number(env.PORT) || 4000;
 
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: [
+        "http://localhost:5173",
+        "https://data-cleaning-and-repair-system.vercel.app"
+    ],
     credentials: true
 }));
 app.use(cookieParser())
