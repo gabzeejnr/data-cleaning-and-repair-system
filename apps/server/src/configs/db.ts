@@ -1,15 +1,8 @@
 import { Pool, type QueryResult } from "pg";
-import {
-    DATABASE, DATABASE_HOST, DATABASE_PASSWORD,
-    DATABASE_PORT, DATABASE_USER
-} from "./env.js";
+import { DATABASE_URL } from "./env.js";
 
 const pool = new Pool({
-    database: DATABASE,
-    user: DATABASE_USER,
-    host: DATABASE_HOST,
-    port: DATABASE_PORT,
-    password: DATABASE_PASSWORD
+    connectionString: DATABASE_URL
 })
 
 try {
