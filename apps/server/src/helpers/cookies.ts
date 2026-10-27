@@ -12,7 +12,7 @@ function setTokenCookie(
     res.cookie(tokenName, token, {
         httpOnly: true,
         secure,
-        sameSite: "lax",
+        sameSite: "none",
         maxAge,
         path
     })

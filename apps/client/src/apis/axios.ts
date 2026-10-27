@@ -1,6 +1,6 @@
 import axios from "axios";
-const baseUrl = "http://localhost:4000";
-const mlBaseUrl = "http://127.0.0.1:8000";
+const baseUrl = "https://data-cleaning-and-repair-system-express.onrender.com";
+const mlBaseUrl = "https://data-cleaning-and-repair-system-python.onrender.com/";
 
 const AUTH = axios.create({
     baseURL: `${baseUrl}/auth`,
