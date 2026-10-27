@@ -73,7 +73,7 @@ async function persistDataset(
     }
 }
 
-async function persistRepairedDataset(
+async function persistRepairedDataset({ id, originalDatasetId, userId, filename, columns, rows, reports, missing_before, missing_after, profile }: {
     id: string,
     originalDatasetId: string,
     userId: string,
@@ -81,16 +81,19 @@ async function persistRepairedDataset(
     columns: string[],
     rows: DatasetRow[],
     reports: CleaningReportInput[],
+    missing_before: number,
+    missing_after: number,
     profile?: DatasetProfile
-): Promise<void> {
+}): Promise<void> {
+
     const client = await pool.connect();
 
     try {
         await client.query("BEGIN");
 
-        await client.query(`INSERT INTO datasets (id, user_id, filename, columns, row_count, column_count, profile, expires_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, NOW() + INTERVAL '24 hours')`,
-            [id, userId, filename, columns, rows.length, columns.length, profile ? JSON.stringify(profile) : null]
+        await client.query(`INSERT INTO datasets (id, user_id, filename, columns, row_count, column_count, profile, missing_before, missing_after,expires_at)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW() + INTERVAL '24 hours')`,
+            [id, userId, filename, columns, rows.length, columns.length, profile ? JSON.stringify(profile) : null, missing_before, missing_after]
         )
 
         const batchSize = 500;
