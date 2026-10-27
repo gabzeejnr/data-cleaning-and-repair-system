@@ -8,10 +8,10 @@
     ],
     "scripts": {
         "dev:client": "npm run dev --workspace=data-cleaning-system-client",
-        "build:client": "npm run build --workspace=data-cleaning-system-client",
+        "build:client": "npm run build --workspace=packages/shared && npm run build --workspace=data-cleaning-system-client",
         "lint": "npm run lint --workspace=data-cleaning-system-client",
         "dev:server": "npm run dev --workspace=data-cleaning-system-server",
-        "build:server": "npm run build --workspace=data-cleaning-system-server",
+        "build:server": "npm run build --workspace=packages/shared && npm run build --workspace=data-cleaning-system-server",
         "start:server": "npm run start --workspace=data-cleaning-system-server",
         "watch:server": "npm run watch --workspace=data-cleaning-system-server",
         "dev:ml": "cd apps/ml-service && .venv\\Scripts\\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000",
