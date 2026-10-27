@@ -30,7 +30,7 @@ from .reporting import run_cleaning_workflow
 
 logger = logging.getLogger("ml_service")
 
-DEFAULT_ALLOWED_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173"
+DEFAULT_ALLOWED_ORIGINS = "https://data-cleaning-and-repair-system.vercel.app,http://localhost:5173,http://127.0.0.1:5173"
 ALLOWED_ORIGINS = [
     origin.strip()
     for origin in os.getenv("ML_ALLOWED_ORIGINS", DEFAULT_ALLOWED_ORIGINS).split(",")
