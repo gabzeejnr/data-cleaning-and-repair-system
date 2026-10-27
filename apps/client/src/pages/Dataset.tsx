@@ -4,9 +4,9 @@ import { Database, RefreshCw } from "../libs";
 import { getUploadErrorMessage } from "../utils";
 import { API } from "../apis/axios";
 import PageHeader from "../components/PageHeader";
-import DatasetTable from "../components/Dataset/Table";
+import DatasetTable from "../components/dataset/Table";
+import ColumnProfile from "../components/dataset/ColumnProfile";
 import type { Dataset, DatasetProfile, DatasetRow, getDatasetIdResponse } from "@data-cleaning-system/shared";
-import ColumnProfile from "../components/Dataset/ColumnProfile";
 
 export default function Dataset() {
 
