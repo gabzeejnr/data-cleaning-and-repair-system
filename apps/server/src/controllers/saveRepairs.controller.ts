@@ -38,7 +38,7 @@ async function saveRepairs(req: Request, res: Response): Promise<void> {
             id: newDatasetId,
             originalDatasetId: datasetId,
             userId,
-            filename: `${dataset.file}-repaired`,
+            filename: `${dataset.file.split(".")[0]}-repaired`,
             columns: dataset.columns,
             reports,
             missing_before: missingBefore,
