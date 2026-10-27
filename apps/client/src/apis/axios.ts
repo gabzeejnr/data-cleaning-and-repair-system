@@ -1,6 +1,6 @@
 import axios from "axios";
 const baseUrl = "https://data-cleaning-and-repair-system-express.onrender.com";
-const mlBaseUrl = "https://data-cleaning-and-repair-system-python.onrender.com/";
+const mlBaseUrl = "https://data-cleaning-and-repair-system-python.onrender.com";
 
 const AUTH = axios.create({
     baseURL: `${baseUrl}/auth`,
