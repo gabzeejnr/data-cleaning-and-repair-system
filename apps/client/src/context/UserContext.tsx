@@ -1,14 +1,19 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import type { ReactNode } from "react";
+import { AUTH } from "../apis/axios";
 import type { AccessTokenPayload, User } from "@data-cleaning-system/shared";
 import type { UserContextType } from "../types";
-import { AUTH } from "../apis/axios";
+import type { ReactNode } from "react";
 
 const UserContext = createContext<UserContextType | null>(null);
 
 function UserProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
-    const [loading, setLoading] = useState<boolean>(true)
+    const [loading, setLoading] = useState<boolean>(true);
+    const initials = (user?.name
+        ?.trim().split(/\s+/)
+        .slice(0, 2).map(p => p[0])
+        .join("").toUpperCase()
+    ) || "U";
 
     useEffect(() => {
         async function getAuthenticated() {
@@ -25,7 +30,22 @@ function UserProvider({ children }: { children: ReactNode }) {
         getAuthenticated();
     }, [])
 
-    const value = { user, setUser, loading }
+    async function logOut() {
+        try {
+            await AUTH.post("/logout");
+            setUser(null)
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    const value = {
+        user,
+        setUser,
+        loading,
+        initials,
+        logOut
+    }
 
     return (
         <UserContext.Provider value={value}>
