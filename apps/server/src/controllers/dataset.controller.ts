@@ -287,14 +287,15 @@ async function getDatasetIssues(req: Request<{ id: string }>, res: Response<ApiS
 }
 
 async function getSummary(_req: Request, res: Response<ApiSuccess<DashboardSummary> | ApiError>) {
-    const userId = res.locals.user?.userId;
     try {
+        const userId = res.locals.user?.userId;
         if (!userId) {
             res.status(401).json({ error: "Couldn't find user. Please try again." });
             return;
         }
 
-        const { rows } = await pool.query<DashboardSummary>(`SELECT COUNT(*) FILTER (WHERE filename NOT ILIKE '%repaired%') AS "totalDatasets",
+        const { rows } = await pool.query<DashboardSummary>(
+            `SELECT COUNT(*) FILTER (WHERE filename NOT ILIKE '%repaired%') AS "totalDatasets",
             COUNT(*) FILTER (WHERE filename ILIKE '%repaired%') AS "repairsCompleted" FROM datasets WHERE user_id = $1`,
             [userId]
         );
@@ -302,8 +303,8 @@ async function getSummary(_req: Request, res: Response<ApiSuccess<DashboardSumma
         res.status(200).json({
             message: "Successfully fetched dataset summary.",
             data: {
-                totalDatasets: Number(rows[0]?.totalDatasets),
-                repairsCompleted: Number(rows[0]?.repairsCompleted)
+                totalDatasets: Number(rows[0]?.totalDatasets ?? 0),
+                repairsCompleted: Number(rows[0]?.repairsCompleted ?? 0)
             }
         })
     } catch (err) {

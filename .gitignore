@@ -25,6 +25,9 @@ test
 *.sln
 *.sw?
 *.env
+*.docx
+*.zip
+!sample*.pdf
 
 #Python
 __pycache__/

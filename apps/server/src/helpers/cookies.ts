@@ -1,6 +1,5 @@
-import { env } from "node:process";
 import type { Response } from "express";
-const secure = env.NODE_ENV === "production";
+const secure = true;
 const path ="/"
 
 function setTokenCookie(

@@ -23,6 +23,7 @@
     "ml-random-forest": "^2.1.0",
     "multer": "^2.4.0",
     "papaparse": "^5.7.0",
+    "pdfjs-dist": "^6.5.438",
     "pg": "^8.23.1",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zod": "^4.6.7"

@@ -167,7 +167,7 @@ async function getDatasetsFunc({ userId, limit, datasetId }: { userId: string, l
         queries.push(`id = $${values.length}`)
     }
 
-    let sql = `SELECT id, filename, row_count, column_count, created_at, expires_at, status FROM datasets WHERE ${queries.join(" AND ")} AND expires_at > NOW() ORDER BY created_at DESC`
+    let sql = `SELECT id, filename, row_count, column_count, created_at, expires_at, status FROM datasets WHERE ${queries.join(" AND ")} ORDER BY created_at DESC`
 
     if (limit) {
         values.push(Number(limit));

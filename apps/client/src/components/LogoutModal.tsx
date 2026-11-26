@@ -2,12 +2,7 @@ import { LogOut } from "../libs";
 import { useUser } from "../context/UserContext";
 import type { SetStateAction } from "react";
 
-type ModalProps = {
-    onCancel?: () => void;
-    setIsLoggingOut: React.Dispatch<SetStateAction<boolean>>
-}
-
-export default function LogoutModal({ onCancel, setIsLoggingOut }: ModalProps) {
+export default function LogoutModal({ setIsLoggingOut }: { setIsLoggingOut: React.Dispatch<SetStateAction<boolean>> }) {
 
     const { initials, user, logOut } = useUser();
     const fullName = user?.name;
