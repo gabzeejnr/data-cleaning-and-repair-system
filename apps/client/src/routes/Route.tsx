@@ -5,10 +5,12 @@ import MainLayout from "../layouts/MainLayout";
 import Dashboard from "../pages/Dashboard";
 import Datasets from "../pages/Datasets";
 import Dataset from "../pages/Dataset";
-import Settings from "../pages/Settings";
+import Settings from "../pages/settings/Settings";
 import Issues from "../pages/Issues";
 import Repairs from "../pages/Repairs";
 import Reports from "../pages/Reports";
+import AccountSecurtiy from "../pages/settings/Security";
+import General from "../pages/settings/General";
 
 export default function RoutePage() {
     return (
@@ -25,7 +27,11 @@ export default function RoutePage() {
                         <Route path=":id" element={<Dataset />} />
                     </Route>
                     <Route path="issues" element={<Issues />} />
-                    <Route path="settings" element={<Settings />} />
+                    <Route path="settings">
+                        <Route path="account" element={<Settings />} />
+                        <Route path="security" element={<AccountSecurtiy />} />
+                        <Route path="general" element={<General />} />
+                    </Route>
                     <Route path="repairs" element={<Repairs />} />
                     <Route path="reports" element={<Reports />} />
                 </Route>

@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { Database, X } from "lucide-react";
-import { workspaces, preferences } from "../data";
+import { workspaces, accounts } from "../data";
 import type { PagesType } from "../types";
 
 type SidebarProps = {
@@ -49,7 +49,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 border-r border-slate-200 bg-white transition-transform duration-300
                 ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
             >
-                <div className="flex h-[76px] items-center justify-between border-b border-slate-100 px-6">
+                <div className="flex h-19 items-center justify-between border-b border-slate-100 px-6">
                     <NavLink to="/" onClick={onClose} className="flex items-center gap-3">
                         <div className="grid size-10 place-items-center rounded-xl bg-indigo-600 text-white shadow-sm shadow-indigo-200">
                             <Database size={22} />
@@ -70,11 +70,11 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                     <p className="mb-4 px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">Workspace</p>
                     <PageMap pages={workspaces} onClose={onClose} />
 
-                    <div className="!mt-8 border-t border-slate-100 pt-6">
+                    <div className="mt-8! border-t border-slate-100 pt-6">
                         <p className="mb-4 px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-400">
-                            Preferences
+                            Account
                         </p>
-                        <PageMap pages={preferences} onClose={onClose} />
+                        <PageMap pages={accounts} onClose={onClose} />
                     </div>
                 </nav>
 

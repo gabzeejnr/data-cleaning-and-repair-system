@@ -22,8 +22,18 @@ export default function DashboardHeader({ onMenuClick, setIsLoggingOut }: Header
     const { user, initials } = useUser();
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
-    const currentPage = pathname.split("/").filter(Boolean).at(0) ?? "dashboard";
-    const pageData = pagesData.find(page => page.path === `/${currentPage}`);
+    const path = pathname.split("/").filter(Boolean);
+    const currentPage = (path.length === 1
+        ? path.at(0)
+        : path.at(1) ?? "dashboard"
+    );
+    const pageData = pagesData.find(page => path.length === 1 ?
+        page.path === `/${currentPage}`
+        : (path.length > 1 ?
+            page.path === `/${path.join("/")}`
+            : ""
+        )
+    );
     const label = pageData?.label ?? "Dashboard";
     const text = pageData?.text ?? "Manage and monitor your data quality";
 
