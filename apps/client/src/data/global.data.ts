@@ -1,4 +1,4 @@
-import { CircleAlert, Database, FileChartColumn, LayoutDashboard, Settings, Settings2, WandSparkles, User } from "../libs"
+import { CircleAlert, Database, FileChartColumn, LayoutDashboard, Settings, WandSparkles } from "../libs"
 import type { PagesType } from "../types";
 
 const workspaces: PagesType[] = [
@@ -37,22 +37,10 @@ const workspaces: PagesType[] = [
 
 const accounts: PagesType[] = [
     {
-        icon: User,
-        label: "Account",
-        path: "/settings/account",
-        text: "Manage account preferences"
-    },
-    {
-        icon: Settings2,
-        label: "General Preferences",
-        path: "/settings/general",
-        text: "Change App preferences"
-    },
-    {
         icon: Settings,
-        label: "Security",
-        path: "/settings/security",
-        text: "Security"
+        label: "Settings",
+        path: "/settings",
+        text: "Manage account preferences"
     }
 ]
 

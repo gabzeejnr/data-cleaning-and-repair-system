@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { AUTH } from "../../apis/axios";
+import { AUTH } from "../apis/axios";
 import type { ReactNode } from "react";
 
 function SettingsSection({ title, text, children }: { title: string; text: string; children: ReactNode }) {
