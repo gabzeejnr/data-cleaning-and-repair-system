@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { allPages } from "../data";
 import { Menu, Bell, ChevronDown, UserRound, Settings2, LogOut } from "../libs";
 import { useUser } from "../context/UserContext";
@@ -107,12 +107,12 @@ export default function DashboardHeader({ onMenuClick, setIsLoggingOut }: Header
                                     My profile
                                 </button>
 
-                                <button type="button" role="menuitem" onClick={() => setMenuOpen(false)}
+                                <Link to={"/settings"} type="button" role="menuitem" onClick={() => setMenuOpen(false)}
                                     className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-[#11133B]"
                                 >
                                     <Settings2 size={17} className="text-slate-400" />
                                     Account settings
-                                </button>
+                                </Link>
                             </div>
 
                             <div className="border-t border-slate-100 p-1.5">

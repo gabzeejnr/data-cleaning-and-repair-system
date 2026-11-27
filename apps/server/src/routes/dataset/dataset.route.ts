@@ -1,14 +1,15 @@
 import { Router } from "express";
 import { upload } from "../../configs/multer.js";
+import { pdfUpload } from "../../configs/pdf-multer.js";
 import { validateSchema } from "../../middlewares/index.js";
 import { duplicateZod, repairMissingValuesZod } from "../../apis/datasets/index.js";
-import { uploadFile, detectDuplicates, getDatasets, getDatasetsId, getDatasetIssues, getDatasetIdRows, getSummary, downloadDataset } from "../../controllers/index.js";
+import {
+    uploadFile, detectDuplicates, getDatasets, getDatasetsId, getDatasetIssues,
+    getDatasetIdRows, getSummary, downloadDataset, saveCleanedDataset, saveRepairs,
+    getReports, readPdfController, uploadPdfController
+} from "../../controllers/index.js";
 import type { Router as RouterType } from "express";
-import { saveCleanedDataset } from "../../controllers/saveCleaned.controller.js";
-import { saveRepairs } from "../../controllers/saveRepairs.controller.js";
-import { getReports } from "../../controllers/reports.controller.js";
-import { pdfUpload } from "../../configs/pdf-multer.js";
-import { readPdfController } from "../../controllers/pdf.controller.js";
+
 
 const router: RouterType = Router();
 
@@ -20,9 +21,10 @@ router.get("/:id/rows", getDatasetIdRows);
 router.get("/:id/download", downloadDataset);
 router.get("/:id", getDatasetsId);
 router.post("/upload", upload.single("file"), uploadFile);
+router.post("/read-pdf", pdfUpload.single("file"), readPdfController)
+router.post("/upload-pdf", pdfUpload.single("file"), uploadPdfController)
 router.post("/save-repairs", saveRepairs);
 router.post("/detect-duplicate", validateSchema(duplicateZod), detectDuplicates);
 router.post("/save-cleaned", validateSchema(repairMissingValuesZod), saveCleanedDataset);
-router.post("/read-pdf", pdfUpload.single("file"), readPdfController)
 
 export { router as datasetRoutes }

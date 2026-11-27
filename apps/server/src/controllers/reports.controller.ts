@@ -27,7 +27,8 @@ export async function getReports(req: Request, res: Response<ApiSuccess | ApiErr
 
     try {
 
-        const { rows } = await pool.query(`WITH report_runs AS (SELECT cr.repaired_dataset_id, MIN(cr.dataset_id::text)::uuid AS dataset_id
+        const { rows } = await pool.query(`
+            WITH report_runs AS (SELECT cr.repaired_dataset_id, MIN(cr.dataset_id::text)::uuid AS dataset_id
             FROM cleaning_reports cr JOIN datasets repaired ON repaired.id = cr.repaired_dataset_id
             WHERE repaired.user_id = $1 GROUP BY cr.repaired_dataset_id),
             reports AS (SELECT repaired.id, original.id AS dataset_id,

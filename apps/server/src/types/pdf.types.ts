@@ -21,6 +21,7 @@ interface PDFTable {
 
 interface Cell {
     x: number;
+    end: number;
     text: string;
 }
 

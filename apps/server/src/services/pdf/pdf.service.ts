@@ -1,9 +1,10 @@
 import { validatePDF } from "./pdf-validator.js";
 import { extractPDFText } from "./pdf-text.service.js";
 import { detectTables, tableToCSV } from "../../helpers/pdf.js";
+import type { PDFTable } from "../../types/pdf.types.js";
 
 
-export async function readPDF(buffer: Buffer) {
+async function readPDF(buffer: Buffer) {
     validatePDF(buffer);
 
     const pages = await extractPDFText(buffer);
@@ -24,3 +25,17 @@ export async function readPDF(buffer: Buffer) {
         })),
     }
 }
+
+async function extractTables(buffer: Buffer): Promise<PDFTable[]> {
+    validatePDF(buffer);
+
+    const pages = await extractPDFText(buffer);
+    return detectTables(pages);
+}
+
+
+
+
+
+
+export {readPDF, extractTables}

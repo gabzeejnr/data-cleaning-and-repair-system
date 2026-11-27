@@ -4,9 +4,22 @@ import {
     CheckCircle2, AlertCircle, Info
 } from "../../libs";
 import { getUploadErrorMessage } from "../../utils";
-import { MAX_FILE_SIZE, ACCEPTED_EXTENSIONS, whatHappensNext } from "../../data/datasets.data";
+import { MAX_FILE_SIZE, ACCEPTED_EXTENSIONS, whatHappensNext, supportedFormats } from "../../data/datasets.data";
 import type { DragEvent, ChangeEvent } from "react";
-import type { UploadDatasetModalProps } from "../../types";
+import type { UploadDatasetModalProps, UploadSupportedFormat } from "../../types";
+
+
+function SupportedFormats({ title, text, icon: Icon }: UploadSupportedFormat) {
+    return (
+        <div className="flex items-center gap-3">
+            <Icon size={22} className="text-emerald-600" />
+            <div>
+                <p className="text-sm font-semibold text-[#11133B]">{title}</p>
+                <p className="text-xs text-slate-500">{text}</p>
+            </div>
+        </div>
+    )
+}
 
 export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetModalProps) {
     const inputRef = useRef<HTMLInputElement>(null);
@@ -23,7 +36,7 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
 
         const extension = `.${selectedFile.name.split(".").pop()?.toLowerCase()}`;
         if (!ACCEPTED_EXTENSIONS.includes(extension)) {
-            setError("Choose a CSV or Excel file (.csv, .xls, .xlsx).");
+            setError("Choose a CSV, Excel or PDF file (.csv, .xls, .xlsx).");
             return;
         }
 
@@ -176,20 +189,9 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
                         <h3 className="font-semibold text-[#11133B]">Supported formats</h3>
 
                         <div className="mt-4 space-y-4">
-                            <div className="flex items-center gap-3">
-                                <FileText size={22} className="text-emerald-600" />
-                                <div>
-                                    <p className="text-sm font-semibold text-[#11133B]">CSV</p>
-                                    <p className="text-xs text-slate-500">Comma-separated values</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center gap-3">
-                                <FileSpreadsheet size={22} className="text-emerald-600" />
-                                <div>
-                                    <p className="text-sm font-semibold text-[#11133B]">Excel</p>
-                                    <p className="text-xs text-slate-500">.xls and .xlsx workbooks</p>
-                                </div>
-                            </div>
+                            {supportedFormats.map(f => (
+                                <SupportedFormats key={f.text} {...f} />
+                            ))}
                         </div>
 
                         <div className="my-6 border-t border-indigo-100" />

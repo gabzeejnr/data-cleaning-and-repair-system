@@ -91,9 +91,20 @@ async function persistRepairedDataset({ id, originalDatasetId, userId, filename,
     try {
         await client.query("BEGIN");
 
-        await client.query(`INSERT INTO datasets (id, user_id, filename, columns, row_count, column_count, profile, missing_before, missing_after,expires_at)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW() + INTERVAL '24 hours')`,
-            [id, userId, filename, columns, rows.length, columns.length, profile ? JSON.stringify(profile) : null, missing_before, missing_after]
+        await client.query(`
+            INSERT INTO datasets (
+                id, user_id, filename, columns, row_count,
+                column_count, profile, missing_before, missing_after,
+                status, expires_at
+            )
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW() + INTERVAL '24 hours')`,
+            [
+                id, userId, filename, columns, rows.length,
+                columns.length,
+                profile ? JSON.stringify(profile) : null,
+                missing_before, missing_after,
+                "repaired"
+            ]
         )
 
         const batchSize = 500;

@@ -295,8 +295,8 @@ async function getSummary(_req: Request, res: Response<ApiSuccess<DashboardSumma
         }
 
         const { rows } = await pool.query<DashboardSummary>(
-            `SELECT COUNT(*) FILTER (WHERE filename NOT ILIKE '%repaired%') AS "totalDatasets",
-            COUNT(*) FILTER (WHERE filename ILIKE '%repaired%') AS "repairsCompleted" FROM datasets WHERE user_id = $1`,
+            `SELECT COUNT(*) FILTER (WHERE NOT status = 'repaired') AS "totalDatasets",
+            COUNT(*) FILTER (WHERE status = 'repaired') AS "repairsCompleted" FROM datasets WHERE user_id = $1`,
             [userId]
         );
 

@@ -9,13 +9,12 @@ async function downloadDataset(req: Request<{ id: string }, {}, {}, { format: "c
     const { id } = req.params;
     const { format } = req.query;
     try {
-        console.log("STARTING...")
         if (!userId) {
             res.status(401).json({ error: "Authentication is required." });
             return
         }
 
-        if (format !== "csv" && format !== "xlsx" ) {
+        if (format !== "csv" && format !== "xlsx") {
             res.status(422).json({ error: "Invalid download format. Accepted formats are csv and xlsx" })
             return;
         }
@@ -34,7 +33,6 @@ async function downloadDataset(req: Request<{ id: string }, {}, {}, { format: "c
         const records = rows.map(row => row.row_data as Record<string, unknown>);
 
         let data: string | Buffer = "";
-        console.log(format)
         if (format === "csv") {
             const headers = dataset.columns;
 
@@ -61,8 +59,6 @@ async function downloadDataset(req: Request<{ id: string }, {}, {}, { format: "c
                 bookType: "xlsx"
             })
 
-            console.log("buffer size:", buffer.length, typeof buffer)
-
             res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
             res.setHeader("Content-Disposition", `attachment; filename="${dataset.file}.xlsx"`)
 
@@ -71,7 +67,8 @@ async function downloadDataset(req: Request<{ id: string }, {}, {}, { format: "c
 
         res.status(200).send(data)
     } catch (err) {
-
+        console.error("Failed to download repaired file:", err);
+        res.status(500).json({ error: "Internal server error." })
     }
 }
 
