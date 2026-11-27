@@ -1,4 +1,4 @@
-import { isNumber } from "../libs/service.libs.js";
+import { isNumber } from "../libs/index.js";
 import { parseNumericValue } from "../utils/index.js";
 import type { ColumnProfile, Outliers } from "@data-cleaning-system/shared";
 

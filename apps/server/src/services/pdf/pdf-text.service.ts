@@ -1,19 +1,6 @@
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+import type { ExtractedPDFPage, ExtractedTextItem } from "../../types/pdf.types.js";
 
-interface ExtractedTextItem {
-    text: string;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-}
-
-interface ExtractedPDFPage {
-    pageNumber: number;
-    width: number;
-    height: number;
-    items: ExtractedTextItem[];
-}
 
 async function extractPDFText(buffer: Buffer): Promise<ExtractedPDFPage[]> {
     const document = await getDocument({

@@ -1,17 +1,12 @@
-function escapeCSV(value: unknown) {
-    const v = value;
+function escapeCSV(value: unknown): string {
+    if (value === null || value === undefined) return "";
 
-    if (v === null || v === undefined) return "";
-    let s = String(v);
+    const s = String(value);
 
-    if (s.includes('"')) {
-        s = s.replace(/"/g, '""');
-    }
-
-    if (/[",\r\n]/.test(s)) {
-        s = `"${s}"`;
-    }
-    return s;
+    return (/[",\r\n]/.test(s)
+        ? `"${s.replace(/"/g, '""')}"`
+        : s
+    )
 }
 
 

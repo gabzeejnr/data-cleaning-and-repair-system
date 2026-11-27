@@ -7,6 +7,8 @@ import type { Router as RouterType } from "express";
 import { saveCleanedDataset } from "../../controllers/saveCleaned.controller.js";
 import { saveRepairs } from "../../controllers/saveRepairs.controller.js";
 import { getReports } from "../../controllers/reports.controller.js";
+import { pdfUpload } from "../../configs/pdf-multer.js";
+import { readPdfController } from "../../controllers/pdf.controller.js";
 
 const router: RouterType = Router();
 
@@ -21,5 +23,6 @@ router.post("/upload", upload.single("file"), uploadFile);
 router.post("/save-repairs", saveRepairs);
 router.post("/detect-duplicate", validateSchema(duplicateZod), detectDuplicates);
 router.post("/save-cleaned", validateSchema(repairMissingValuesZod), saveCleanedDataset);
+router.post("/read-pdf", pdfUpload.single("file"), readPdfController)
 
 export { router as datasetRoutes }
