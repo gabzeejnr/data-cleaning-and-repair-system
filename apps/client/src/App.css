@@ -1,10 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-    --color-brand: #4F46E5;
-    --color-brand-soft: #EEF2FF;
+    --color-brand: var(--brand);
+    --color-brand-soft: var(--brand-soft);
     --color-ink: #111827;
-    --color-muted: #6B7280;
+    --color-muted: var(--text-muted);
     --color-mist: #F9FAFB;
     --color-line: #E5E7EB;
+    --color-bg-primary: var(--bg-primary);
+    --color-bg-secondary: var(--bg-secondary)
+
 }

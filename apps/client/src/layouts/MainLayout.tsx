@@ -10,7 +10,7 @@ export default function MainLayout() {
 
     return (
         <Fragment>
-            <div className="min-h-screen bg-slate-50">
+            <div className="min-h-screen bg-bg-primary">
                 <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
                 <div className="min-w-0 lg:pl-64">

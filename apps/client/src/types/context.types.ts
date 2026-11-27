@@ -1,4 +1,7 @@
 import type { User } from "@data-cleaning-system/shared";
+import type { Dispatch, SetStateAction } from "react";
+
+type Theme = "light" | "dark" | "system";
 
 interface UserContextType {
     user: User | null
@@ -8,4 +11,10 @@ interface UserContextType {
     logOut: () => Promise<void>
 }
 
-export type { UserContextType }
+interface ThemeContextType {
+    theme: Theme;
+    setTheme: Dispatch<SetStateAction<Theme>>;
+    toggleTheme: (theme?: Theme) => void
+}
+
+export type { UserContextType, ThemeContextType }

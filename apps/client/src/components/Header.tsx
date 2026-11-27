@@ -64,7 +64,7 @@ export default function DashboardHeader({ onMenuClick, setIsLoggingOut }: Header
     }, [])
 
     return (
-        <header className="sticky top-0 z-30 flex h-19 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-30 flex h-19 items-center justify-between border-b border-slate-200 bg-bg-secondary px-4 sm:px-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-3">
                 <button type="button" onClick={onMenuClick} aria-label="Open navigation" className="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 lg:hidden">
                     <Menu size={22} />
