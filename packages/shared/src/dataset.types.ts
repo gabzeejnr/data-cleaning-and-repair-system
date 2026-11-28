@@ -1,4 +1,4 @@
-type DatasetStatus = "profiled" | "not profiled"
+type DatasetStatus = "repaired" | "not repaired"
 type DatasetRow = Record<string, unknown>;
 type DataType = "number" | "text" | "boolean" | "mixed" | "empty"
 type IssueType = "missing_values" | "duplicate_rows" | "outliers";

@@ -64,70 +64,70 @@ export default function DashboardHeader({ onMenuClick, setIsLoggingOut }: Header
     }, [])
 
     return (
-        <header className="sticky top-0 z-30 flex h-19 items-center justify-between border-b border-slate-200 bg-bg-secondary px-4 sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-30 flex h-19 items-center justify-between border-b border-border bg-bg-secondary px-4 sm:px-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-3">
-                <button type="button" onClick={onMenuClick} aria-label="Open navigation" className="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 lg:hidden">
+                <button type="button" onClick={onMenuClick} aria-label="Open navigation" className="rounded-lg p-2 text-text-secondary transition hover:bg-bg-primary lg:hidden">
                     <Menu size={22} />
                 </button>
 
                 <div className="min-w-0">
                     <h2 className="truncate text-lg font-semibold tracking-tight text-text-primary sm:text-xl">{label}</h2>
-                    <p className="hidden text-xs text-slate-400 sm:block">{text}</p>
+                    <p className="hidden text-xs text-text-secondary sm:block">{text}</p>
                 </div>
             </div>
 
             <div className="ml-3 flex shrink-0 items-center gap-3 sm:gap-5">
-                <button type="button" aria-label="Notifications" className="relative rounded-lg p-2.5 text-slate-500 transition hover:bg-slate-100 hover:text-text-primary">
+                <button type="button" aria-label="Notifications" className="relative rounded-lg p-2.5 text-text-secondary transition hover:bg-bg-primary hover:text-text-primary">
                     <Bell size={20} strokeWidth={1.8} />
-                    <span className="absolute right-2 top-2 size-2 rounded-full border-2 border-white bg-indigo-600" />
+                    <span className="absolute right-2 top-2 size-2 rounded-full border-2 border-bg-secondary bg-brand" />
                 </button>
 
-                <div className="h-8 w-px bg-slate-200" />
+                <div className="h-8 w-px bg-border" />
 
                 <div ref={menuRef} className="relative">
                     <button type="button" aria-haspopup="menu" aria-expanded={menuOpen} aria-label="Open account menu" onClick={() => setMenuOpen(p => !p)}
-                        className="flex items-center gap-2 rounded-lg p-1.5 text-left transition hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:gap-3"
+                        className="flex items-center gap-2 rounded-lg p-1.5 text-left transition hover:bg-bg-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand sm:gap-3"
                     >
-                        <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-indigo-100 text-sm font-semibold text-indigo-700">
+                        <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-brand-soft text-sm font-semibold text-brand">
                             {initials || <UserRound size={18} />}
                         </span>
 
                         <span className="hidden min-w-0 sm:block">
                             <span className="block max-w-36 truncate text-sm font-semibold text-text-primary">{user?.name ?? "User"}</span>
-                            <span className="mt-0.5 block max-w-36 truncate text-xs capitalize text-slate-400">{user?.role ?? "Member"}</span>
+                            <span className="mt-0.5 block max-w-36 truncate text-xs capitalize text-text-secondary">{user?.role ?? "Member"}</span>
                         </span>
 
-                        <ChevronDown size={16} className={`hidden text-slate-400 transition-transform sm:block ${menuOpen ? "rotate-180" : ""}`} />
+                        <ChevronDown size={16} className={`hidden text-text-secondary transition-transform sm:block ${menuOpen ? "rotate-180" : ""}`} />
                     </button>
 
                     {menuOpen && (
                         <div role="menu" aria-label="Account menu"
-                            className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden border border-slate-200 bg-white shadow-lg shadow-slate-900/10"
+                            className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-xl border border-border bg-bg-secondary shadow-lg shadow-black/20"
                         >
-                            <div className="border-b border-slate-100 px-4 py-3">
+                            <div className="border-b border-border px-4 py-3">
                                 <p className="truncate text-sm font-semibold text-text-primary">{user?.name ?? "User"}</p>
-                                <p className="mt-1 text-xs capitalize text-slate-500">{user?.role ?? "Member"}</p>
+                                <p className="mt-1 text-xs capitalize text-text-secondary">{user?.role ?? "Member"}</p>
                             </div>
 
                             <div className="p-1.5">
                                 <button type="button" role="menuitem" onClick={() => setMenuOpen(false)}
-                                    className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-text-primary"
+                                    className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-text-secondary transition hover:bg-bg-primary hover:text-text-primary"
                                 >
-                                    <UserRound size={17} className="text-slate-400" />
+                                    <UserRound size={17} className="text-text-secondary" />
                                     My profile
                                 </button>
 
                                 <Link to={"/settings"} type="button" role="menuitem" onClick={() => setMenuOpen(false)}
-                                    className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-text-primary"
+                                    className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-text-secondary transition hover:bg-bg-primary hover:text-text-primary"
                                 >
-                                    <Settings2 size={17} className="text-slate-400" />
+                                    <Settings2 size={17} className="text-text-secondary" />
                                     Account settings
                                 </Link>
                             </div>
 
-                            <div className="border-t border-slate-100 p-1.5">
+                            <div className="border-t border-border p-1.5">
                                 <button type="button" role="menuitem" onClick={() => { setIsLoggingOut(true); setMenuOpen(false) }}
-                                    className="flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium text-rose-600 transition hover:bg-rose-50"
+                                    className="flex w-full items-center gap-3 px-3 py-2.5 text-sm font-medium text-danger transition hover:bg-danger/10"
                                 >
                                     <LogOut size={17} />
                                     Sign out

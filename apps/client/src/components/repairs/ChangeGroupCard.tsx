@@ -19,7 +19,7 @@ export default function ChangeGroupCard({ group, decisions, onDecide, onDecideAl
     const isReview = group.kind === "review";
 
     return (
-        <section className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
+        <section className="overflow-hidden rounded-2xl border border-line bg-bg-secondary shadow-sm">
             <header className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
                 <button type="button" onClick={() => setOpen(current => !current)} aria-expanded={open} className="flex min-w-0 items-center gap-3 text-left">
                     <ChevronDown size={18} className={`shrink-0 text-muted transition-transform ${open ? "" : "-rotate-90"}`} />

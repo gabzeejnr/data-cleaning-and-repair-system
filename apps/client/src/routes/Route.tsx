@@ -9,10 +9,12 @@ import Settings from "../pages/Settings";
 import Issues from "../pages/Issues";
 import Repairs from "../pages/Repairs";
 import Reports from "../pages/Reports";
+import ForgotPassword from "../pages/ForgotPassword";
 
 export default function RoutePage() {
     return (
         <Routes>
+            <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/auth/">
                 <Route path="login" element={<Authentication />} />
                 <Route path="register" element={<Authentication />} />

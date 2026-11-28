@@ -8,34 +8,34 @@ const repairStats: RepairStats = (counts) => ([
         label: "Proposed changes",
         value: counts.total,
         icon: Sparkles,
-        color: "text-indigo-600 bg-indigo-50",
+        color: "text-brand bg-brand-soft",
     },
     {
         label: "Awaiting review",
         value: counts.pending,
         icon: Clock,
-        color: "text-amber-600 bg-amber-50",
+        color: "text-warning bg-warning/10",
     },
     {
         label: "Accepted",
         value: counts.accepted,
         icon: CheckCheck,
-        color: "text-emerald-600 bg-emerald-50",
+        color: "text-success bg-success/10",
     },
     {
         label: "Rejected",
         value: counts.rejected,
         icon: X,
-        color: "text-rose-600 bg-rose-50",
+        color: "text-danger bg-danger/10",
     },
 ])
 
 const status: readonly (ReviewStatus | "all")[] = ["all", "pending", "accepted", "rejected"];
 
 const statusStyles: Record<ReviewStatus, string> = {
-    pending: "bg-amber-50 text-amber-700",
-    accepted: "bg-emerald-50 text-emerald-700",
-    rejected: "bg-rose-50 text-rose-700",
+    pending: "bg-warning/10 text-warning",
+    accepted: "bg-success/10 text-success",
+    rejected: "bg-danger/10 text-danger",
 };
 
 export { repairStats, status, statusStyles }

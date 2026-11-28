@@ -8,28 +8,28 @@ import { ArrowUpRight, Database, Eye, EyeOff, ShieldCheck, UserPlus } from "luci
 import type { User, UserLogin, UserRegistration } from "@data-cleaning-system/shared";
 import type { ToastType, PasswordProps, ButtonProps } from "../types";
 
+const inputClass = "w-full rounded-lg border border-gray-200 bg-bg-secondary px-4 py-3 text-sm text-text-primary outline-none transition placeholder:text-text-secondary focus:border-brand focus:ring-2 focus:ring-indigo-100";
 
 function Password({ label, error, isClosed = true, setIsClosed, ...props }: PasswordProps) {
-
-    // w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100
+    const inputId = props.id ?? props.name ?? "password";
 
     return (
         <div className="space-y-4">
-            <label htmlFor={props.id ?? "password text-text-secondary "} className="text-sm font-medium text-text-secondary">{label}</label>
+            <label htmlFor={inputId} className="text-sm font-medium text-text-secondary">{label}</label>
 
             <div className="relative mt-1">
-                <input {...props} id={props.id ?? "password"} name={props.name ?? "password"}
-                    type={isClosed ? "password" : "text"} autoComplete={props.autoComplete ?? "current-password"} required={props.required ?? true}
+                <input {...props} id={inputId} name={props.name ?? "password"}
+                    type={isClosed ? "password" : "text"} autoComplete={props.autoComplete ?? "new-password"} required={props.required ?? true}
                     placeholder={props.placeholder ?? "Enter your password"}
-                    className={`w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 pr-12 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100 ${error ? "border-red-500" : ""
+                    className={`${inputClass} pr-12 ${error ? "border-red-500" : ""
                         }`}
                     aria-invalid={!!error}
-                    aria-describedby={error ? `${props.id ?? "password"}-error` : undefined}
+                    aria-describedby={error ? `${inputId}-error` : undefined}
                 />
 
                 <button type="button" onClick={() => setIsClosed((prev) => !prev)}
                     aria-label={isClosed ? "Show password" : "Hide password"} aria-pressed={!isClosed}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-gray-700"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary transition hover:text-text-primary"
                 >{isClosed
                     ? <EyeOff size={19} />
                     : <Eye size={19} />
@@ -38,7 +38,7 @@ function Password({ label, error, isClosed = true, setIsClosed, ...props }: Pass
             </div>
 
             {error && (
-                <p id={`${props.id ?? "password"}-error`} role="alert" className="text-sm text-red-600">{error}</p>
+                <p id={`${inputId}-error`} role="alert" className="text-sm text-red-600">{error}</p>
             )}
         </div>
     )
@@ -47,8 +47,8 @@ function Password({ label, error, isClosed = true, setIsClosed, ...props }: Pass
 function FormButton({ type, className, value, children, disabled }: ButtonProps) {
     return (
         <button type={type} className={`flex w-full items-center justify-center gap-2 rounded-lg bg-brand py-3 text-sm font-semibold text-white shadow-sm
-            transition-colors duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2
-            disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 disabled:shadow-none disabled:hover:bg-gray-300${className}`} disabled={disabled}
+            transition-colors duration-200 hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2 focus:ring-offset-bg-primary
+            disabled:cursor-not-allowed disabled:bg-bg-primary disabled:text-text-secondary disabled:shadow-none disabled:hover:bg-bg-primary ${className ?? ""}`} disabled={disabled}
         >
             {value ?? children}
         </button>
@@ -62,16 +62,12 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
     const { setUser } = useUser();
     const [toast, setToast] = useState<ToastType | null>(null);
     const [loading, setLoading] = useState(false);
-    const [emailError, setEmailError] = useState<string>("");
-    const [passwordError, setPasswordError] = useState<string>("");
     const [isClosed, setIsClosed] = useState<boolean>(true);
 
     async function handleLogin(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
         setToast(null);
-        setEmailError("");
-        setPasswordError("");
 
         const formData = new FormData(e.currentTarget);
 
@@ -96,14 +92,17 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
                 const { response } = err
                 setToast({
                     type: "error",
-                    text: response?.data?.error || "Something went wong. Please try again."
+                    text: response?.data?.error || "Something went wrong. Please try again."
+                })
+            } else {
+                setToast({
+                    type: "error",
+                    text: "Something went wrong. Please try again."
                 })
             }
 
             setTimeout(() => {
                 setToast(null);
-                setEmailError("");
-                setPasswordError("");
             }, 5000);
         } finally {
             setLoading(false);
@@ -125,7 +124,7 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
                     <h1 className="text-3xl font-bold tracking-tight text-text-primary">
                         Welcome back
                     </h1>
-                    <p className="text-sm leading-6 text-gray-500">
+                    <p className="text-sm leading-6 text-text-secondary">
                         Sign in to continue cleaning your data.
                     </p>
                 </div>
@@ -139,9 +138,8 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
 
                         <input id="email" name="email" type="email" autoComplete="email" required
                             placeholder="someone@example.com"
-                            className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100"
+                            className={inputClass}
                         />
-                        {emailError && <p role="alert" className="text-sm -mt-1 text-red-600">{emailError}</p>}
                     </div>
 
                     <div className="space-y-2">
@@ -150,7 +148,7 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
                                 Password
                             </label>
 
-                            <Link to="/forgot-password" className="text-sm font-medium text-brand hover:text-indigo-700">
+                            <Link to="/forgot-password" className="text-sm font-medium text-text-secondary underline-offset-4 hover:text-text-primary hover:underline">
                                 Forgot password?
                             </Link>
                         </div>
@@ -158,13 +156,12 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
                         <div className="relative">
                             <input id="password" name="password" type={isClosed ? "password" : "text"} autoComplete="current-password" required
                                 placeholder="Enter your password"
-                                className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 pr-12 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100"
+                                className={`${inputClass} pr-12`}
                             />
-                            {passwordError && <p role="alert" className="text-sm -mt-1 text-red-600">{passwordError}</p>}
 
                             <button type="button" onClick={() => setIsClosed(!isClosed)} aria-label={isClosed
                                 ? "Show password" : "Hide password"}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 transition hover:text-gray-700"
+                                className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary transition hover:text-text-primary"
                             >
                                 {isClosed ? (<EyeOff size={19} />) : (<Eye size={19} />)}
                             </button>
@@ -175,15 +172,15 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
                     </FormButton>
                 </form>
 
-                <p className="text-center text-sm text-gray-500">
+                <p className="text-center text-sm text-text-secondary">
                     Don't have an account?{" "}
-                    <Link to={"/auth/register"} className="font-semibold text-brand hover:text-indigo-700"
+                    <Link to={"/auth/register"} className="font-semibold text-text-secondary underline-offset-4 hover:text-text-primary hover:underline"
                         onClick={onRegister}>
                         Create one
                     </Link>
                 </p>
 
-                <div className="flex items-center justify-center gap-2 text-xs text-gray-400">
+                <div className="flex items-center justify-center gap-2 text-xs text-text-secondary">
                     <ShieldCheck size={15} />
                     Your data deserves better.
                 </div>
@@ -194,6 +191,7 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
 
 function RegisterForm() {
     const navigate = useNavigate();
+    const { setUser } = useUser();
     const [toast, setToast] = useState<ToastType | null>(null);
     const [isClosed, setIsClosed] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -212,6 +210,7 @@ function RegisterForm() {
         setLoading(true);
 
         if (form.password !== form.confirmPassword) {
+            setLoading(false);
             setToast({
                 type: "error",
                 text: "Passwords do not match.",
@@ -221,11 +220,12 @@ function RegisterForm() {
         }
 
         try {
-            await AUTH.post("/register", form);
+            const { data } = await AUTH.post<{ message: string, data: User }>("/register", form);
+            setUser(data.data);
 
             setToast({
                 type: "success",
-                text: "User registered successfully."
+                text: `Welcome ${data.data.name.trim().split(/\s+/)[0] ?? ""}`
             })
 
             setTimeout(() => {
@@ -236,7 +236,12 @@ function RegisterForm() {
                 const { response } = err
                 setToast({
                     type: "error",
-                    text: response?.data?.error || "Something went wong. Please try again."
+                    text: response?.data?.error || "Something went wrong. Please try again."
+                })
+            } else {
+                setToast({
+                    type: "error",
+                    text: "Something went wrong. Please try again."
                 })
             }
 
@@ -249,8 +254,6 @@ function RegisterForm() {
         }
     }
 
-    const inputClass = "w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100";
-
     return (
         <div className="w-full space-y-6">
             <div className="space-y-2">
@@ -260,7 +263,7 @@ function RegisterForm() {
                     <span className="text-sm font-semibold">Create your account</span>
                 </div>
 
-                <h1 className="tracking-tight">Get started with DataCare</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-text-primary">Get started with DataCare</h1>
 
                 <p className="text-sm leading-6 text-text-secondary">Create an account to upload, analyze, and repair your datasets in one place.</p>
             </div>
@@ -309,9 +312,9 @@ function RegisterForm() {
                 </FormButton>
             </form>
 
-            <p className="text-center text-sm text-gray-500">
+            <p className="text-center text-sm text-text-secondary">
                 Already have an account?{" "}
-                <Link to="/auth/login" className="font-semibold text-brand hover:text-indigo-700">Sign in</Link>
+                <Link to="/auth/login" className="font-semibold text-text-secondary underline-offset-4 hover:text-text-primary hover:underline">Sign in</Link>
             </p>
         </div>
     )

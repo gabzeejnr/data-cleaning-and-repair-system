@@ -9,7 +9,7 @@ export default function StatCard({ title, value, icon: Icon, description, accent
 
     return (
         <article id={id}
-            className="group relative isolate min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-900/10"
+            className="group relative isolate min-w-0 overflow-hidden rounded-2xl border border-border bg-bg-secondary p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-brand/40 hover:shadow-xl hover:shadow-black/20"
         >
             <div aria-hidden
                 className={`pointer-events-none absolute -right-10 -top-10 -z-10 size-32 rounded-full opacity-30 blur-3xl transition duration-300 group-hover:scale-110 group-hover:opacity-50 ${t.glow}`}
@@ -17,8 +17,8 @@ export default function StatCard({ title, value, icon: Icon, description, accent
 
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">{title}</p>
-                    <p className="mt-3 text-3xl font-bold tabular-nums tracking-tight text-black">{value}</p>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-text-secondary">{title}</p>
+                    <p className="mt-3 text-3xl font-bold tabular-nums tracking-tight text-text-primary">{value}</p>
                 </div>
 
                 <div className={`grid size-11 shrink-0 place-items-center rounded-xl shadow-lg ${t.tile}`}>
@@ -26,8 +26,8 @@ export default function StatCard({ title, value, icon: Icon, description, accent
                 </div>
             </div>
 
-            <div className="mt-5 border-t border-slate-100 pt-3">
-                <p className="text-sm leading-5 text-slate-500">{description}</p>
+            <div className="mt-5 border-t border-border pt-3">
+                <p className="text-sm leading-5 text-text-secondary">{description}</p>
             </div>
 
             <div aria-hidden className={`absolute inset-x-0 bottom-0 h-0.5 w-0 transition-all duration-500 group-hover:w-full ${t.bar}`} />

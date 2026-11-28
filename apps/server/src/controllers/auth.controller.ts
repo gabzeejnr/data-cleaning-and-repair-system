@@ -19,19 +19,25 @@ async function registerUser(_req: Request, res: Response<ApiError<never> | ApiSu
             return;
         }
 
-        if (password !== confirmPassword) res.status(400).json({ error: "Passwords do not match. Please try again." })
+        if (password !== confirmPassword) {
+            res.status(400).json({ error: "Passwords do not match. Please try again." })
+            return;
+        }
 
         const hashed = await hashPassword(password)
         const newUser = await createUser(name, email, hashed);
+        const data = toUser(newUser)
+        const token = jwt.sign(
+            { ...data, purpose: "access" },
+            JWT_SECRET,
+            { expiresIn: "1d" }
+        )
+
+        setTokenCookie(res, "accessToken", token, 24 * 60 * 60 * 1000);
 
         res.status(201).json({
             message: "User created successfully",
-            data: {
-                userId: newUser.user_id,
-                name,
-                email,
-                role: newUser.role
-            }
+            data
         })
     } catch (err) {
         console.log("Could not create user:", err)

@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { LoginForm, RegisterForm } from "../components/Forms";
 import { FileSpreadsheet, Copy, Wrench, Sparkles, type LucideIcon } from "lucide-react";
@@ -24,15 +23,11 @@ export default function Authentication() {
 
     const { pathname } = useLocation();
     const navigate = useNavigate();
-    const [isRegistering, setIsRegistering] = useState(pathname === "/auth/register");
-
-    useEffect(() => {
-        setIsRegistering(pathname === "/auth/register");
-    }, [pathname]);
+    const isRegistering = pathname === "/auth/register";
 
     return (
         <section className="relative min-h-screen overflow-hidden bg-bg-primary">
-            <aside className={`absolute inset-y-0 left-0 flex w-full items-center px-8 text-white transition-transform duration-700 ease-in-out lg:w-1/2 lg:px-14 ${isRegistering
+            <aside className={`absolute inset-y-0 left-0 flex w-full items-center bg-[#11133B] px-8 text-white transition-transform duration-700 ease-in-out lg:w-1/2 lg:px-14 ${isRegistering
                 ? "lg:translate-x-0" : "lg:translate-x-full"}`}
             >
 
@@ -47,11 +42,11 @@ export default function Authentication() {
                                 The data workspace
                             </div>
 
-                            <h2 className="text-3xl font-bold leading-tight xl:text-4xl text-text-primary">
+                            <h2 className="text-3xl font-bold leading-tight text-white xl:text-4xl">
                                 {isRegistering ? "Your data journey starts here." : "Better data. Better decisions."}
                             </h2>
 
-                            <p className="max-w-md text-sm leading-6 text-text-secondary">
+                            <p className="max-w-md text-sm leading-6 text-indigo-100/80">
                                 {isRegistering
                                     ? "Create your account and start discovering cleaner, more reliable data."
                                     : "Analyze, repair, and improve your datasets in one workspace."
@@ -63,8 +58,8 @@ export default function Authentication() {
                     <div className="rounded-2xl border border-white/10 bg-white/6 p-5 shadow-2xl backdrop-blur-sm sm:p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-semibold text-text-secondary">Dataset overview</p>
-                                <p className="mt-1 text-xs text-text-primary">sales_data.csv</p>
+                                <p className="text-sm font-semibold text-indigo-100/80">Dataset overview</p>
+                                <p className="mt-1 text-xs text-white">sales_data.csv</p>
                             </div>
 
                             <div className="rounded-lg bg-brand/15 p-2 text-brand">
@@ -74,7 +69,7 @@ export default function Authentication() {
 
                         <div className="mt-6 flex items-center justify-between gap-4">
                             <div>
-                                <p className="text-xs text-brand/70">Data quality score</p>
+                                <p className="text-xs text-indigo-200">Data quality score</p>
                                 <h3 className="mt-1 text-3xl font-bold">92.8%</h3>
                             </div>
 
@@ -129,9 +124,7 @@ export default function Authentication() {
                         </div>
                     </div>
 
-                    <p className="text-center text-xs text-indigo-200/40">
-                        Identify issues. Repair your data. Work with confidence.
-                    </p>
+                    <p className="text-center text-xs text-indigo-200/75">Identify issues. Repair your data. Work with confidence.</p>
                 </div>
 
             </aside>
@@ -147,7 +140,6 @@ export default function Authentication() {
                     ) : (
                         <LoginForm
                             onRegister={() => {
-                                setIsRegistering(true);
                                 navigate("/auth/register");
                             }}
                         />

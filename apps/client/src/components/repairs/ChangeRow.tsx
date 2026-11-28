@@ -19,7 +19,7 @@ export default function ChangeRow({ change, decision, onDecide }: ChangeRowProps
     const rejected = decision === "rejected";
 
     return (
-        <li className={`grid gap-3 px-5 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center ${rejected ? "bg-mist" : "bg-white"}`}>
+        <li className={`grid gap-3 px-5 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center ${rejected ? "bg-mist" : "bg-bg-secondary"}`}>
             <div className="min-w-0">
                 <p className="text-xs text-muted">
                     Row {String(change.row_index)}
@@ -59,8 +59,8 @@ export default function ChangeRow({ change, decision, onDecide }: ChangeRowProps
                 >
                     <button type="button" aria-pressed={rejected} onClick={() => onDecide(change.id, rejected ? "pending" : "rejected")}
                         className={`flex items-center gap-1.5 px-3 py-2 text-sm font-medium transition ${rejected
-                            ? "bg-ink text-white"
-                            : "bg-white text-muted hover:text-ink"}`
+                            ? "bg-danger/10 text-danger"
+                                : "bg-bg-secondary text-muted hover:text-ink"}`
                         }
                     >
                         <X size={15} /> Reject
@@ -68,7 +68,7 @@ export default function ChangeRow({ change, decision, onDecide }: ChangeRowProps
                     <button type="button" aria-pressed={decision === "accepted"} onClick={() => onDecide(change.id, decision === "accepted" ? "pending" : "accepted")}
                         className={`flex items-center gap-1.5 border-l border-line px-3 py-2 text-sm font-medium transition ${decision === "accepted"
                             ? "bg-brand text-white"
-                            : "bg-white text-muted hover:text-brand"}`
+                            : "bg-bg-secondary text-muted hover:text-brand"}`
                         }
                     >
                         <Check size={15} /> Accept

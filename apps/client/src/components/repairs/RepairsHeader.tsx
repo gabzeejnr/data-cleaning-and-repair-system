@@ -3,7 +3,7 @@ import { FileCheck2, Sparkles } from "../../libs"
 
 export default function RepairsHeader() {
     return (
-        <section className="overflow-hidden rounded-2xl bg-bg-secondary text-white">
+        <section className="overflow-hidden rounded-2xl bg-[#11133B] text-white">
             <div className="flex flex-col justify-between gap-6 p-6 sm:p-8 lg:flex-row lg:items-center">
                 <div className="max-w-xl">
                     <div className="mb-3 flex items-center gap-2 text-sm font-medium text-indigo-200">

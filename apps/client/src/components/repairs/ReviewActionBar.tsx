@@ -10,7 +10,7 @@ interface ReviewActionBarProps {
 
 export default function ReviewActionBar({ approved, applyable, pending, loading, onApply }: ReviewActionBarProps) {
     return (
-        <div className="sticky bottom-4 z-20 flex flex-col gap-3 rounded-2xl border border-line bg-white/95 p-4 shadow-lg backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+        <div className="sticky bottom-4 z-20 flex flex-col gap-3 rounded-2xl border border-line bg-bg-secondary/95 p-4 shadow-lg backdrop-blur sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <p className="text-sm font-semibold text-ink">{approved} of {applyable} changes approved</p>
                 <p className="text-xs text-muted">

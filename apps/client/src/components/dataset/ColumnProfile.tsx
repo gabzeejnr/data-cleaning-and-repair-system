@@ -7,11 +7,11 @@ interface ColumnProfileProps {
 }
 
 const typeStyles: Record<ColumnProfile["dataType"], string> = {
-    text: "bg-sky-50 text-sky-700 ring-sky-600/20",
-    number: "bg-violet-50 text-violet-700 ring-violet-600/20",
-    boolean: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
-    mixed: "bg-amber-50 text-amber-700 ring-amber-600/20",
-    empty: "bg-slate-100 text-slate-600 ring-slate-500/20",
+    text: "bg-brand-soft text-brand ring-brand/20",
+    number: "bg-brand-soft text-brand ring-brand/20",
+    boolean: "bg-success/10 text-success ring-success/20",
+    mixed: "bg-warning/10 text-warning ring-warning/20",
+    empty: "bg-bg-primary text-text-secondary ring-border",
 };
 
 const typeIcons = {
@@ -24,19 +24,19 @@ const typeIcons = {
 
 export default function ColumnProfile({ columns, loading = false }: ColumnProfileProps) {
     return (
-        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-            <div className="flex items-center gap-3 border-b border-slate-100 px-5 py-5 sm:px-6">
-                <div className="rounded-xl bg-indigo-50 p-2.5 text-indigo-600">
+        <section className="overflow-hidden rounded-2xl border border-border bg-bg-secondary shadow-sm">
+            <div className="flex items-center gap-3 border-b border-border px-5 py-5 sm:px-6">
+                <div className="rounded-xl bg-brand-soft p-2.5 text-brand">
                     <Columns3 size={20} />
                 </div>
 
                 <div>
-                    <h2 className="font-semibold text-slate-900">Column profile</h2>
-                    <p className="mt-1 text-sm text-slate-500">Explore the structure and quality of each column.</p>
+                    <h2 className="font-semibold text-text-primary">Column profile</h2>
+                    <p className="mt-1 text-sm text-text-secondary">Explore the structure and quality of each column.</p>
                 </div>
 
                 {!loading && (
-                    <span className="ml-auto rounded-full bg-indigo-50 px-3 py-1 text-xs text-center flex  font-semibold text-indigo-700">
+                    <span className="ml-auto flex rounded-full bg-brand-soft px-3 py-1 text-center text-xs font-semibold text-brand">
                         {columns.length} columns
                     </span>
                 )}
@@ -45,19 +45,19 @@ export default function ColumnProfile({ columns, loading = false }: ColumnProfil
             {loading ? (
                 <div className="space-y-4 p-6">
                     {[1, 2, 3].map((item) => (
-                        <div key={item} className="h-12 animate-pulse rounded-lg bg-slate-100" />
+                        <div key={item} className="h-12 animate-pulse rounded-lg bg-bg-primary" />
                     ))}
                 </div>
             ) : columns.length === 0 ? (
                 <div className="px-6 py-12 text-center">
-                    <Columns3 size={30} className="mx-auto text-slate-300" />
-                    <p className="mt-3 font-medium text-slate-800">No column profiles available</p>
-                    <p className="mt-1 text-sm text-slate-500">Column statistics will appear here once profiling is available.</p>
+                    <Columns3 size={30} className="mx-auto text-text-secondary" />
+                    <p className="mt-3 font-medium text-text-primary">No column profiles available</p>
+                    <p className="mt-1 text-sm text-text-secondary">Column statistics will appear here once profiling is available.</p>
                 </div>
             ) : (
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-155 text-left text-sm">
-                        <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
+                        <thead className="bg-bg-primary text-xs uppercase tracking-wide text-text-secondary">
                             <tr>
                                 <th className="px-6 py-4 font-semibold">Column name</th>
                                 <th className="px-6 py-4 font-semibold">Data type</th>
@@ -66,13 +66,13 @@ export default function ColumnProfile({ columns, loading = false }: ColumnProfil
                             </tr>
                         </thead>
 
-                        <tbody className="divide-y divide-slate-100">
+                        <tbody className="divide-y divide-border">
                             {columns.map((column) => {
                                 const Icon = typeIcons[column.dataType];
 
                                 return (
-                                    <tr key={column.name} className="transition hover:bg-indigo-50/40">
-                                        <td className="px-6 py-4 font-medium text-slate-800">{column.name}</td>
+                                    <tr key={column.name} className="transition hover:bg-bg-primary">
+                                        <td className="px-6 py-4 font-medium text-text-primary">{column.name}</td>
 
                                         <td className="px-6 py-4">
                                             <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset ${typeStyles[column.dataType]}`}>
@@ -83,12 +83,12 @@ export default function ColumnProfile({ columns, loading = false }: ColumnProfil
 
                                         <td className="px-6 py-4 text-right tabular-nums">
                                             <span className={(column.missingCount > 0
-                                                ? "font-semibold text-amber-600"
-                                                : "text-slate-500"
+                                                ? "font-semibold text-warning"
+                                                : "text-text-secondary"
                                             )}>{column.missingCount.toLocaleString()}</span>
                                         </td>
 
-                                        <td className="px-6 py-4 text-right tabular-nums text-slate-600">{column.uniqueCount.toLocaleString()}</td>
+                                        <td className="px-6 py-4 text-right tabular-nums text-text-secondary">{column.uniqueCount.toLocaleString()}</td>
                                     </tr>
                                 )
                             })}

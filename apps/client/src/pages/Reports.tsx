@@ -40,8 +40,8 @@ export default function Reports() {
 
     return (
         <main className="space-y-6 pb-10">
-            <header className="rounded-2xl bg-ink p-6 text-white sm:p-8">
-                <div className="flex items-center gap-2 text-sm font-medium text-brand-soft">
+            <header className="rounded-2xl bg-[#11133B] p-6 text-white sm:p-8">
+                <div className="flex items-center gap-2 text-sm font-medium text-indigo-200">
                     <FileText size={17} /> Cleaning history
                 </div>
                 <h1 className="mt-3 text-2xl font-bold tracking-tight sm:text-3xl">Reports</h1>
@@ -50,7 +50,7 @@ export default function Reports() {
 
             <section className="grid grid-cols-2 gap-3 xl:grid-cols-4">
                 {reportsLabels(stats).map(({ label, value, icon: Icon }) => (
-                    <article key={label} className="rounded-2xl border border-line bg-white p-4 shadow-sm sm:p-5">
+                    <article key={label} className="rounded-2xl border border-line bg-bg-secondary p-4 shadow-sm sm:p-5">
                         <div className="flex items-center justify-between gap-2">
                             <span className="text-xs font-medium text-muted sm:text-sm">{label}</span>
                             <span className="rounded-lg bg-brand-soft p-2 text-brand"><Icon size={18} /></span>
@@ -61,11 +61,11 @@ export default function Reports() {
             </section>
 
             <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-                <section className="overflow-hidden rounded-2xl border border-line bg-white shadow-sm">
+                <section className="overflow-hidden rounded-2xl border border-line bg-bg-secondary shadow-sm">
                     <div className="flex flex-col gap-3 border-b border-mist p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
                         <h2 className="font-semibold text-ink">Runs</h2>
                         <select value={datasetFilter} onChange={e => setDatasetFilter(e.target.value)}
-                            className="rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand/20"
+                            className="rounded-lg border border-line bg-bg-primary px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand/20"
                         >
                             <option value="all">All datasets</option>
                             {datasets.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
@@ -77,7 +77,7 @@ export default function Reports() {
                             {[0, 1, 2].map(i => <div key={i} className="h-14 animate-pulse rounded-xl bg-mist" />)}
                         </div>)
                         : (error
-                            ? (<p role="alert" className="flex items-center gap-2 p-6 text-sm text-rose-600">
+                            ? (<p role="alert" className="flex items-center gap-2 p-6 text-sm text-danger">
                                 <AlertTriangle size={17} /> {error}
                             </p>)
                             : (visible.length === 0
@@ -98,7 +98,7 @@ export default function Reports() {
                                             </span>
                                             <span className="flex flex-wrap gap-1.5">
                                                 {run.breakdown.slice(0, 3).map(item => (
-                                                    <span key={item.errorType} className="rounded-md bg-white px-2 py-1 text-xs text-muted ring-1 ring-line">
+                                                    <span key={item.errorType} className="rounded-md bg-bg-secondary px-2 py-1 text-xs text-muted ring-1 ring-line">
                                                         {item.recordsAffected.toLocaleString()} {item.errorType.replaceAll("_", " ")}
                                                     </span>
                                                 ))}

@@ -18,9 +18,9 @@ interface GetIssuesResponse {
 
 function SeverityBadge({ severity }: { severity: DataIssue["severity"] }) {
     const styles: Record<DataIssue["severity"], string> = {
-        low: "bg-sky-50 text-sky-700",
-        medium: "bg-amber-50 text-amber-700",
-        high: "bg-red-50 text-red-700",
+        low: "bg-success/10 text-success",
+        medium: "bg-warning/10 text-warning",
+        high: "bg-danger/10 text-danger",
     }
 
     return (
@@ -101,21 +101,21 @@ export default function Issues() {
         <main className="space-y-6">
             <PageHeader title="Data Quality Issues" subtitle="Inspect missing values, duplicates, and potential outliers." />
 
-            <section className="rounded-2xl border border-slate-200 bg-white p-5">
+            <section className="rounded-2xl border border-border bg-bg-secondary p-5">
                 {loadingDatasets ? (
-                    <p className="flex items-center gap-2 text-sm text-slate-500">
+                    <p className="flex items-center gap-2 text-sm text-text-secondary">
                         <LoaderCircle size={16} className="animate-spin" />
                         Loading datasets...
                     </p>
                 ) : datasets.length === 0 ? (
-                    <p className="text-sm text-slate-500">No datasets found. Upload a dataset to inspect its issues.</p>
+                    <p className="text-sm text-text-secondary">No datasets found. Upload a dataset to inspect its issues.</p>
                 ) : (
                     <DatasetSelector datasets={datasets} value={selectedDatasetId} onChange={setSelectedDatasetId} disabled={loadingIssues} />
                 )}
             </section>
 
             {error && (
-                <p role="alert" className="text-sm text-red-600">{error}</p>
+                <p role="alert" className="text-sm text-danger">{error}</p>
             )}
 
             {selectedDatasetId && !loadingDatasets
@@ -127,27 +127,27 @@ export default function Issues() {
                         <SummaryCard title="Outlier issues" value={outlierIssues} icon={AlertTriangle} />
                     </section>
 
-                    <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                        <div className="border-b border-slate-100 p-5">
-                            <h2 className="font-semibold text-slate-900">Detected issues</h2>
-                            <p className="mt-1 text-sm text-slate-500">Review the findings for the selected dataset.</p>
+                    <section className="overflow-hidden rounded-2xl border border-border bg-bg-secondary">
+                        <div className="border-b border-border p-5">
+                            <h2 className="font-semibold text-text-primary">Detected issues</h2>
+                            <p className="mt-1 text-sm text-text-secondary">Review the findings for the selected dataset.</p>
                         </div>
 
                         {loadingIssues ? (
-                            <div className="flex items-center justify-center gap-2 p-10 text-sm text-slate-500">
+                            <div className="flex items-center justify-center gap-2 p-10 text-sm text-text-secondary">
                                 <LoaderCircle size={18} className="animate-spin" />
                                 Loading issues...
                             </div>
                         ) : issues.length === 0 && !error ? (
                             <div className="p-10 text-center">
-                                <CheckCircle2 size={32} className="mx-auto text-emerald-500" />
-                                <h3 className="mt-3 font-medium text-slate-900">No issues detected</h3>
-                                <p className="mt-1 text-sm text-slate-500">The profiler did not find any issues in this dataset.</p>
+                                <CheckCircle2 size={32} className="mx-auto text-success" />
+                                <h3 className="mt-3 font-medium text-text-primary">No issues detected</h3>
+                                <p className="mt-1 text-sm text-text-secondary">The profiler did not find any issues in this dataset.</p>
                             </div>
                         ) : (
                             <div className="overflow-x-auto">
                                 <table className="w-full text-left text-sm">
-                                    <thead className="bg-slate-50 text-slate-500">
+                                    <thead className="bg-bg-primary text-text-secondary">
                                         <tr>
                                             <th className="px-5 py-3 font-medium">Issue</th>
                                             <th className="px-5 py-3 font-medium">Column</th>
@@ -155,18 +155,18 @@ export default function Issues() {
                                             <th className="px-5 py-3 font-medium">Affected rows</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y divide-slate-100">
+                                    <tbody className="divide-y divide-border">
                                         {issues.map(issue => (
-                                            <tr key={issue.id} className="hover:bg-slate-50/70">
+                                            <tr key={issue.id} className="hover:bg-bg-primary">
                                                 <td className="px-5 py-4">
-                                                    <p className="font-medium text-slate-800">{issue.type.replaceAll("_", " ").capitalize()}</p>
-                                                    <p className="mt-1 text-xs text-slate-500">{issue.description}</p>
+                                                    <p className="font-medium text-text-primary">{issue.type.replaceAll("_", " ").capitalize()}</p>
+                                                    <p className="mt-1 text-xs text-text-secondary">{issue.description}</p>
                                                 </td>
-                                                <td className="px-5 py-4 text-slate-600">{issue.column ?? "—"}</td>
+                                                <td className="px-5 py-4 text-text-secondary">{issue.column ?? "—"}</td>
                                                 <td className="px-5 py-4">
                                                     <SeverityBadge severity={issue.severity} />
                                                 </td>
-                                                <td className="px-5 py-4 tabular-nums text-slate-600">{issue.affectedRows.toLocaleString()}</td>
+                                                <td className="px-5 py-4 tabular-nums text-text-secondary">{issue.affectedRows.toLocaleString()}</td>
                                             </tr>
                                         ))}
                                     </tbody>
