@@ -71,7 +71,11 @@ export default function Datasets() {
 
         if (name) formData.append("name", name);
 
-        await API.post("/datasets/upload", formData);
+        if (file.name.split(".").pop()?.toLowerCase() === "pdf") {
+            await API.post("/datasets/upload-pdf", formData);
+        } else {
+            await API.post("/datasets/upload", formData);
+        }
         await fetchDatasets();
         setIsUploadOpen(false);
     }

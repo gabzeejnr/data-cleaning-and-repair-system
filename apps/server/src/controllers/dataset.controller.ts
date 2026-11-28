@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { pool } from "../configs/db.js";
 import path from "node:path"
 import Papa from "papaparse";
 import * as XLSX from "xlsx";
@@ -9,7 +10,6 @@ import { toDataset } from "../utils/datasets.js";
 import type { Request, Response } from "express";
 import type { DashboardSummary, Dataset, DataIssue, DatasetRow, getDatasetIdResponse } from "@data-cleaning-system/shared";
 import type { ApiError, ApiSuccess, CSVErrorDetail, UploadSuccess } from "../types/index.js";
-import { pool } from "../configs/db.js";
 
 async function uploadFile(req: Request, res: Response<ApiError<CSVErrorDetail> | ApiSuccess<UploadSuccess>>): Promise<void> {
     try {
@@ -30,7 +30,7 @@ async function uploadFile(req: Request, res: Response<ApiError<CSVErrorDetail> |
             const result = Papa.parse<DatasetRow>(csv, {
                 header: true,
                 skipEmptyLines: "greedy",
-                transformHeader: (header) => header.trim()
+                transformHeader: h => h.trim()
             })
 
             if (result.errors.length > 0) {
@@ -107,7 +107,14 @@ async function uploadFile(req: Request, res: Response<ApiError<CSVErrorDetail> |
         }
 
         const profile = profileDataset(rows);
-        await persistDataset(datasetId, userId, req.file.originalname, columns, rows, profile);
+        await persistDataset(
+            datasetId,
+            userId,
+            req.file.originalname,
+            columns,
+            rows,
+            profile
+        );
 
         res.status(200).json({
             message: "Dataset uploaded and parsed successfully.",

@@ -1,24 +1,25 @@
-import multer from "multer";
-import path from "node:path"
+import { createUpload } from "./upload.js";
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
-
-const upload = multer({
-    storage: multer.memoryStorage(),
-    limits: {
-        fileSize: MAX_FILE_SIZE,
-        files: 1
-    },
-    fileFilter: function (_req, file, callback) {
-        const extension = path.extname(file.originalname).toLowerCase();
-
-        if (extension !== ".csv" && extension !== ".xlsx") {
-            callback(new Error("Only CSV and XLSX files are supported."));
-            return
-        }
-
-        callback(null, true)
-    }
+const upload = createUpload({
+    label: "CSV and XLSX",
+    extensions: [".csv", ".xlsx"],
+    mimetypes: [
+        "text/csv",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    ],
+    sizeMb: 10
 })
 
-export { upload };
+const pdfUpload = createUpload({
+    label: "PDF",
+    extensions: [".pdf"],
+    mimetypes: ["application/pdf"],
+    sizeMb: 25,
+    requireBoth: true
+})
+
+
+
+
+
+export { upload, pdfUpload };

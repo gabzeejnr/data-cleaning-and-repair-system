@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import {
-    X, UploadCloud, FileSpreadsheet, FileText,
-    CheckCircle2, AlertCircle, Info
+    X, UploadCloud, File, FileSpreadsheet,
+    FileText, CheckCircle2, AlertCircle, Info
 } from "../../libs";
 import { getUploadErrorMessage } from "../../utils";
 import { MAX_FILE_SIZE, ACCEPTED_EXTENSIONS, whatHappensNext, supportedFormats } from "../../data/datasets.data";
@@ -23,7 +23,6 @@ function SupportedFormats({ title, text, icon: Icon }: UploadSupportedFormat) {
 
 export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetModalProps) {
     const inputRef = useRef<HTMLInputElement>(null);
-
     const [file, setFile] = useState<File | null>(null);
     const [name, setName] = useState("");
     const [error, setError] = useState("");
@@ -35,8 +34,9 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
         setError("");
 
         const extension = `.${selectedFile.name.split(".").pop()?.toLowerCase()}`;
+        console.log(selectedFile.name)
         if (!ACCEPTED_EXTENSIONS.includes(extension)) {
-            setError("Choose a CSV, Excel or PDF file (.csv, .xls, .xlsx).");
+            setError("Choose a CSV, Excel or PDF file (.csv, .xls, .xlsx, .pdf).");
             return;
         }
 
@@ -84,7 +84,7 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
 
     return (
         <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-black/60 p-4 backdrop-blur-sm"
-            onMouseDown={(event) => { if (event.target === event.currentTarget && !uploading) onClose() }}
+            onMouseDown={e => { if (e.target === e.currentTarget && !uploading) onClose() }}
         >
             <section role="dialog" aria-modal="true" aria-labelledby="upload-title" className="my-auto w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-bg-secondary shadow-2xl">
                 <header className="flex items-start justify-between border-b border-border px-6 py-5 sm:px-8">
@@ -107,7 +107,7 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
 
                 <div className="grid md:grid-cols-[1.6fr_1fr]">
                     <div className="p-6 sm:p-8">
-                        <input ref={inputRef} type="file" accept=".csv,.xls,.xlsx" className="hidden" onChange={handleFileChange} />
+                        <input ref={inputRef} type="file" accept={ACCEPTED_EXTENSIONS.join(",")} className="hidden" onChange={handleFileChange} />
 
                         <div onDragOver={(e) => { e.preventDefault(); setDragging(true) }} onDrop={handleDrop}
                             onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node | null)) { setDragging(false) } }}
@@ -134,7 +134,10 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
                                 <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-success/10 text-success">
                                     {file.name.toLowerCase().endsWith(".csv")
                                         ? <FileText size={21} />
-                                        : <FileSpreadsheet size={21} />
+                                        : (file.name.toLowerCase().endsWith(".csv")
+                                            ? <FileSpreadsheet size={21} />
+                                            : <File size={21} />
+                                        )
                                     }
                                 </div>
 

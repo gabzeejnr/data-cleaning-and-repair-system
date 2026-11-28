@@ -2,7 +2,7 @@ import { File, FileSpreadsheet, FileText } from "lucide-react";
 import type { UploadSupportedFormat } from "../types";
 
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_FILE_SIZE = 25 * 1024 * 1024;
 const ACCEPTED_EXTENSIONS = [".csv", ".xls", ".xlsx", ".pdf"];
 
 

@@ -1,6 +1,5 @@
 import { Router } from "express";
-import { upload } from "../../configs/multer.js";
-import { pdfUpload } from "../../configs/pdf-multer.js";
+import { upload, pdfUpload } from "../../configs/multer.js";
 import { validateSchema } from "../../middlewares/index.js";
 import { duplicateZod, repairMissingValuesZod } from "../../apis/datasets/index.js";
 import {
