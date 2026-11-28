@@ -20,7 +20,7 @@ export default function LogoutModal({ setIsLoggingOut }: { setIsLoggingOut: Reac
                     <LogOut size={20} strokeWidth={1.8} className="text-rose-600" />
                 </div>
 
-                <h2 id="logout-title" className="mt-5 text-xl font-semibold tracking-tight text-[#11133B]">Sign out of DataCare?</h2>
+                <h2 id="logout-title" className="mt-5 text-xl font-semibold tracking-tight text-text-primary">Sign out of DataCare?</h2>
 
                 <p id="logout-description" className="mt-2 text-sm leading-6 text-slate-500">
                     You're about to end your current session. You'll need to sign in again to access your workspace.
@@ -32,7 +32,7 @@ export default function LogoutModal({ setIsLoggingOut }: { setIsLoggingOut: Reac
                     <span className="grid size-10 shrink-0 place-items-center rounded-lg border border-indigo-100 bg-indigo-50 text-sm font-semibold text-indigo-700">{initials || "U"}</span>
 
                     <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-[#11133B]">{fullName || "Current account"}</p>
+                        <p className="truncate text-sm font-semibold text-text-primary">{fullName || "Current account"}</p>
                         <p className="mt-1 text-xs text-slate-500">Signed-in account</p>
                     </div>
 

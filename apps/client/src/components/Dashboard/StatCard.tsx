@@ -18,7 +18,7 @@ export default function StatCard({ title, value, icon: Icon, description, accent
             <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">{title}</p>
-                    <p className="mt-3 text-3xl font-bold tabular-nums tracking-tight text-[#11133B]">{value}</p>
+                    <p className="mt-3 text-3xl font-bold tabular-nums tracking-tight text-black">{value}</p>
                 </div>
 
                 <div className={`grid size-11 shrink-0 place-items-center rounded-xl shadow-lg ${t.tile}`}>

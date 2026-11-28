@@ -86,7 +86,7 @@ export default function Datasets() {
             <section className="space-y-6">
                 <header className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                     <div>
-                        <h1 className="text-2xl font-bold text-[#11133B]">Datasets</h1>
+                        <h1 className="text-2xl font-bold text-text-primary">Datasets</h1>
                         <p className="mt-1 text-sm text-slate-500">Manage and inspect your uploaded data.</p>
                     </div>
 
@@ -104,7 +104,7 @@ export default function Datasets() {
                     </div>
                 ) : datasets.length === 0 ? (
                     <div className="rounded-2xl border border-slate-200 bg-white px-6 py-16 text-center">
-                        <h2 className="font-semibold text-[#11133B]">No datasets yet</h2>
+                        <h2 className="font-semibold text-text-primary">No datasets yet</h2>
                         <p className="mt-2 text-sm text-slate-500">Upload a CSV or Excel file to get started.</p>
                         <button type="button" onClick={() => setIsUploadOpen(true)} className="mt-5 rounded-xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white hover:bg-indigo-700">
                             Upload your first dataset
@@ -160,7 +160,7 @@ export default function Datasets() {
                                     )}
                                     {filteredDatasets.map((dataset) => (
                                         <tr key={dataset.id} className="transition hover:bg-slate-50/70">
-                                            <td className="px-6 py-4 font-medium text-[#11133B]">{dataset.filename}</td>
+                                            <td className="px-6 py-4 font-medium text-text-primary">{dataset.filename}</td>
                                             <td className="px-6 py-4 text-slate-600">{dataset.rowCount.toLocaleString()}</td>
                                             <td className="px-6 py-4 text-slate-600">{dataset.columnCount.toLocaleString()}</td>
                                             <td className="px-6 py-4 text-slate-600">{new Date(dataset.createdAt).toLocaleDateString()}</td>

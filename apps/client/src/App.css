@@ -8,6 +8,7 @@
     --color-mist: #F9FAFB;
     --color-line: #E5E7EB;
     --color-bg-primary: var(--bg-primary);
-    --color-bg-secondary: var(--bg-secondary)
-
+    --color-bg-secondary: var(--bg-secondary);
+    --color-text-primary: var(--text-primary);
+    --color-text-secondary: var(--text-secondary);
 }

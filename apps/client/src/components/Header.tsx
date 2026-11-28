@@ -71,13 +71,13 @@ export default function DashboardHeader({ onMenuClick, setIsLoggingOut }: Header
                 </button>
 
                 <div className="min-w-0">
-                    <h2 className="truncate text-lg font-semibold tracking-tight text-[#11133B] sm:text-xl">{label}</h2>
+                    <h2 className="truncate text-lg font-semibold tracking-tight text-text-primary sm:text-xl">{label}</h2>
                     <p className="hidden text-xs text-slate-400 sm:block">{text}</p>
                 </div>
             </div>
 
             <div className="ml-3 flex shrink-0 items-center gap-3 sm:gap-5">
-                <button type="button" aria-label="Notifications" className="relative rounded-lg p-2.5 text-slate-500 transition hover:bg-slate-100 hover:text-[#11133B]">
+                <button type="button" aria-label="Notifications" className="relative rounded-lg p-2.5 text-slate-500 transition hover:bg-slate-100 hover:text-text-primary">
                     <Bell size={20} strokeWidth={1.8} />
                     <span className="absolute right-2 top-2 size-2 rounded-full border-2 border-white bg-indigo-600" />
                 </button>
@@ -93,7 +93,7 @@ export default function DashboardHeader({ onMenuClick, setIsLoggingOut }: Header
                         </span>
 
                         <span className="hidden min-w-0 sm:block">
-                            <span className="block max-w-36 truncate text-sm font-semibold text-[#11133B]">{user?.name ?? "User"}</span>
+                            <span className="block max-w-36 truncate text-sm font-semibold text-text-primary">{user?.name ?? "User"}</span>
                             <span className="mt-0.5 block max-w-36 truncate text-xs capitalize text-slate-400">{user?.role ?? "Member"}</span>
                         </span>
 
@@ -105,20 +105,20 @@ export default function DashboardHeader({ onMenuClick, setIsLoggingOut }: Header
                             className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden border border-slate-200 bg-white shadow-lg shadow-slate-900/10"
                         >
                             <div className="border-b border-slate-100 px-4 py-3">
-                                <p className="truncate text-sm font-semibold text-[#11133B]">{user?.name ?? "User"}</p>
+                                <p className="truncate text-sm font-semibold text-text-primary">{user?.name ?? "User"}</p>
                                 <p className="mt-1 text-xs capitalize text-slate-500">{user?.role ?? "Member"}</p>
                             </div>
 
                             <div className="p-1.5">
                                 <button type="button" role="menuitem" onClick={() => setMenuOpen(false)}
-                                    className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-[#11133B]"
+                                    className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-text-primary"
                                 >
                                     <UserRound size={17} className="text-slate-400" />
                                     My profile
                                 </button>
 
                                 <Link to={"/settings"} type="button" role="menuitem" onClick={() => setMenuOpen(false)}
-                                    className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-[#11133B]"
+                                    className="flex w-full items-center gap-3 px-3 py-2.5 text-sm text-slate-700 transition hover:bg-slate-50 hover:text-text-primary"
                                 >
                                     <Settings2 size={17} className="text-slate-400" />
                                     Account settings

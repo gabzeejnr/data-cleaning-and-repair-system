@@ -4,22 +4,24 @@ import axios from "axios";
 import { useUser } from "../context/UserContext";
 import { AUTH } from "../apis/axios";
 import { Toast } from "./Toast";
-import { ArrowLeft, ArrowUpRight, Database, Eye, EyeOff, ShieldCheck, UserPlus } from "lucide-react";
+import { ArrowUpRight, Database, Eye, EyeOff, ShieldCheck, UserPlus } from "lucide-react";
 import type { User, UserLogin, UserRegistration } from "@data-cleaning-system/shared";
 import type { ToastType, PasswordProps, ButtonProps } from "../types";
 
 
 function Password({ label, error, isClosed = true, setIsClosed, ...props }: PasswordProps) {
 
-    return (
-        <div className="space-y-2">
-            <label htmlFor={props.id ?? "password"} className="text-sm font-medium text-gray-700">{label}</label>
+    // w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100
 
-            <div className="relative">
+    return (
+        <div className="space-y-4">
+            <label htmlFor={props.id ?? "password text-text-secondary "} className="text-sm font-medium text-text-secondary">{label}</label>
+
+            <div className="relative mt-1">
                 <input {...props} id={props.id ?? "password"} name={props.name ?? "password"}
                     type={isClosed ? "password" : "text"} autoComplete={props.autoComplete ?? "current-password"} required={props.required ?? true}
                     placeholder={props.placeholder ?? "Enter your password"}
-                    className={`w-full rounded-lg border border-gray-200 bg-white px-4 py-3 pr-12 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100 ${error ? "border-red-500" : ""
+                    className={`w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 pr-12 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100 ${error ? "border-red-500" : ""
                         }`}
                     aria-invalid={!!error}
                     aria-describedby={error ? `${props.id ?? "password"}-error` : undefined}
@@ -116,11 +118,11 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
                         <Database size={25} color="white" />
                     </div>
 
-                    <span className="text-2xl font-bold tracking-tight text-gray-900">DataCare</span>
+                    <span className="text-2xl font-bold tracking-tight text-text-primary">DataCare</span>
                 </header>
 
                 <div className="space-y-2">
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+                    <h1 className="text-3xl font-bold tracking-tight text-text-primary">
                         Welcome back
                     </h1>
                     <p className="text-sm leading-6 text-gray-500">
@@ -131,7 +133,7 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
                     <Toast toast={toast} />
 
                     <div className="space-y-2">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                        <label htmlFor="email" className=" text-text-secondary block text-sm font-medium">
                             Email address
                         </label>
 
@@ -144,7 +146,7 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
 
                     <div className="space-y-2">
                         <div className="flex items-center justify-between gap-3">
-                            <label htmlFor="password" className="text-sm font-medium text-gray-700">
+                            <label htmlFor="password" className=" text-text-secondary text-sm font-medium">
                                 Password
                             </label>
 
@@ -190,7 +192,7 @@ function LoginForm({ onRegister }: { onRegister: React.MouseEventHandler<HTMLAnc
     )
 }
 
-function RegisterForm({ onBack }: { onBack: React.MouseEventHandler<HTMLButtonElement> }) {
+function RegisterForm() {
     const navigate = useNavigate();
     const [toast, setToast] = useState<ToastType | null>(null);
     const [isClosed, setIsClosed] = useState(true);
@@ -214,7 +216,7 @@ function RegisterForm({ onBack }: { onBack: React.MouseEventHandler<HTMLButtonEl
                 type: "error",
                 text: "Passwords do not match.",
             });
-            
+
             return;
         }
 
@@ -247,31 +249,27 @@ function RegisterForm({ onBack }: { onBack: React.MouseEventHandler<HTMLButtonEl
         }
     }
 
-    const inputClass = "w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100";
+    const inputClass = "w-full rounded-lg border border-gray-200 bg-transparent px-4 py-3 text-sm outline-none transition placeholder:text-gray-400 focus:border-brand focus:ring-2 focus:ring-indigo-100";
 
     return (
         <div className="w-full space-y-6">
             <div className="space-y-2">
-                <button type="button" onClick={onBack} className="mb-3 inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition hover:text-brand">
-                    <ArrowLeft size={16} />
-                    Back to sign in
-                </button>
 
                 <div className="flex items-center gap-2 text-brand">
                     <UserPlus size={21} />
                     <span className="text-sm font-semibold">Create your account</span>
                 </div>
 
-                <h1 className="text-3xl font-bold tracking-tight text-gray-900">Get started with DataCare</h1>
+                <h1 className="tracking-tight">Get started with DataCare</h1>
 
-                <p className="text-sm leading-6 text-gray-500">Create an account to upload, analyze, and repair your datasets in one place.</p>
+                <p className="text-sm leading-6 text-text-secondary">Create an account to upload, analyze, and repair your datasets in one place.</p>
             </div>
 
             <form className="space-y-4" onSubmit={handleRegister}>
                 <Toast toast={toast} />
 
                 <div className="space-y-2">
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full name</label>
+                    <label htmlFor="name" className=" text-text-secondary block text-sm font-medium">Full name</label>
 
                     <input id="name" name="name" type="text" autoComplete="name" required
                         minLength={2} placeholder="John Doe" className={inputClass}
@@ -280,7 +278,7 @@ function RegisterForm({ onBack }: { onBack: React.MouseEventHandler<HTMLButtonEl
                 </div>
 
                 <div className="space-y-2">
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email address</label>
+                    <label htmlFor="email" className=" text-text-secondary block text-sm font-medium">Email address</label>
 
                     <input id="email" name="email" type="email" autoComplete="email"
                         required placeholder="someone@example.com" className={inputClass}
@@ -301,7 +299,7 @@ function RegisterForm({ onBack }: { onBack: React.MouseEventHandler<HTMLButtonEl
                     />
                 </div>
 
-                <p className="text-xs leading-5 text-gray-500">
+                <p className="text-xs leading-5 text-text-secondary">
                     By creating an account, you agree to use DataCare responsibly and provide accurate account information.
                 </p>
 

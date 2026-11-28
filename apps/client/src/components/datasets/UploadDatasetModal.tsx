@@ -14,7 +14,7 @@ function SupportedFormats({ title, text, icon: Icon }: UploadSupportedFormat) {
         <div className="flex items-center gap-3">
             <Icon size={22} className="text-emerald-600" />
             <div>
-                <p className="text-sm font-semibold text-[#11133B]">{title}</p>
+                <p className="text-sm font-semibold text-text-primary">{title}</p>
                 <p className="text-xs text-slate-500">{text}</p>
             </div>
         </div>
@@ -83,7 +83,7 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
     )
 
     return (
-        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-[#11133B]/60 p-4 backdrop-blur-sm"
+        <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto bg-text-primary/60 p-4 backdrop-blur-sm"
             onMouseDown={(event) => { if (event.target === event.currentTarget && !uploading) onClose() }}
         >
             <section role="dialog" aria-modal="true" aria-labelledby="upload-title" className="my-auto w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl">
@@ -93,7 +93,7 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
                             <UploadCloud size={23} />
                         </div>
                         <div>
-                            <h2 id="upload-title" className="text-xl font-bold text-[#11133B]">Upload dataset</h2>
+                            <h2 id="upload-title" className="text-xl font-bold text-text-primary">Upload dataset</h2>
                             <p className="mt-1 text-sm text-slate-500">Upload a file to start profiling and cleaning your data.</p>
                         </div>
                     </div>
@@ -119,7 +119,7 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
                         >
                             <div className="grid size-14 place-items-center rounded-2xl bg-indigo-100 text-brand"><UploadCloud size={28} /></div>
 
-                            <p className="mt-4 font-semibold text-[#11133B]">Drag and drop your file here</p>
+                            <p className="mt-4 font-semibold text-text-primary">Drag and drop your file here</p>
                             <p className="mt-1 text-sm text-slate-500">or</p>
 
                             <button type="button" onClick={() => inputRef.current?.click()} className="mt-4 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand">
@@ -139,7 +139,7 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
                                 </div>
 
                                 <div className="min-w-0 flex-1">
-                                    <p className="truncate text-sm font-semibold text-[#11133B]">{file.name}</p>
+                                    <p className="truncate text-sm font-semibold text-text-primary">{file.name}</p>
                                     <p className="mt-1 text-xs text-slate-500">{fileSize} · Ready to upload</p>
                                 </div>
 
@@ -153,7 +153,7 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
                             </div>
                         )}
 
-                        <label htmlFor="dataset-name" className="mt-6 block text-sm font-medium text-[#11133B]">
+                        <label htmlFor="dataset-name" className="mt-6 block text-sm font-medium text-text-primary">
                             Dataset name <span className="font-normal text-slate-400">(optional)</span>
                         </label>
                         <input id="dataset-name" value={name} onChange={(e) => setName(e.target.value)} disabled={uploading} maxLength={150} placeholder="e.g. Sales data — Q3 2026"
@@ -186,7 +186,7 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
                     </div>
 
                     <aside className="border-t border-slate-100 bg-indigo-50/40 p-6 sm:p-8 md:border-l md:border-t-0">
-                        <h3 className="font-semibold text-[#11133B]">Supported formats</h3>
+                        <h3 className="font-semibold text-text-primary">Supported formats</h3>
 
                         <div className="mt-4 space-y-4">
                             {supportedFormats.map(f => (
@@ -196,7 +196,7 @@ export default function UploadDatasetModal({ onClose, onUpload }: UploadDatasetM
 
                         <div className="my-6 border-t border-indigo-100" />
 
-                        <h3 className="font-semibold text-[#11133B]">What happens next?</h3>
+                        <h3 className="font-semibold text-text-primary">What happens next?</h3>
                         <ol className="mt-4 space-y-4">
                             {whatHappensNext.map((step, index) => (
                                 <li key={step} className="flex items-start gap-3">

@@ -11,7 +11,7 @@
 
     --text-primary: light-dark(#111827, #F9FAFB);
     --text-secondary: light-dark(#6B7280, #A1A1B8);
-    --text-muted: light-dark(#9CA3AF, #73758F);
+    --text-muted: light-dark(#6B7280, #73758F);
 
     --border: light-dark(#E5E7EB, #30325D);
     --input-bg: light-dark(#FFFFFF, #191B49);
@@ -19,6 +19,16 @@
     --success: light-dark(#16A34A, #4ADE80);
     --warning: light-dark(#D97706, #FBBF24);
     --danger: light-dark(#DC2626, #F87171);
+
+
+
+
+    h1 {
+        color: var(--text-primary);
+        font-size: 30px;
+        font-weight: 700;
+        margin: 0;
+    }
 }
 
 

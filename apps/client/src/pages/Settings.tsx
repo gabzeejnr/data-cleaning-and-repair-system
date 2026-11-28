@@ -60,7 +60,7 @@ export default function Settings() {
         name: user?.name ?? "",
         email: user?.email ?? ""
     })
-    const inputStyle = "w-full border border-ink/15 rounded-xl p-2 text-sm outline-none focus:border-brand transition-colors"
+    const inputStyle = `w-full border ${isEditing ? "border-brand" : "border-ink/15"} rounded-xl p-2 text-sm outline-none focus:border-brand transition-colors`
 
     function handleProfileChange(e: SubmitEvent<HTMLFormElement>) {
         e.preventDefault();

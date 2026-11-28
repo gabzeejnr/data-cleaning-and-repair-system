@@ -31,7 +31,7 @@ export default function Authentication() {
     }, [pathname]);
 
     return (
-        <section className="relative min-h-screen overflow-hidden bg-[#11133B]">
+        <section className="relative min-h-screen overflow-hidden bg-bg-primary">
             <aside className={`absolute inset-y-0 left-0 flex w-full items-center px-8 text-white transition-transform duration-700 ease-in-out lg:w-1/2 lg:px-14 ${isRegistering
                 ? "lg:translate-x-0" : "lg:translate-x-full"}`}
             >
@@ -47,38 +47,34 @@ export default function Authentication() {
                                 The data workspace
                             </div>
 
-                            <h2 className="text-3xl font-bold leading-tight xl:text-4xl">
-                                {isRegistering
-                                    ? "Your data journey starts here."
-                                    : "Better data. Better decisions."
-                                }
+                            <h2 className="text-3xl font-bold leading-tight xl:text-4xl text-text-primary">
+                                {isRegistering ? "Your data journey starts here." : "Better data. Better decisions."}
                             </h2>
 
-                            <p className="max-w-md text-sm leading-6 text-indigo-100/70">
+                            <p className="max-w-md text-sm leading-6 text-text-secondary">
                                 {isRegistering
                                     ? "Create your account and start discovering cleaner, more reliable data."
                                     : "Analyze, repair, and improve your datasets in one workspace."
-                                }</p>
+                                }
+                            </p>
                         </div>
                     </div>
 
                     <div className="rounded-2xl border border-white/10 bg-white/6 p-5 shadow-2xl backdrop-blur-sm sm:p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm font-semibold">Dataset overview</p>
-                                <p className="mt-1 text-xs text-indigo-200/60">
-                                    sales_data.csv
-                                </p>
+                                <p className="text-sm font-semibold text-text-secondary">Dataset overview</p>
+                                <p className="mt-1 text-xs text-text-primary">sales_data.csv</p>
                             </div>
 
-                            <div className="rounded-lg bg-indigo-400/15 p-2 text-indigo-300">
+                            <div className="rounded-lg bg-brand/15 p-2 text-brand">
                                 <FileSpreadsheet size={20} />
                             </div>
                         </div>
 
                         <div className="mt-6 flex items-center justify-between gap-4">
                             <div>
-                                <p className="text-xs text-indigo-200/70">Data quality score</p>
+                                <p className="text-xs text-brand/70">Data quality score</p>
                                 <h3 className="mt-1 text-3xl font-bold">92.8%</h3>
                             </div>
 
@@ -140,19 +136,14 @@ export default function Authentication() {
 
             </aside>
 
-            <div className={`absolute inset-y-0 left-0 z-10 flex w-full items-center justify-center overflow-y-auto bg-white px-5 py-8 transition-transform duration-700 ease-in-out sm:px-10 lg:w-1/2 lg:px-14 ${isRegistering
+            <div className={`absolute inset-y-0 left-0 z-10 flex w-full items-center justify-center overflow-y-auto bg-bg-primary px-5 py-8 transition-transform duration-700 ease-in-out sm:px-10 lg:w-1/2 lg:px-14 ${isRegistering
                 ? "translate-x-0 lg:translate-x-full"
                 : "translate-x-0 lg:translate-x-0"
                 }`
             }>
                 <div className="w-full max-w-md">
                     {isRegistering ? (
-                        <RegisterForm
-                            onBack={() => {
-                                setIsRegistering(false);
-                                navigate("/auth/login");
-                            }}
-                        />
+                        <RegisterForm />
                     ) : (
                         <LoginForm
                             onRegister={() => {

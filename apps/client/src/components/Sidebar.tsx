@@ -19,7 +19,7 @@ function PageMap({ pages, onClose }: PageMapType) {
                 <NavLink key={path} to={path} end={end} onClick={onClose} className={({ isActive }) =>
                     `group flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-medium transition-colors ${isActive
                         ? "bg-indigo-50 text-indigo-700"
-                        : "text-slate-500 hover:bg-slate-50 hover:text-[#11133B]"
+                        : "text-slate-500 hover:bg-slate-50 hover:text-text-primary"
                     }`
                 }>
                     {({ isActive }) => (
@@ -46,7 +46,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             )}
 
             <aside className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col
-                border-r border-slate-200 bg-white transition-transform duration-300
+                border-r border-slate-200 bg-bg-secondary transition-transform duration-300
                 ${isOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
             >
                 <div className="flex h-19 items-center justify-between border-b border-slate-100 px-6">
@@ -56,7 +56,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         </div>
 
                         <div>
-                            <h1 className="text-lg font-bold tracking-tight text-[#11133B]">DataCare</h1>
+                            <h1 className="text-lg font-bold tracking-tight text-text-primary">DataCare</h1>
                             <p className="text-[11px] font-medium tracking-wide text-slate-400">DATA QUALITY PLATFORM</p>
                         </div>
                     </NavLink>
@@ -79,7 +79,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                 </nav>
 
                 <div className="border-t border-slate-100 p-4">
-                    {/* <div className="rounded-2xl bg-[#11133B] p-4 text-white">
+                    {/* <div className="rounded-2xl bg-text-primary p-4 text-white">
                         <div className="mb-3 flex size-9 items-center justify-center rounded-xl bg-white/10">
                             <ShieldCheck size={19} />
                         </div>
